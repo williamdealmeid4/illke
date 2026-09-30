@@ -1,0 +1,15 @@
+﻿.runtime/
+.data/
+**/node_modules/
+**/vendor/
+**/.env
+**/.env.*
+!**/.env.example
+**/.svelte-kit/
+**/build/
+**/coverage/
+**/storage/logs/*
+**/storage/framework/*
+**/database/*.sqlite
+graphify-out/
+*.log
