@@ -154,7 +154,6 @@
   </p>{/if}{#if result?.message_url}<a
     class="text-link"
     href={result.message_url}
-    target="_blank"
     rel="noreferrer">Abrir mensagem no Discord</a
   >{/if}
 
@@ -168,7 +167,6 @@
       {#if inviteUrl}<a
           class="button secondary small"
           href={inviteUrl}
-          target="_blank"
           rel="noreferrer">Adicionar bot ao servidor</a
         >{/if}{#if !connected}<a
           class="button small"

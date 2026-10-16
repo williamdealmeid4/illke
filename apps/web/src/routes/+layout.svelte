@@ -51,7 +51,6 @@
       <a
         class="discord-link"
         href={data.discordInviteUrl || "/discord"}
-        target={data.discordInviteUrl ? "_blank" : undefined}
         rel="noreferrer">Bot do Discord</a
       ><button
         class="icon-button theme-button"

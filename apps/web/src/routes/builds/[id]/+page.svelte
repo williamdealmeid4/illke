@@ -122,7 +122,6 @@
         Referência: <a
           class="text-link"
           href={b.source_url}
-          target="_blank"
           rel="noreferrer">{b.source_name}</a
         >. Explicação do illke; sets pertencem aos respectivos contribuidores.
       </p>{/if}<a class="text-link" href={"/comunidade?build=" + b.id}

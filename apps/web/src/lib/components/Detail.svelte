@@ -48,7 +48,6 @@
         {#if a.sprites?.shiny}<a
             class="text-link"
             href={a.sprites.shiny.url}
-            target="_blank"
             rel="noreferrer">Ver sprite shiny</a
           >{/if}
       </div>
@@ -181,7 +180,6 @@
   Fonte: <a
     class="text-link"
     href="https://github.com/PokeAPI/pokeapi"
-    target="_blank"
     rel="noreferrer">PokéAPI</a
   >
   · revisão {entry.revision?.slice(0, 12)}

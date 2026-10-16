@@ -24,7 +24,6 @@
   {#if data.discordInviteUrl}<a
       class="button"
       href={data.discordInviteUrl}
-      target="_blank"
       rel="noreferrer">Adicionar bot ao meu servidor</a
     >{:else}<div class="notice">
       O bot ainda não está disponível para instalação. Enquanto isso, você pode
