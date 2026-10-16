@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'discord' => ['enabled' => env('DISCORD_ENABLED', false), 'client_id' => env('DISCORD_APPLICATION_ID'), 'client_secret' => env('DISCORD_CLIENT_SECRET'), 'redirect_uri' => env('DISCORD_REDIRECT_URI', 'http://127.0.0.1:5186/api/v1/discord/callback'), 'url' => env('DISCORD_SERVICE_URL', 'http://127.0.0.1:8082'), 'token' => env('BOT_SERVICE_TOKEN')],
+    'moderator_token' => env('MODERATOR_TOKEN'),
+    'engine' => ['revision' => 'heuristic-singles-v1-reference-sets-v1', 'url' => env('ENGINE_URL', 'http://127.0.0.1:8081'), 'token' => env('ENGINE_TOKEN')],
 
     /*
     |--------------------------------------------------------------------------

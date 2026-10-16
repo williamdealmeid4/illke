@@ -1,4 +1,4 @@
-﻿.runtime/
+.runtime/
 .data/
 **/node_modules/
 **/vendor/
@@ -13,3 +13,6 @@
 **/database/*.sqlite
 graphify-out/
 *.log
+
+output/
+.playwright-cli/

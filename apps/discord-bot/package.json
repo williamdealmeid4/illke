@@ -3,8 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --env-file-if-exists=.env src/index.js",
-    "register": "node --env-file-if-exists=.env src/register.js"
+    "start": "node --env-file-if-exists=.env src/index.js"
   },
   "dependencies": {
     "discord.js": "^14.22.1"

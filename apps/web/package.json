@@ -1,21 +1,24 @@
 {
-    "name":  "@illke/web",
-    "private":  true,
-    "type":  "module",
-    "scripts":  {
-                    "dev":  "vite --host 127.0.0.1",
-                    "build":  "vite build",
-                    "preview":  "vite preview",
-                    "check":  "svelte-kit sync \u0026\u0026 svelte-check --tsconfig ./jsconfig.json"
-                },
-    "devDependencies":  {
-                            "@lucide/svelte":  "^1.49.0",
-                            "@sveltejs/adapter-node":  "^5.2.0",
-                            "@sveltejs/kit":  "^2.40.0",
-                            "@sveltejs/vite-plugin-svelte":  "^7.3.1",
-                            "lucide-svelte":  "^0.544.0",
-                            "svelte":  "^5.39.0",
-                            "svelte-check":  "^4.3.0",
-                            "vite":  "^8.3.1"
-                        }
+    "name": "@illke/web",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host 127.0.0.1",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json"
+    },
+    "devDependencies": {
+        "@lucide/svelte": "^1.49.0",
+        "@sveltejs/adapter-node": "^5.2.0",
+        "@sveltejs/kit": "^2.40.0",
+        "@sveltejs/vite-plugin-svelte": "^7.3.1",
+        "lucide-svelte": "^0.544.0",
+        "svelte": "^5.39.0",
+        "svelte-check": "^4.3.0",
+        "vite": "^8.3.1"
+    },
+    "dependencies": {
+        "jspdf": "^4.2.1"
+    }
 }
