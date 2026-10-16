@@ -12,7 +12,7 @@
 
 <svelte:head><title>Cobertura dos dados — illke</title></svelte:head>
 <div class="page-header">
-  <h1>O que já está no campo.</h1>
+  <h1>Cobertura dos dados</h1>
   <p>Dados importados, fontes e limites da cobertura atual.</p>
 </div>
 {#if data.error}<p class="notice error">

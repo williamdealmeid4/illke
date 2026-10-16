@@ -36,8 +36,8 @@
   <h1>{data.title}</h1>
   <p>
     {data.kind === "pokemon"
-      ? "Cada Pokémon tem um lugar. Encontre o seu próximo parceiro."
-      : "Propriedades, efeitos e referências para suas escolhas."}
+      ? "Espécies e formas, com filtros por nome, tipo e geração."
+      : "Propriedades e efeitos dos registros do catálogo."}
   </p>
 </div>
 <form class="toolbar">

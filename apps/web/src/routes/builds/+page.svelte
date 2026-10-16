@@ -8,8 +8,8 @@
 <div class="page-header split">
   <div>
     <div class="breadcrumbs"><a href="/">illke</a><span>/</span>Builds</div>
-    <h1>Uma função. Um motivo.</h1>
-    <p>Conheça as escolhas de cada build e adapte a estratégia ao seu time.</p>
+    <h1>Builds</h1>
+    <p>Sets de referência por Pokémon e formato.</p>
   </div>
   <a class="button" href="/builder">Criar build</a>
 </div>

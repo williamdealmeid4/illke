@@ -13,40 +13,34 @@
 </script>
 
 <svelte:head
-  ><title>illke — Seu próximo time começa aqui</title><meta
+  ><title>illke — Pokémon e builds</title><meta
     name="description"
-    content="Explore Pokémon, compare builds por formato e monte sua próxima equipe com a comunidade illke."
+    content="Pokédex, builds por formato, editor de equipes e exportação de builds em PDF."
   /></svelte:head
 >
 <section class="arena-intro">
   <div class="intro-copy">
-    <div class="season-tag"><Swords size={15} /> Laboratório de batalha</div>
-    <h1>Conheça seu time.<br />Mude o jogo.</h1>
-    <p>
-      Dos primeiros parceiros às escolhas competitivas.<br
-        class="desktop-only"
-      /> Explore Pokémon, entenda suas builds e encontre seu jeito de jogar.
-    </p>
+    <h1>Pokémon e builds</h1>
     <form class="global-search" action="/pokedex">
       <Search size={20} /><label class="sr-only" for="search"
-        >Buscar Pokémon</label
+        >Pesquisar por nome ou número</label
       ><input
         id="search"
         name="q"
-        placeholder="Qual Pokémon vai para o seu time?"
+        placeholder="Nome ou número da Pokédex"
       /><button type="submit" aria-label="Pesquisar"
         ><ArrowRight size={20} /></button
       >
     </form>
     <div class="search-suggestions">
-      <span>Experimente</span><a href="/pokemon/garchomp">Garchomp</a><a
+      <span>Pokémon</span><a href="/pokemon/garchomp">Garchomp</a><a
         href="/pokemon/dragapult">Dragapult</a
       ><a href="/pokemon/blastoise">Blastoise</a>
     </div>
   </div>
   <div class="featured-match">
     <div class="match-title">
-      <span class="status-dot"></span> Duas funções. Muitas possibilidades.
+      <span class="status-dot"></span> Garchomp e Corviknight
     </div>
     <div class="match-pokemon">
       <a href="/pokemon/garchomp" class="match-mon ground"
@@ -80,12 +74,12 @@
       >
     </div>
     <a class="match-footer" href="/builds?context_id=gen9ou"
-      >Explore as builds de Scarlet / Violet <ArrowUpRight size={17} /></a
+      >Builds de Scarlet / Violet <ArrowUpRight size={17} /></a
     >
   </div>
 </section>
 <div class="catalog-ticker">
-  <span>Seu campo de pesquisa</span><a href="/pokedex"
+  <span>Catálogo</span><a href="/pokedex"
     ><strong
       >{data.summary?.counts?.pokemon?.toLocaleString("pt-BR") || "—"}</strong
     > Pokémon e formas</a
@@ -103,8 +97,7 @@
 <section class="home-catalog">
   <div class="section-heading">
     <div>
-      <h2>Peças para a sua estratégia</h2>
-      <p>Conheça o Pokémon antes de escolher a build.</p>
+      <h2>Pokémon</h2>
     </div>
     <a href="/pokedex" class="text-link"
       >Abrir Pokédex <ArrowRight size={16} /></a
@@ -144,16 +137,16 @@
 <section class="workbench-promo">
   <div class="promo-copy">
     <span class="section-kicker"><Swords size={20} /></span>
-    <h2>Seis escolhas.<br />Uma estratégia sua.</h2>
+    <h2>Editor de equipes</h2>
     <p>
-      Escolha os integrantes, ajuste cada build e veja onde a equipe ganha força
-      — ou deixa uma brecha.
+      Equipes de até seis Pokémon, com análise individual e validação por
+      formato.
     </p>
-    <a href="/builder" class="button"><Plus size={17} /> Montar minha equipe</a>
+    <a href="/builder" class="button"><Plus size={17} /> Criar equipe</a>
   </div>
   <div class="team-preview" aria-label="Exemplo de composição de equipe">
     <div class="preview-header">
-      <span>Na bancada</span><span>Você decide cada slot</span>
+      <span>Equipe de exemplo</span>
     </div>
     <div class="preview-slots">
       {#each ["Blastoise", "Torkoal", "Torterra"] as name}<div>
@@ -165,26 +158,21 @@
             loading="lazy"
           /><span>{name}</span>
         </div>{/each}<a href="/builder" aria-label="Adicionar Pokémon à equipe"
-        ><Plus size={27} /><span>Sua escolha</span></a
+        ><Plus size={27} /><span>Adicionar</span></a
       >
     </div>
     <div class="preview-note">
-      <Shield size={16} /><span
-        >Resistência, cobertura e legalidade no mesmo lugar.</span
-      >
+      <Shield size={16} /><span>Validação de golpes, habilidades e itens.</span>
     </div>
   </div>
 </section>
 <section class="community-promo">
   <div>
     <MessageSquare size={24} />
-    <h2>Estratégia também se constrói em conversa.</h2>
-    <p>
-      Compartilhe uma equipe, tire dúvidas e descubra como outros treinadores
-      jogam.
-    </p>
+    <h2>Fórum</h2>
+    <p>Tópicos sobre equipes, builds e jogos Pokémon.</p>
   </div>
   <a href="/comunidade" class="button secondary"
-    >Entrar na comunidade <ArrowRight size={16} /></a
+    >Ver tópicos <ArrowRight size={16} /></a
   >
 </section>

@@ -1,7 +1,7 @@
 <svelte:head><title>Fontes e créditos — illke</title></svelte:head>
 <div class="page-header">
-  <h1>Informação com origem.</h1>
-  <p>As referências que ajudam a construir o illke.</p>
+  <h1>Fontes e créditos</h1>
+  <p>Origem dos dados, imagens e cálculos.</p>
 </div>
 <div class="prose">
   <h2>Catálogo e imagens</h2>

@@ -76,7 +76,6 @@
   <main id="content">{@render children()}</main>
   <footer>
     <a class="brand" href="/">illke</a>
-    <p>Uma equipe melhor começa com uma boa escolha.</p>
     <nav aria-label="Rodapé">
       <a href="/cobertura">Cobertura</a><a href="/fontes">Fontes e créditos</a
       ><a href="/wiki">Guias</a>

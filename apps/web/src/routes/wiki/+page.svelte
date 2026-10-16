@@ -1,7 +1,7 @@
 <svelte:head><title>Guias de estratégia — illke</title></svelte:head>
 <div class="page-header">
-  <h1>Entenda as suas escolhas.</h1>
-  <p>O começo de uma boa equipe é saber o que cada integrante faz.</p>
+  <h1>Guia de builds e equipes</h1>
+  <p>Formatos, funções, treinamento e interpretação dos resultados.</p>
 </div>
 <div class="prose">
   <h2>Comece pelo formato</h2>

@@ -1576,3 +1576,14 @@ footer small {
     gap: 8px;
   }
 }
+
+footer > nav {
+  grid-column: 2 / -1;
+  justify-self: end;
+}
+@media (max-width: 760px) {
+  footer > nav {
+    grid-column: auto;
+    justify-self: start;
+  }
+}

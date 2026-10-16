@@ -48,18 +48,15 @@
 <div class="page-header split">
   <div>
     <div class="breadcrumbs"><a href="/">illke</a><span>/</span>Comunidade</div>
-    <h1>O próximo movimento vem da conversa.</h1>
-    <p>
-      Equipes para discutir, dúvidas para resolver e estratégias para
-      compartilhar.
-    </p>
+    <h1>Fórum</h1>
+    <p>Discussões sobre equipes, builds, campanha e regras dos jogos.</p>
   </div>
   <button class="button" onclick={() => (compose = !compose)}
     ><Plus size={17} /> Novo tópico</button
   >
 </div>
 {#if compose}<section class="content-panel">
-    <h2>Comece uma conversa</h2>
+    <h2>Novo tópico</h2>
     <form
       onsubmit={(e) => {
         e.preventDefault();
@@ -129,11 +126,8 @@
     {data.error}
   </p>{:else if !data.topics?.data?.length}<div class="empty-panel">
     <MessageSquare size={26} />
-    <h3 style="margin-top:15px">A primeira conversa pode ser sua.</h3>
-    <p>
-      Compartilhe uma equipe que você está testando ou uma dúvida sobre seu
-      jogo.
-    </p>
+    <h3 style="margin-top:15px">Nenhum tópico publicado</h3>
+    <p>Use “Criar tópico” para publicar uma pergunta ou equipe.</p>
     <button class="button secondary" onclick={() => (compose = true)}
       >Criar tópico</button
     >

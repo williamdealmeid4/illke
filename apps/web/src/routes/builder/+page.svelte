@@ -282,8 +282,8 @@
 <div class="page-header split">
   <div>
     <div class="breadcrumbs"><a href="/">illke</a><span>/</span>Builder</div>
-    <h1>Sua bancada de batalha.</h1>
-    <p>Escolha seis parceiros. Dê uma função a cada um.</p>
+    <h1>Criar equipe</h1>
+    <p>Edite os golpes, itens, habilidades e atributos de até seis Pokémon.</p>
   </div>
   <div class="actions" style="margin:0">
     <button
@@ -496,7 +496,7 @@
           >Como esta build funciona<textarea
             bind:value={draft.strategy}
             maxlength="20000"
-            placeholder="Descreva a função, os parceiros e as situações em que ela funciona."
+            placeholder="Função, parceiros recomendados e limitações da build."
           ></textarea></label
         >
       </div>
@@ -509,10 +509,9 @@
     </section>
     <aside class="builder-sidebar">
       <div class="content-panel" style="margin-top:0">
-        <h2>Antes de entrar em campo</h2>
+        <h2>Legalidade</h2>
         <p>
-          Confira o conjunto e as regras da equipe antes de avaliar o
-          desempenho.
+          Verifique se os integrantes seguem as regras do formato selecionado.
         </p>
         <button class="button secondary full" onclick={validate} disabled={busy}
           >Validar equipe</button
@@ -549,7 +548,7 @@
       </div>
       <div class="content-panel">
         <Swords size={22} />
-        <h2 style="margin-top:12px">Teste sua equipe</h2>
+        <h2 style="margin-top:12px">Simulação de batalhas</h2>
         <p>
           Simule 1.000 batalhas contra equipes sintéticas de referência, com a
           mesma política automatizada nos dois lados.

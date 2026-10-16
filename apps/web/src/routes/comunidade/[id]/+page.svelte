@@ -88,7 +88,7 @@
       reply();
     }}
   >
-    <h2>Continue a conversa</h2>
+    <h2>Responder ao tópico</h2>
     <label for="reply-nickname">Seu apelido</label><input
       id="reply-nickname"
       style="display:block;margin:12px 0"
@@ -103,7 +103,7 @@
       required
       minlength="2"
       maxlength="20000"
-      placeholder="Compartilhe uma ideia ou responda à dúvida."></textarea>
+      placeholder="Escreva sua resposta."></textarea>
     <div class="actions">
       <button class="button" disabled={busy}>Publicar resposta</button>
     </div>

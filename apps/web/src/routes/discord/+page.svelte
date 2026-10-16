@@ -4,8 +4,8 @@
 
 <svelte:head><title>Bot do Discord — illke</title></svelte:head>
 <div class="page-header">
-  <h1>Seu servidor. Suas estratégias.</h1>
-  <p>Leve as builds do illke para o Discord da sua comunidade.</p>
+  <h1>Bot do Discord</h1>
+  <p>Instale o bot e publique builds em um canal do seu servidor.</p>
 </div>
 <div class="prose">
   <h2>Como funciona</h2>
