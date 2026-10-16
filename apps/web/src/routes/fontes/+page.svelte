@@ -9,7 +9,10 @@
     <a href="https://github.com/PokeAPI/pokeapi">PokéAPI</a>: dados de espécies,
     formas, golpes, itens, habilidades e jogos.
     <a href="https://github.com/PokeAPI/sprites">PokéAPI/sprites</a>: sprites e
-    artes. A revisão importada está na página de
+    artes e símbolos de tipos. Ícones de categorias de golpes e sprites
+    complementares de itens vêm do acervo Pokémon Showdown. Habilidades sem
+    sprite específico usam ícones de interface Lucide. A revisão importada está
+    na página de
     <a href="/cobertura">cobertura</a>.
   </p>
   <h2>Regras e cálculos</h2>

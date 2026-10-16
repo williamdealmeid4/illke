@@ -1,4 +1,5 @@
 <script>
+  import TypeBadge from "$lib/components/TypeBadge.svelte";
   import {
     Search,
     ArrowUpRight,
@@ -51,10 +52,7 @@
           height="220"
         /><strong>Garchomp</strong><span>Pressão ofensiva</span>
         <div class="types">
-          <span class="type" data-type="dragon">Dragão</span><span
-            class="type"
-            data-type="ground">Terra</span
-          >
+          <TypeBadge type="dragon" /><TypeBadge type="ground" />
         </div></a
       ><span class="versus">×</span><a
         href="/pokemon/corviknight"
@@ -66,10 +64,7 @@
           height="220"
         /><strong>Corviknight</strong><span>Defesa e suporte</span>
         <div class="types">
-          <span class="type" data-type="flying">Voador</span><span
-            class="type"
-            data-type="steel">Aço</span
-          >
+          <TypeBadge type="flying" /><TypeBadge type="steel" />
         </div></a
       >
     </div>
@@ -122,10 +117,7 @@
           </div>
           <h3>{pokemon.name}</h3>
           <div class="types">
-            {#each pokemon.attributes.types as type}<span
-                class="type"
-                data-type={type}>{type}</span
-              >{/each}
+            {#each pokemon.attributes.types as type}<TypeBadge {type} />{/each}
           </div></a
         >{/each}
     </div>{:else}<div class="empty-panel">

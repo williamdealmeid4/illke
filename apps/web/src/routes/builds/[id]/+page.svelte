@@ -1,4 +1,6 @@
 <script>
+  import MoveChip from "$lib/components/MoveChip.svelte";
+  import EntityIcon from "$lib/components/EntityIcon.svelte";
   import ShareBuild from "$lib/components/ShareBuild.svelte";
   import { sprite, roles, statLabels, mutate } from "$lib/api.js";
   let { data } = $props();
@@ -67,11 +69,23 @@
       <dl class="detail-data">
         <div>
           <dt>Item</dt>
-          <dd>{c.item || "Sem item"}</dd>
+          <dd class="inline-asset">
+            {#if c.item}<EntityIcon
+                kind="item"
+                name={c.item}
+                size={32}
+              />{/if}{c.item || "Sem item"}
+          </dd>
         </div>
         <div>
           <dt>Habilidade</dt>
-          <dd>{c.ability || "Não se aplica"}</dd>
+          <dd class="inline-asset">
+            <EntityIcon
+              kind="ability"
+              name={c.ability}
+              size={28}
+            />{c.ability || "Não se aplica"}
+          </dd>
         </div>
         <div>
           <dt>Nature</dt>
@@ -87,7 +101,7 @@
           </div>{/if}
       </dl>
       <h3 style="margin-top:25px">Golpes</h3>
-      {#each c.moves as move}<span class="chip">{move}</span>{/each}
+      {#each c.moves as move}<MoveChip name={move} />{/each}
       <h3 style="margin-top:20px">Treinamento</h3>
       <div>
         {#each Object.entries(c.evs) as [stat, value]}{#if value}<span

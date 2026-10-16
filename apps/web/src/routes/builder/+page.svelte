@@ -10,6 +10,9 @@
     Swords,
     Save,
   } from "@lucide/svelte";
+  import EntityIcon from "$lib/components/EntityIcon.svelte";
+  import TypeIcon from "$lib/components/TypeIcon.svelte";
+  import { moveIconData } from "$lib/icons.js";
   import ShareBuild from "$lib/components/ShareBuild.svelte";
   import { mutate, sprite, statLabels, roles } from "$lib/api.js";
   let { data } = $props();
@@ -407,40 +410,56 @@
               >{/each}</select
           ></label
         ><label
-          >Habilidade<select
-            bind:value={draft.ability}
-            disabled={!capabilities.ability}
-            ><option value="">Sem habilidade</option
-            >{#each options?.abilities || [] as ability}<option value={ability}
-                >{ability}</option
-              >{/each}</select
+          >Habilidade<span class="input-with-icon"
+            ><EntityIcon kind="ability" name={draft.ability} size={24} /><select
+              bind:value={draft.ability}
+              disabled={!capabilities.ability}
+              ><option value="">Sem habilidade</option
+              >{#each options?.abilities || [] as ability}<option
+                  value={ability}>{ability}</option
+                >{/each}</select
+            ></span
           ></label
         ><label
-          >Item<input
-            list="items"
-            bind:value={draft.item}
-            disabled={!capabilities.held_item}
-          /></label
+          >Item<span class="input-with-icon"
+            >{#if draft.item}<EntityIcon
+                kind="item"
+                name={draft.item}
+                size={28}
+              />{/if}<input
+              list="items"
+              bind:value={draft.item}
+              disabled={!capabilities.held_item}
+            /></span
+          ></label
         ><datalist id="items"
           >{#each options?.items || [] as item}<option value={item.name}
             ></option>{/each}</datalist
         >{#if capabilities.tera}<label
-            >Tipo Tera<select bind:value={draft.tera_type}
-              ><option value="">Sem seleção</option
-              >{#each options?.types || [] as type}<option value={type}
-                  >{type}</option
-                >{/each}</select
+            >Tipo Tera<span class="input-with-icon"
+              ><TypeIcon type={draft.tera_type} size={20} /><select
+                bind:value={draft.tera_type}
+                ><option value="">Sem seleção</option
+                >{#each options?.types || [] as type}<option value={type}
+                    >{type}</option
+                  >{/each}</select
+              ></span
             ></label
           >{/if}
         <div class="wide">
           <h3 style="font-size:16px;margin:10px 0 12px">Golpes</h3>
           <div class="moves-inputs">
             {#each [0, 1, 2, 3] as i}<label
-                >Golpe {i + 1}<input
-                  list="moves"
-                  bind:value={draft.moves[i]}
-                  placeholder="Selecionar golpe"
-                /></label
+                >Golpe {i + 1}<span class="input-with-icon"
+                  >{#if moveIconData(draft.moves[i])}<TypeIcon
+                      type={moveIconData(draft.moves[i]).type}
+                      size={20}
+                    />{/if}<input
+                    list="moves"
+                    bind:value={draft.moves[i]}
+                    placeholder="Selecionar golpe"
+                  /></span
+                ></label
               >{/each}
           </div>
           <datalist id="moves"

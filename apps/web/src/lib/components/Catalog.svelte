@@ -1,5 +1,8 @@
 <script>
   import { Search, ArrowUpRight, SlidersHorizontal } from "@lucide/svelte";
+  import TypeBadge from "./TypeBadge.svelte";
+  import EntityIcon from "./EntityIcon.svelte";
+  import CategoryBadge from "./CategoryBadge.svelte";
   import Pagination from "./Pagination.svelte";
   let { data } = $props();
   const links = {
@@ -90,20 +93,11 @@
             ><ArrowUpRight size={15} />
           </div>
           <div class="pokemon-image">
-            {#if p.image}<img
-                src={p.image.url}
-                alt={p.name}
-                loading="lazy"
-                width="120"
-                height="120"
-              />{:else}<span class="help">Sprite indisponível</span>{/if}
+            <EntityIcon entry={p} size={120} />
           </div>
           <h3>{p.name}</h3>
           <div class="types">
-            {#each p.attributes.types || [] as type}<span
-                class="type"
-                data-type={type}>{type}</span
-              >{/each}
+            {#each p.attributes.types || [] as type}<TypeBadge {type} />{/each}
           </div></a
         >{/each}
     </div>
@@ -120,20 +114,17 @@
           >{#each data.catalog.data as p}<tr
               ><td
                 ><a href={links[data.kind] + p.slug}
-                  >{#if p.image}<img
-                      src={p.image.url}
-                      alt=""
-                      width="40"
-                      height="40"
-                      loading="lazy"
-                    />{/if}{p.name}</a
+                  ><span class="catalog-name"
+                    ><EntityIcon entry={p} /><span>{p.name}</span></span
+                  ></a
                 ></td
-              ><td
-                >{#if data.kind === "move"}<span
-                    class="type"
-                    data-type={p.attributes.type}>{p.attributes.type}</span
-                  > <span class="help">{p.attributes.category}</span>{:else}{p
-                    .attributes.effect || "Sem descrição na fonte."}{/if}</td
+              ><td>
+                {#if data.kind === "move"}<span class="move-classification"
+                    ><TypeBadge type={p.attributes.type} /><CategoryBadge
+                      category={p.attributes.category}
+                    /></span
+                  >{:else}{p.attributes.effect ||
+                    "Sem descrição na fonte."}{/if}</td
               >{#if data.kind === "move"}<td>{p.attributes.power ?? "—"}</td><td
                   >{p.attributes.accuracy
                     ? p.attributes.accuracy + "%"

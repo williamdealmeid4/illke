@@ -17,7 +17,8 @@
     "check": "npm run check -w @illke/web",
     "build": "npm run build -w @illke/web",
     "dev": "node scripts/dev.mjs",
-    "setup": "node scripts/setup.mjs"
+    "setup": "node scripts/setup.mjs",
+    "sync:icons": "node scripts/sync-icons.mjs"
   },
   "dependencies": {
     "@smogon/calc": "^0.10.0",

@@ -1,4 +1,6 @@
 <script>
+  import MoveChip from "./MoveChip.svelte";
+  import EntityIcon from "./EntityIcon.svelte";
   import { sprite, roles } from "$lib/api.js";
   let { builds = [] } = $props();
 </script>
@@ -25,13 +27,17 @@
             >
           </h3>
           <p>
-            {roles[build.configuration.role] || build.configuration.role} · {build
-              .configuration.item || "Sem item"} · {build.configuration.nature}
+            {roles[build.configuration.role] || build.configuration.role} · {#if build.configuration.item}<EntityIcon
+                kind="item"
+                name={build.configuration.item}
+                size={24}
+              />{/if}{build.configuration.item || "Sem item"} · {build
+              .configuration.nature}
           </p>
           <div>
-            {#each build.configuration.moves as move}<span class="chip"
-                >{move}</span
-              >{/each}
+            {#each build.configuration.moves as move}<MoveChip
+                name={move}
+              />{/each}
           </div>
           <span class="help"
             >{build.source_name || build.author_name || "Comunidade"} · {build.context_id}

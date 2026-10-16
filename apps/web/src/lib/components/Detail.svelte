@@ -1,5 +1,8 @@
 <script>
   import { ArrowRight, Plus } from "@lucide/svelte";
+  import TypeBadge from "./TypeBadge.svelte";
+  import EntityIcon from "./EntityIcon.svelte";
+  import CategoryBadge from "./CategoryBadge.svelte";
   import BuildList from "./BuildList.svelte";
   let { data } = $props();
   let entry = $derived(data.entry);
@@ -29,20 +32,18 @@
   </div>
   <h1>{entry.name}</h1>
   <div class="types">
-    {#each a.types || [] as type}<span class="type" data-type={type}
-        >{type}</span
-      >{/each}
+    {#each a.types || [] as type}<TypeBadge {type} />{/each}
   </div>
 </div>
 {#if entry.kind === "pokemon"}<div class="detail-grid">
     <aside>
-      <img
-        class="detail-art"
-        src={a.sprites?.artwork?.url || entry.image?.url}
-        alt={entry.name}
-        width="280"
-        height="260"
-      />
+      <div class="detail-portrait">
+        <EntityIcon
+          entry={{ ...entry, image: a.sprites?.artwork || entry.image }}
+          size={240}
+          decorative={false}
+        />
+      </div>
       <div class="actions">
         {#if a.sprites?.shiny}<a
             class="text-link"
@@ -98,8 +99,14 @@
         <div>
           <dt>Habilidades</dt>
           <dd>
-            {#each a.abilities || [] as ability}<span class="chip"
-                >{ability.name}{ability.hidden ? " · oculta" : ""}</span
+            {#each a.abilities || [] as ability}<a
+                class="chip ability-chip"
+                href={"/habilidade/" + ability.name}
+                ><EntityIcon
+                  kind="ability"
+                  name={ability.name}
+                  size={20}
+                />{ability.name}{ability.hidden ? " · oculta" : ""}</a
               >{/each}
           </dd>
         </div>
@@ -140,10 +147,19 @@
     <BuildList builds={data.builds?.data || []} />
   </section>
 {:else}<div class="content-panel">
-    <h2>Propriedades</h2>
+    <div class="entry-heading">
+      <EntityIcon {entry} size={64} decorative={false} />
+      <div>
+        <h2>{entry.name}</h2>
+        {#if entry.kind === "move"}<div class="move-classification">
+            <TypeBadge type={a.type} /><CategoryBadge category={a.category} />
+          </div>{/if}
+      </div>
+    </div>
+    <h3>Propriedades</h3>
     <p>{a.effect || "Descrição indisponível na fonte."}</p>
     <dl class="detail-data">
-      {#each Object.entries(a).filter(([k, v]) => k !== "effect" && v !== null && typeof v !== "object") as [key, value]}<div
+      {#each Object.entries(a).filter(([k, v]) => k !== "effect" && !["type", "category"].includes(k) && v !== null && typeof v !== "object") as [key, value]}<div
         >
           <dt>
             {{

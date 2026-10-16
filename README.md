@@ -31,6 +31,7 @@ Abra http://127.0.0.1:5186. O comando inicia SvelteKit, Laravel, motor e worker 
 npm run sync:data
 php apps/api/artisan catalog:import
 npm run audit:assets
+npm run sync:icons # atualiza os ícones locais de tipos, categorias e itens
 npm test
 npm run check
 npm run build
