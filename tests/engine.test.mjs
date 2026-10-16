@@ -55,8 +55,10 @@ test("older formats exclude future moves from candidates", () => {
 });
 test("team validation catches species clause and mixed contexts", () => {
   assert.ok(validateTeam([build, build]).issues.length);
-  assert.throws(() =>
-    validateTeam([build, { ...build, context_id: "gen8ou" }]),
+  assert.ok(
+    validateTeam([build, { ...build, context_id: "gen8ou" }]).issues.some((x) =>
+      x.includes("mesmo formato"),
+    ),
   );
 });
 test("stats and evidence reflect level, training, and role", () => {
@@ -90,4 +92,38 @@ test("seeded battles reproduce their results and account for every outcome", () 
   );
   assert.deepEqual(a, b);
   assert.equal(a.wins + a.losses + a.draws, 5);
+});
+
+test("unfinished teams return actionable issues instead of throwing", () => {
+  const result = validateTeam([{ ...build, moves: [] }]);
+  assert.ok(
+    result.issues.some(
+      (x) => x.includes("Integrante 1") && x.includes("golpe"),
+    ),
+  );
+});
+test("build validation works in each of the nine generations", () => {
+  for (let gen = 1; gen <= 9; gen++) {
+    const member = {
+      ...build,
+      context_id: `gen${gen}ou`,
+      pokemon: "Charizard",
+      ability: gen >= 3 ? "Blaze" : "",
+      nature: gen >= 3 ? "Timid" : "Serious",
+      item: "",
+      tera_type: "",
+      moves: ["Flamethrower"],
+      evs: statMap(4),
+    };
+    assert.equal(
+      legal(member).status,
+      "legal",
+      `generation ${gen}: ${JSON.stringify(legal(member))}`,
+    );
+    assert.deepEqual(validateTeam([member]).issues, [], `generation ${gen}`);
+  }
+});
+test("options exclude species introduced after the chosen generation", () => {
+  assert.equal(options("Garchomp", "gen1ou").supported, false);
+  assert.equal(options("Garchomp", "gen4ou").supported, true);
 });

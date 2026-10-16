@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { parse } from "csv-parse/sync";
 import { createHash } from "node:crypto";
+import { catalogGeneration } from "./lib/catalog-generation.mjs";
 const require = createRequire(import.meta.url);
 const { Dex, TeamValidator } = require("pokemon-showdown");
 const root = new URL("../.data/", import.meta.url);
@@ -132,6 +133,8 @@ const showdownSpecies = new Map(
     .filter((x) => x.exists)
     .map((x) => [Dex.toID(x.name), x]),
 );
+const formsByPokemon = grouped(tables.pokemon_forms, "pokemon_id");
+const versionGroupsById = byId("version_groups");
 const entities = [];
 for (const p of tables.pokemon) {
   const s = speciesMap.get(p.species_id);
@@ -154,7 +157,17 @@ for (const p of tables.pokemon) {
       (p.is_default === "1" ? enNames.get(p.species_id) : null) ||
       p.identifier,
     national_number: +p.species_id,
-    generation: +s.generation_id,
+    generation: catalogGeneration(
+      +s.generation_id,
+      candidate?.gen,
+      p.is_default === "1",
+      (formsByPokemon.get(p.id) || []).map((form) =>
+        Number(
+          versionGroupsById.get(form.introduced_in_version_group_id)
+            ?.generation_id,
+        ),
+      ),
+    ),
     image: image(`sprites/pokemon/${p.id}.png`),
     attributes: {
       pokeapi_id: +p.id,

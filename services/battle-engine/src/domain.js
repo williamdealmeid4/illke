@@ -35,7 +35,10 @@ export const buildSchema = z.object({
   nature: z.string().min(1).max(30),
   ability: z.string().max(80),
   item: z.string().max(80),
-  moves: z.array(z.string().min(1).max(80)).min(1).max(4),
+  moves: z
+    .array(z.string().min(1).max(80))
+    .min(1, "Escolha ao menos um golpe.")
+    .max(4),
   evs: statMap(252),
   ivs: statMap(31),
   tera_type: z.string().max(30),
@@ -86,10 +89,16 @@ export function options(name, contextId = "gen9ou") {
   const context = getContext(contextId);
   const Dex = globalDex.forFormat(context.format);
   const species = Dex.species.get(name);
-  if (!species.exists)
+  if (!species.exists || species.gen > context.generation)
     return {
       supported: false,
-      reason: "Espécie ou forma ausente no snapshot do Showdown.",
+      reason: "Espécie ou forma indisponível nesta geração.",
+      context,
+      abilities: [],
+      moves: [],
+      items: [],
+      natures: [],
+      types: [],
     };
   const learnset = Object.assign(
     {},
@@ -112,7 +121,9 @@ export function options(name, contextId = "gen9ou") {
     form: species.forme || "Base",
     types: species.types,
     stats: species.baseStats,
-    abilities: Object.values(species.abilities),
+    abilities: context.capabilities.ability
+      ? [...new Set(Object.values(species.abilities))]
+      : [],
     moves,
     natures: Dex.natures
       .all()
@@ -338,16 +349,31 @@ export function exportTeam(build) {
 export function validateTeam(builds) {
   if (!Array.isArray(builds) || !builds.length || builds.length > 6)
     throw Error("Selecione de 1 a 6 Pokémon.");
-  const context = getContext(builds[0].context_id);
+  const issues = [];
   if (builds.some((b) => b.context_id !== builds[0].context_id))
-    throw Error("A equipe deve usar o mesmo contexto.");
-  for (const b of builds) buildSchema.parse(b);
-  return {
-    issues:
-      new TeamValidator(context.format).validateTeam(builds.map(toSet)) || [],
-    versions,
-    context,
-  };
+    issues.push("A equipe deve usar o mesmo formato e geração.");
+  for (const [i, build] of builds.entries()) {
+    const result = legal(build);
+    issues.push(
+      ...result.issues.map(
+        (issue) =>
+          `Integrante ${i + 1} (${build.pokemon || "sem Pokémon"}): ${issue.message}`,
+      ),
+    );
+  }
+  const context =
+    contexts.some((c) => c.id === builds[0].context_id) ||
+    builds[0].context_id === "sv-ou-r1"
+      ? getContext(builds[0].context_id)
+      : undefined;
+  if (!issues.length && context) {
+    issues.push(
+      ...(new TeamValidator(context.format).validateTeam(
+        builds.map((b) => structuredClone(toSet(b))),
+      ) || []),
+    );
+  }
+  return { issues, versions, context };
 }
 export function speciesData() {
   return Dex.species

@@ -56,14 +56,16 @@
     ><select
       id="generation"
       name="generation"
+      onchange={(event) => event.currentTarget.form.requestSubmit()}
       value={data.query.generation || ""}
       ><option value="">Todas as gerações</option
       >{#each Array.from({ length: 9 }, (_, i) => i + 1) as gen}<option
-          value={gen}>Geração {gen}</option
+          value={String(gen)}>Geração {gen}</option
         >{/each}</select
     ><label class="sr-only" for="type">Tipo</label><select
       id="type"
       name="type"
+      onchange={(event) => event.currentTarget.form.requestSubmit()}
       value={data.query.type || ""}
       ><option value="">Todos os tipos</option>{#each types as type}<option
           value={type}>{type}</option

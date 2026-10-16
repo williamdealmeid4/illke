@@ -8,10 +8,10 @@ export async function load({ fetch, url, request }) {
     let initial = {
       name: "Minha build",
       context_id: url.searchParams.get("context_id") || "gen9ou",
-      pokemon: url.searchParams.get("pokemon") || "Garchomp",
+      pokemon: url.searchParams.get("pokemon") || "Bulbasaur",
       level: 100,
-      nature: "Jolly",
-      ability: "Rough Skin",
+      nature: "Serious",
+      ability: "",
       item: "",
       moves: [],
       evs: stats(0),
@@ -52,7 +52,9 @@ export async function load({ fetch, url, request }) {
           p.num > 0 && !["CAP", "Custom", "Pokestar"].includes(p.nonstandard),
       ),
       explicit:
-        url.searchParams.has("build") || url.searchParams.has("pokemon"),
+        url.searchParams.has("build") ||
+        url.searchParams.has("pokemon") ||
+        url.searchParams.has("context_id"),
       error: null,
     };
   } catch (e) {

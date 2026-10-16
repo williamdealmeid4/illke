@@ -1,5 +1,5 @@
 <script>
-  import { onMount, untrack } from "svelte";
+  import { onMount, untrack, tick } from "svelte";
   import {
     Plus,
     Check,
@@ -22,6 +22,34 @@
     untrack(() => (data.initial ? [structuredClone(data.initial)] : [])),
   );
   let selected = $state(0);
+  let pickerSlot = $state(null);
+  let pokemonSearch = $state("");
+  let optionsBusy = $state(false);
+  let generation = $derived(Number(draft?.context_id?.match(/^gen(\d+)/)?.[1] || 9));
+  let candidates = $derived(data.species.filter((p) => p.gen <= generation &&
+    (!pokemonSearch || p.name.toLowerCase().includes(pokemonSearch.toLowerCase().trim()) || String(p.num) === pokemonSearch.trim())));
+  async function openPicker(slot) {
+    pickerSlot = slot; pokemonSearch = "";
+    await tick(); document.getElementById("pokemon-search")?.focus();
+  }
+  function choosePokemon(pokemon) {
+    const slot = pickerSlot;
+    const fresh = {
+      ...clone(data.initial), context_id: draft.context_id, pokemon,
+      name: "Build de " + pokemon, nature: "Serious", ability: "", item: "",
+      moves: [], tera_type: "", strategy: "", evs: Object.fromEntries(Object.keys(statLabels).map(s => [s, 0])),
+      ivs: Object.fromEntries(Object.keys(statLabels).map(s => [s, 31])),
+    };
+    members[slot] = fresh; selected = slot; draft = clone(fresh);
+    pickerSlot = null; refreshOptions();
+  }
+  function adaptContext(member, context) {
+    const gen = Number(context.match(/^gen(\d+)/)?.[1] || 9);
+    return { ...clone(member), context_id: context,
+      ...(gen < 3 ? {nature: "Serious", ability: ""} : {}),
+      ...(gen < 2 ? {item: ""} : {}),
+      ...(gen !== 9 ? {tera_type: ""} : {}) };
+  }
   let hydrated = $state(false);
   let busy = $state(false);
   let message = $state("");
@@ -34,7 +62,7 @@
   let showImport = $state(false);
   let requestSerial = 0;
   let polling;
-  let capabilities = $derived(options?.context?.capabilities || {});
+  let capabilities = $derived(data.contexts?.find(c => c.id === draft?.context_id)?.capabilities || {});
   let evTotal = $derived(
     draft
       ? Object.values(draft.evs).reduce((a, b) => a + Number(b || 0), 0)
@@ -92,6 +120,7 @@
   });
   async function refreshOptions() {
     const serial = ++requestSerial;
+    optionsBusy = true;
     try {
       const res = await fetch(
         "/api/v1/options?" +
@@ -106,16 +135,21 @@
       if (serial !== requestSerial) return;
       options = result;
       if (!result.supported) throw Error(result.reason);
-      if (!result.abilities.includes(draft.ability))
+      if (!result.context.capabilities.ability) draft.ability = "";
+      else if (!result.abilities.includes(draft.ability))
         draft.ability = result.abilities[0] || "";
       message = "";
     } catch (e) {
       if (serial === requestSerial) message = e.message;
+    } finally {
+      if (serial === requestSerial) optionsBusy = false;
     }
   }
   async function changeContext() {
     const context = draft.context_id;
-    members = members.map((m) => ({ ...clone(m), context_id: context }));
+    members[selected] = clone(draft);
+    members = members.map((m) => adaptContext(m, context));
+    draft = clone(members[selected]);
     await refreshOptions();
     message =
       "Formato alterado. Confira todos os integrantes e valide novamente.";
@@ -123,7 +157,8 @@
   function selectSlot(i) {
     if (i >= members.length) {
       if (members.length >= 6) return;
-      members.push({ ...clone(data.initial), context_id: draft.context_id });
+      openPicker(i);
+      return;
     }
     selected = i;
     draft = clone(members[i]);
@@ -181,6 +216,7 @@
     });
   }
   async function validate() {
+    members[selected] = clone(draft);
     await action(async () => {
       validation = await mutate("/teams/validate", {
         builds: members.map(configuration),
@@ -311,7 +347,7 @@
         bind:value={importText}></textarea><button
         class="button"
         onclick={importTeam}
-        disabled={busy}>Importar equipe</button
+        disabled={busy || optionsBusy}>Importar equipe</button
       >
     </div>{/if}
   <div class="toolbar">
@@ -347,6 +383,20 @@
           >{/if}</button
       >{/each}
   </div>
+  {#if pickerSlot !== null}
+    <section class="content-panel pokemon-picker" aria-label="Selecionar Pokémon">
+      <div class="picker-heading"><h2>{pickerSlot >= members.length ? "Adicionar Pokémon" : "Trocar Pokémon"}</h2>
+        <button class="button secondary small" onclick={() => pickerSlot = null}>Cancelar</button></div>
+      <label for="pokemon-search">Nome, forma ou número — gerações 1 a {generation}</label>
+      <input id="pokemon-search" type="search" bind:value={pokemonSearch} placeholder="Buscar Pokémon" />
+      <p class="help" aria-live="polite">{candidates.length} opções{candidates.length > 48 ? ". Exibindo as primeiras 48; digite para buscar." : "."}</p>
+      <div class="picker-grid">
+        {#each candidates.slice(0, 48) as p}<button onclick={() => choosePokemon(p.name)} aria-label={"Selecionar " + p.name}>
+          <img src={sprite(p.name)} alt="" loading="lazy" width="64" height="64" /><span>{p.name}</span><small>#{p.num} · Geração {p.gen}</small>
+        </button>{:else}<p>Nenhum Pokémon nesta geração com esse nome.</p>{/each}
+      </div>
+    </section>
+  {/if}
   <p class="context-note">
     {options?.context?.scope || "Escolha um formato para carregar as regras."} Os
     formatos OU são referências competitivas por geração. Regras específicas de cartucho,
@@ -374,17 +424,9 @@
         >
       </div>
       <div class="form-grid">
-        <label class="wide"
-          >Pokémon ou forma<input
-            list="species"
-            bind:value={draft.pokemon}
-            onchange={refreshOptions}
-          /></label
-        ><datalist id="species"
-          >{#each data.species.filter((p) => p.gen <= (options?.context?.generation || 9)) as p}<option
-              value={p.name}
-            ></option>{/each}</datalist
-        ><label
+        <div class="wide"><span class="help">Pokémon ou forma</span>
+          <button class="button secondary" onclick={() => openPicker(selected)}>Trocar Pokémon</button>
+        </div><label
           >Nome da build<input bind:value={draft.name} maxlength="100" /></label
         ><label
           >Função<select bind:value={draft.role}
@@ -479,7 +521,7 @@
                 >{evTotal} / {capabilities.ev_total || 510}</span
               >
             </h3>
-            <button class="button secondary small" onclick={preset}
+            <button class="button secondary small" onclick={preset} disabled={optionsBusy}
               >Distribuir pela função</button
             >
           </div>
@@ -520,7 +562,7 @@
         >
       </div>
       <div class="actions">
-        <button class="button" onclick={analyze} disabled={busy}
+        <button class="button" onclick={analyze} disabled={busy || optionsBusy}
           ><Shield size={16} /> Analisar build</button
         >
       </div>
@@ -532,7 +574,7 @@
         <p>
           Verifique se os integrantes seguem as regras do formato selecionado.
         </p>
-        <button class="button secondary full" onclick={validate} disabled={busy}
+        <button class="button secondary full" onclick={validate} disabled={busy || optionsBusy}
           >Validar equipe</button
         >{#if validation}<div class="notice" role="status">
             {#if validation.issues.length}{#each validation.issues as issue}<p>
@@ -584,7 +626,7 @@
         ><button
           class="button full"
           onclick={evaluateTeam}
-          disabled={busy || members.length !== 6}
+          disabled={busy || optionsBusy || members.length !== 6}
           >Avaliar equipe completa</button
         >
         <p class="help">
@@ -651,3 +693,13 @@
         </details>{/if}
     </section>{/if}
 {/if}
+
+<style>
+  .pokemon-picker { margin-bottom: 20px; }
+  .picker-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+  .pokemon-picker > input { width:100%; margin:8px 0; }
+  .picker-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); max-height:430px; overflow-y:auto; gap:8px; }
+  .picker-grid button { display:flex; flex-direction:column; align-items:center; border:1px solid var(--border); background:var(--surface); color:inherit; border-radius:10px; padding:10px; cursor:pointer; }
+  .picker-grid button:hover { border-color:var(--accent); }
+  .picker-grid small { opacity:.65; margin-top:4px; }
+</style>
