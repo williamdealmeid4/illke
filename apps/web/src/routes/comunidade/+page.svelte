@@ -49,7 +49,7 @@
   <div>
     <div class="breadcrumbs"><a href="/">illke</a><span>/</span>Comunidade</div>
     <h1>Fórum</h1>
-    <p>Discussões sobre equipes, builds, campanha e regras dos jogos.</p>
+    <p>Discussões sobre equipes, builds, campanha e regras dos jogos.</p><p class="help">Apelidos não verificam identidade. A edição das suas publicações depende desta sessão do navegador.</p>
   </div>
   <button class="button" onclick={() => (compose = !compose)}
     ><Plus size={17} /> Novo tópico</button

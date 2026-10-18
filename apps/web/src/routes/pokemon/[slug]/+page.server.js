@@ -1,6 +1,7 @@
 import { readApi } from "$lib/api.js";
 import { error } from "@sveltejs/kit";
-export async function load({ fetch, params }) {
+export async function load({ fetch, params, url }) {
+  const context_id = /^gen[1-9]ou$/.test(url.searchParams.get('context_id') || '') ? url.searchParams.get('context_id') : 'gen9ou';
   let entry;
   try {
     entry = await readApi(fetch, "/catalog/pokemon/" + params.slug);
@@ -12,9 +13,9 @@ export async function load({ fetch, params }) {
     try {
       builds = await readApi(
         fetch,
-        "/builds?q=" + encodeURIComponent(entry.name) + "&context_id=gen9ou",
+        "/builds?q=" + encodeURIComponent(entry.name) + '&context_id=' + context_id,
       );
     } catch {}
   }
-  return { entry, builds };
+  return { entry, builds, context_id };
 }

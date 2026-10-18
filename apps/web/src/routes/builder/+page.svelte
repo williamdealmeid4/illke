@@ -1,5 +1,7 @@
 <script>
   import { onMount, untrack, tick } from "svelte";
+  import { replaceState } from '$app/navigation';
+  import { page } from '$app/state';
   import {
     Plus,
     Check,
@@ -15,6 +17,7 @@
   import { moveIconData } from "$lib/icons.js";
   import ShareBuild from "$lib/components/ShareBuild.svelte";
   import { mutate, sprite, statLabels, roles } from "$lib/api.js";
+  import { library, createTeam, saveTeam, getTeam } from '$lib/team-store.js';
   let { data } = $props();
   let draft = $state(untrack(() => structuredClone(data.initial)));
   let options = $state(untrack(() => data.options));
@@ -22,6 +25,19 @@
     untrack(() => (data.initial ? [structuredClone(data.initial)] : [])),
   );
   let selected = $state(0);
+  function signature(builds){return JSON.stringify(builds.map(b=>[b.context_id,b.pokemon,b.level,b.nature,b.ability,b.item,b.tera_type,(b.moves||[]).filter(Boolean),Object.keys(statLabels).map(s=>b.evs?.[s]||0),Object.keys(statLabels).map(s=>b.ivs?.[s]??31)]));}
+  let evaluationStale=$derived(!!evaluation?.input?.members && signature(evaluation.input.members)!==signature(members));
+  function fieldIssue(path){return analysisStale?'':(analysis?.legality?.issues||[]).filter(issue=>issue.path===path||issue.path?.startsWith(path+'.')).map(issue=>issue.message).join(' ');}
+  let teamId = $state(null), saveStatus = $state('Carregando biblioteca…'), pendingReference = $state(null), history = $state([]), analysisStale = $state(false), teamAnalysis = $state(null);
+  let saveSerial = 0;
+  let mounted = false, pollErrors = 0;
+  let liveStats = $state(null), statSerial = 0;
+  $effect(() => {
+    if(!hydrated || !draft) return;
+    const build=$state.snapshot(draft), serial=++statSerial;
+    const timer=setTimeout(async()=>{try{const result=await mutate('/stats',{configuration:configuration(build)});if(serial===statSerial)liveStats=result;}catch{if(serial===statSerial)liveStats=null;}},800);
+    return ()=>clearTimeout(timer);
+  });
   let pickerSlot = $state(null);
   let pokemonSearch = $state("");
   let optionsBusy = $state(false);
@@ -32,7 +48,8 @@
     pickerSlot = slot; pokemonSearch = "";
     await tick(); document.getElementById("pokemon-search")?.focus();
   }
-  function choosePokemon(pokemon) {
+  async function choosePokemon(pokemon) {
+    await protect('Trocar ou adicionar Pokémon');
     const slot = pickerSlot;
     const fresh = {
       ...clone(data.initial), context_id: draft.context_id, pokemon,
@@ -82,21 +99,31 @@
     };
   }
   onMount(() => {
-    if (!data.explicit) {
+    mounted=true;
+    let disposed = false;
+    (async () => {
       try {
-        const saved = JSON.parse(
-          localStorage.getItem("illke-team-v1") || "null",
-        );
-        if (saved?.members?.length && saved.members.length <= 6) {
-          members = saved.members;
-          draft = clone(members[0]);
-          teamName = saved.name || teamName;
-          refreshOptions();
+        const saved = await library();
+        const query = new URLSearchParams(window.location.search);
+        const existing = saved.teams.find(t => t.id === (query.get('team') || saved.active_id));
+        let team = existing;
+        if (query.has('new') || !team) team = await createTeam({name:'Minha equipe',members:[clone(data.initial)]});
+        else if (data.explicit) pendingReference = clone(data.initial);
+        if (disposed) return;
+        teamId = team.id; teamName = team.name; members = team.members;
+        if(!pendingReference) replaceState('/builder?team='+team.id+(query.get('discord')?'&discord='+encodeURIComponent(query.get('discord')):''),page.state);
+        draft = clone(members[0]); history = team.history;
+        await refreshOptions();
+        const last = team.evaluations?.at(-1);
+        if (last) {
+          const response = await fetch('/api/v1/evaluations/'+last.id);
+          if(response.ok) { evaluation = await response.json(); poll(); }
         }
-      } catch {}
-    }
-    hydrated = true;
-    return () => clearTimeout(polling);
+        saveStatus = 'Salvo neste navegador';
+        hydrated = true;
+      } catch(e) { saveStatus = e.message; message = e.message; }
+    })();
+    return () => { disposed = true; mounted=false; clearTimeout(polling); };
   });
   $effect(() => {
     if (!draft) return;
@@ -104,20 +131,46 @@
     untrack(() => {
       if (hydrated) {
         members[selected] = snapshot;
-        analysis = null;
+        analysisStale = !!analysis;
         validation = null;
-        evaluation = null;
-        clearTimeout(polling);
       }
     });
   });
   $effect(() => {
     if (!hydrated) return;
-    const saved = { members: $state.snapshot(members), name: teamName };
-    try {
-      localStorage.setItem("illke-team-v1", JSON.stringify(saved));
-    } catch {}
+    const saved = { members: $state.snapshot(members), name: teamName, context_id: draft.context_id };
+    untrack(() => {
+      const serial = ++saveSerial;
+      saveStatus = 'Salvando…';
+      saveTeam(teamId, saved).then(() => { if(serial===saveSerial) saveStatus='Salvo neste navegador'; }).catch(e => {saveStatus=e.message;});
+    });
   });
+  async function protect(reason) {
+    if (!teamId) return;
+    try {
+      members[selected] = clone(draft);
+      const team = await saveTeam(teamId,{name:teamName,members:clone(members),context_id:draft.context_id},reason);
+      history = team.history;
+    } catch(e) { message=e.message; throw e; }
+  }
+  async function useReference(asNew) {
+    try {
+      if (asNew) {
+        const team = await createTeam({name:pendingReference.name || 'Nova equipe',members:[clone(pendingReference)]});
+        window.location.href='/builder?team='+team.id;
+      } else {
+        await protect('Adicionar referência');
+        members.push(clone(pendingReference)); selected=members.length-1; draft=clone(pendingReference); pendingReference=null; await refreshOptions();
+      }
+    } catch(e) {message=e.message;}
+  }
+  async function restoreVersion(version) {
+    await protect('Antes de restaurar versão');
+    members=clone(version.members); selected=0; teamName=version.name; draft=clone(members[0]); await refreshOptions();
+  }
+  async function diagnoseTeam() {
+    await action(async()=>{ teamAnalysis=await mutate('/teams/analyze',{builds:members.map(configuration)}); });
+  }
   async function refreshOptions() {
     const serial = ++requestSerial;
     optionsBusy = true;
@@ -146,10 +199,12 @@
     }
   }
   async function changeContext() {
+    const checkpoint = saveTeam(teamId, {}, 'Alterar formato');
     const context = draft.context_id;
     members[selected] = clone(draft);
     members = members.map((m) => adaptContext(m, context));
     draft = clone(members[selected]);
+    history = (await checkpoint).history;
     await refreshOptions();
     message =
       "Formato alterado. Confira todos os integrantes e valide novamente.";
@@ -165,17 +220,19 @@
     analysis = null;
     refreshOptions();
   }
-  function removeSlot() {
+  async function removeSlot() {
     if (members.length === 1) {
       message = "Mantenha ao menos um integrante no rascunho.";
       return;
     }
+    await protect('Remover integrante');
     members.splice(selected, 1);
     selected = 0;
     draft = clone(members[0]);
     refreshOptions();
   }
   function preset() {
+    if (!['wall','physical-attacker','special-attacker'].includes(draft.role)) { message='Escolha uma distribuição manual para esta função. Não há preset genérico revisado.'; return; }
     draft.evs = Object.fromEntries(Object.keys(statLabels).map((s) => [s, 0]));
     if (capabilities.ev_total > 510) {
       draft.evs = Object.fromEntries(
@@ -213,6 +270,7 @@
       analysis = await mutate("/analyze", {
         configuration: configuration(draft),
       });
+      analysisStale = false;
     });
   }
   async function validate() {
@@ -229,11 +287,14 @@
         members: members.map(configuration),
         recommendation_slot: Number(recommendationSlot),
       });
+      const team = await getTeam(teamId);
+      await saveTeam(teamId, {evaluations:[...(team.evaluations || []),{id:evaluation.public_id,at:new Date().toISOString()}].slice(-20)});
+      message='Avaliação iniciada. Você pode recarregar a página para continuar acompanhando.';
       poll();
     });
   }
   async function poll() {
-    if (!evaluation || !["queued", "running"].includes(evaluation.status))
+    if (!mounted || !evaluation || !["queued", "running"].includes(evaluation.status))
       return;
     polling = setTimeout(async () => {
       try {
@@ -241,12 +302,15 @@
           "/api/v1/evaluations/" + evaluation.public_id,
           { headers: { Accept: "application/json" } },
         );
+        if ([403,404].includes(response.status)) {message='A avaliação pertence a uma sessão anterior. Execute novamente para criar uma nova avaliação.';return;}
         if (!response.ok)
           throw Error("Não foi possível consultar a avaliação.");
         evaluation = await response.json();
+        pollErrors=0;
         poll();
       } catch (e) {
         message = e.message;
+        if(++pollErrors<=5) poll();
       }
     }, 3000);
   }
@@ -254,7 +318,7 @@
     const text = members
       .map(
         (b) =>
-          `${b.pokemon}${b.item ? " @ " + b.item : ""}\nAbility: ${b.ability}\nLevel: ${b.level}\n${b.tera_type ? "Tera Type: " + b.tera_type + "\n" : ""}EVs: ${Object.entries(
+          `${b.nickname ? b.nickname + ' (' + b.pokemon + ')' : b.pokemon}${b.item ? " @ " + b.item : ""}\nAbility: ${b.ability}\nLevel: ${b.level}\n${b.tera_type ? "Tera Type: " + b.tera_type + "\n" : ""}EVs: ${Object.entries(
             b.evs,
           )
             .filter(([, v]) => v)
@@ -307,6 +371,7 @@
       });
       if (!response.length || response.length > 6)
         throw Error("Importe de 1 a 6 Pokémon.");
+      await protect('Importar equipe Showdown');
       members = response;
       selected = 0;
       draft = clone(members[0]);
@@ -318,6 +383,7 @@
 </script>
 
 <svelte:head><title>Builder de equipes — illke</title></svelte:head>
+{#if pendingReference}<section class="content-panel" aria-label="Abrir referência"><h2>Como você quer usar {pendingReference.pokemon}?</h2><p>Sua equipe atual será preservada.</p><div class="actions"><button class="button" onclick={()=>useReference(false)} disabled={members.length>=6 || pendingReference.context_id!==draft.context_id}>Adicionar à equipe atual</button><button class="button secondary" onclick={()=>useReference(true)}>Criar nova equipe</button><button class="text-link" onclick={()=>pendingReference=null}>Cancelar</button></div>{#if pendingReference.context_id!==draft.context_id}<p class="help">A referência usa outro formato. Crie uma nova equipe para manter as regras de cada uma.</p>{/if}</section>{/if}
 <div class="page-header split">
   <div>
     <div class="breadcrumbs"><a href="/">illke</a><span>/</span>Builder</div>
@@ -360,7 +426,7 @@
       onchange={changeContext}
       >{#each data.contexts as c}<option value={c.id}>{c.label}</option
         >{/each}</select
-    ><span class="help">Rascunho salvo neste navegador</span>
+    ><span class="help" role="status">{saveStatus}</span><a class="text-link" href="/equipes">Minhas equipes</a>
   </div>
   <div class="team-slots">
     {#each Array.from({ length: 6 }, (_, i) => i) as i}<button
@@ -404,6 +470,7 @@
   </p>
   {#if message}<div class="notice" role="status">{message}</div>{/if}
   <div class="builder-grid">
+    <nav class="builder-section-nav" aria-label="Seções do editor"><a href="#configuration">Configuração</a><a href="#training">Treinamento</a><a href="#team-analysis">Análise</a><button type="button" onclick={analyze} disabled={busy||optionsBusy}>Revisar alterações</button></nav>
     <section class="content-panel">
       <div class="builder-pokemon-title">
         <img
@@ -424,10 +491,12 @@
         >
       </div>
       <div class="form-grid">
+        <span id="configuration"></span>
         <div class="wide"><span class="help">Pokémon ou forma</span>
           <button class="button secondary" onclick={() => openPicker(selected)}>Trocar Pokémon</button>
         </div><label
-          >Nome da build<input bind:value={draft.name} maxlength="100" /></label
+          >Nome da build<input bind:value={draft.name} maxlength="100" />{#if !draft.name?.trim()}<small class="field-error">Dê um nome à build.</small>{/if}{#if fieldIssue('name')}<small class="field-error">{fieldIssue('name')}</small>{/if}</label
+        ><label>Apelido do Pokémon<input bind:value={draft.nickname} maxlength="18" placeholder="Opcional" /></label
         ><label
           >Função<select bind:value={draft.role}
             >{#each Object.entries(roles) as [value, label]}<option {value}
@@ -440,7 +509,7 @@
             min="1"
             max="100"
             bind:value={draft.level}
-          /></label
+          />{#if !draft.level || draft.level<1 || draft.level>100}<small class="field-error">Use um nível de 1 a 100.</small>{/if}</label
         ><label
           >Nature<select
             bind:value={draft.nature}
@@ -461,7 +530,7 @@
                   value={ability}>{ability}</option
                 >{/each}</select
             ></span
-          ></label
+          >{#if options?.ability_descriptions?.[draft.ability]}<small class="help">{options.ability_descriptions[draft.ability]}</small>{/if}</label
         ><label
           >Item<span class="input-with-icon"
             >{#if draft.item}<EntityIcon
@@ -473,7 +542,7 @@
               bind:value={draft.item}
               disabled={!capabilities.held_item}
             /></span
-          ></label
+          >{#if options?.items?.find(item=>item.name.toLowerCase()===draft.item.toLowerCase())?.description}<small class="help">{options.items.find(item=>item.name.toLowerCase()===draft.item.toLowerCase()).description}</small>{/if}</label
         ><datalist id="items"
           >{#each options?.items || [] as item}<option value={item.name}
             ></option>{/each}</datalist
@@ -501,7 +570,7 @@
                     bind:value={draft.moves[i]}
                     placeholder="Selecionar golpe"
                   /></span
-                ></label
+                >{#if options?.move_restrictions?.[draft.moves[i]]?.length}<small class="field-error">Opção com restrições: {options.move_restrictions[draft.moves[i]].join(' ')}</small>{/if}{#if draft.moves[i] && draft.moves.filter(m=>m?.toLowerCase()===draft.moves[i].toLowerCase()).length>1}<small class="field-error">Este golpe está repetido.</small>{/if}</label
               >{/each}
           </div>
           <datalist id="moves"
@@ -516,12 +585,13 @@
         </div>
         <div class="wide">
           <div class="section-heading" style="margin:12px 0">
+            <span id="training"></span>
             <h3 style="font-size:16px;margin:0">
               EVs <span class="help"
                 >{evTotal} / {capabilities.ev_total || 510}</span
               >
             </h3>
-            <button class="button secondary small" onclick={preset} disabled={optionsBusy}
+            <button class="button secondary small" onclick={preset} disabled={optionsBusy || !['wall','physical-attacker','special-attacker'].includes(draft.role)}
               >Distribuir pela função</button
             >
           </div>
@@ -566,11 +636,14 @@
           ><Shield size={16} /> Analisar build</button
         >
       </div>
-      <ShareBuild build={configuration(draft)} {analysis} />
+      <ShareBuild build={configuration(draft)} analysis={analysisStale ? null : analysis} />
+      {#if history.length}<details class="content-panel"><summary>Recuperar versão anterior ({history.length})</summary>{#each [...history].reverse() as version}<p>{version.reason} · {new Date(version.at).toLocaleString('pt-BR')} <button class="button secondary small" onclick={()=>restoreVersion(version)}>Restaurar</button></p>{/each}</details>{/if}
     </section>
     <aside class="builder-sidebar">
       <div class="content-panel" style="margin-top:0">
+        <span id="team-analysis"></span>
         <h2>Legalidade</h2>
+        {#if liveStats}<h3>Atributos atuais</h3><div class="stats">{#each Object.entries(liveStats) as [stat,value]}<div class="stat"><span>{statLabels[stat] || stat}</span><strong>{value}</strong></div>{/each}</div>{/if}
         <p>
           Verifique se os integrantes seguem as regras do formato selecionado.
         </p>
@@ -581,6 +654,7 @@
                   {issue}
                 </p>{/each}{:else}Equipe legal neste formato.{/if}
           </div>{/if}
+        {#if analysisStale}<p class="notice">A configuração mudou. A análise abaixo precisa ser atualizada.</p>{/if}
         {#if analysis}<div
             class="notice"
             class:success={analysis.legality.status === "legal"}
@@ -608,7 +682,12 @@
             </p>{/each}{/if}
       </div>
       <div class="content-panel">
+        <h2>Diagnóstico da equipe</h2><p>Cobertura, velocidades e recursos da equipe, sem pontuação inventada.</p><button class="button secondary full" onclick={diagnoseTeam} disabled={busy||optionsBusy}>Analisar equipe</button>
+        {#if teamAnalysis}{#each teamAnalysis.observations as observation}<p class="notice"><strong>{observation.title}</strong><br/>{observation.message}</p>{/each}<h3>Velocidades calculadas</h3>{#each teamAnalysis.speed_tiers as member}<p>{member.pokemon}: {member.speed ?? 'não calculada'}</p>{/each}<details><summary>Resistências e cobertura</summary>{#each teamAnalysis.type_profile as type}<p><strong>{type.type}</strong>: {type.weak.length} fracos · {type.resist.length} resistentes · {type.immune.length} imunes</p>{/each}<h3>Golpes super efetivos por tipo puro</h3>{#each teamAnalysis.offensive_coverage as type}<p>{type.type}: {type.super_effective_moves.join(', ')||'nenhum identificado'}</p>{/each}</details><p class="help">{teamAnalysis.limitations?.join(' ')}</p><a class="text-link" href="/calculos">Comparar dano e matchups</a>{/if}
+      </div>
+      <div class="content-panel">
         <Swords size={22} />
+        {#if data.contexts?.find(c=>c.id===draft.context_id)?.availability?.simulation===false}<p class="notice">{data.contexts.find(c=>c.id===draft.context_id).availability.reason}</p>{/if}
         <h2 style="margin-top:12px">Simulação de batalhas</h2>
         <p>
           Simule 1.000 batalhas contra equipes sintéticas de referência, com a
@@ -626,7 +705,7 @@
         ><button
           class="button full"
           onclick={evaluateTeam}
-          disabled={busy || optionsBusy || members.length !== 6}
+          disabled={busy || optionsBusy || members.length !== 6 || data.contexts?.find(c=>c.id===draft.context_id)?.availability?.simulation===false}
           >Avaliar equipe completa</button
         >
         <p class="help">
@@ -638,6 +717,11 @@
   </div>
   {#if evaluation}<section class="content-panel" aria-live="polite">
       <h2>Avaliação da equipe</h2>
+      {#if evaluationStale}<p class="notice">Esta avaliação corresponde à equipe enviada anteriormente. A configuração atual foi alterada; execute outra avaliação para compará-la.</p>{/if}
+      {#if evaluation.status==='failed'||evaluation.can_resume}<button class="button" onclick={()=>action(async()=>{evaluation=await mutate('/evaluations',evaluation.input);pollErrors=0;poll();})}>Retomar avaliação original</button>{/if}
+      <p class="help">{evaluation.phase || evaluation.status} · {evaluation.progress || 0}% das etapas concluídas</p>
+      {#if ['queued','running'].includes(evaluation.status)}<button class="button secondary small" onclick={()=>action(async()=>{evaluation=await mutate('/evaluations/'+evaluation.public_id,undefined,'DELETE');clearTimeout(polling);})}>Cancelar avaliação</button>{/if}
+      {#if evaluation.status==='cancelled'}<p>Avaliação cancelada. Sua equipe foi preservada.</p>{/if}
       {#if evaluation.status === "queued" || evaluation.status === "running"}<p>
           Avaliação {evaluation.status === "queued"
             ? "na fila"
@@ -645,7 +729,7 @@
           alternativas pode levar alguns minutos.
         </p>{:else if evaluation.status === "failed"}<p class="field-error">
           {evaluation.error}
-        </p>{:else if evaluation.result}{@const result = evaluation.result}
+        </p>{:else if evaluation.status==='completed' && evaluation.result}{@const result = evaluation.result}
         <div class="result-number">
           {(result.win_rate * 100).toFixed(1)}%<small
             >Vitórias neste benchmark · IC 95%: {(
@@ -659,7 +743,8 @@
           <div><strong>{result.draws}</strong>Empates / limite de turnos</div>
         </div>
         {#each result.limitations as limit}<p class="help">{limit}</p>{/each}
-        <h3>Alternativas para o slot {Number(recommendationSlot) + 1}</h3>
+        <h3>Alternativas para o slot {Number(evaluation.input?.recommendation_slot ?? recommendationSlot) + 1}</h3>
+        <p>{result.search_summary?.tested ?? 0} alternativas distintas testadas. Comparação pareada, com correção de Holm.</p>
         {#if !result.recommendations.length}<p>
             Nenhuma das alternativas testadas demonstrou melhora suficiente
             neste benchmark.

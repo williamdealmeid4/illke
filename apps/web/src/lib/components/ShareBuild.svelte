@@ -17,13 +17,17 @@
   let guildId = $state("");
   let channelId = $state("");
   let inviteUrl = $state(null);
+  let returnTo = $state('/builder');
   let channels = $derived(guilds.find((g) => g.id === guildId)?.channels || []);
   onMount(() => {
+    const query=new URLSearchParams(window.location.search);
+    returnTo=window.location.pathname+(query.get('team')?'?team='+encodeURIComponent(query.get('team')):'');
     fetch("/api/v1/session", { headers: { Accept: "application/json" } })
       .then((r) => r.json())
       .then((s) => {
         discordAvailable = s.discord_available;
         inviteUrl = s.discord_invite_url;
+        if(s.discord_available && query.get('discord')==='connected') openDiscord();
       })
       .catch(() => {});
     return () => clearTimeout(polling);
@@ -170,7 +174,7 @@
           rel="noreferrer">Adicionar bot ao servidor</a
         >{/if}{#if !connected}<a
           class="button small"
-          href="/api/v1/discord/connect">Conectar Discord</a
+          href={'/api/v1/discord/connect?return_to='+encodeURIComponent(returnTo)}>Conectar Discord</a
         >{/if}
     </div>
     {#if connected}{#if !guilds.length}<p class="help">

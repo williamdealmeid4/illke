@@ -1,4 +1,7 @@
 import { Worker } from "node:worker_threads";
+import { analyzeTeam } from './team-analysis.js';
+import { finishEvaluation, makeBenchmark } from './simulation.js';
+import { readFile, stat } from 'node:fs/promises';
 import http from "node:http";
 import {
   context,
@@ -15,6 +18,18 @@ import {
   contexts,
 } from "./domain.js";
 let simulationRunning = false;
+let activeSimulation = null;
+let readinessCache = { modified: null, contexts: null };
+async function availableContexts() {
+  const path = new URL('../../../.data/catalog.json',import.meta.url);
+  try {
+    const modified = (await stat(path)).mtimeMs;
+    if(readinessCache.modified===modified) return readinessCache.contexts;
+    const catalog=JSON.parse(await readFile(path,'utf8'));
+    const result=contexts.map(c=>{try{const teams=makeBenchmark(catalog.builds,c.id);return {...c,snapshot_id:catalog.snapshot_id,availability:{builder:true,validation:true,simulation:true,reference_teams:teams.length}};}catch(error){return {...c,snapshot_id:catalog.snapshot_id,availability:{builder:true,validation:true,simulation:false,reason:error.message}};}});
+    readinessCache={modified,contexts:result};return result;
+  } catch {return contexts.map(c=>({...c,availability:{builder:true,validation:true,simulation:false,reason:'O catálogo de referência ainda não está disponível.'}}));}
+}
 const port = Number(process.env.ENGINE_PORT || 8081);
 const token = process.env.ENGINE_TOKEN;
 if (!token) {
@@ -34,7 +49,7 @@ http
       if (req.headers.authorization !== "Bearer " + token)
         return send(res, 401, { error: { code: "UNAUTHENTICATED" } });
       if (req.method === "GET" && url.pathname === "/contexts")
-        return send(res, 200, contexts);
+        return send(res, 200, await availableContexts());
       if (req.method === "GET" && url.pathname === "/context")
         return send(res, 200, context);
       if (req.method === "GET" && url.pathname === "/species")
@@ -51,13 +66,18 @@ http
       let raw = "";
       for await (const chunk of req) {
         raw += chunk;
-        if (Buffer.byteLength(raw) > 100000) {
+        if (Buffer.byteLength(raw) > 2 * 1024 * 1024) {
           send(res, 413, { error: { code: "PAYLOAD_TOO_LARGE" } });
           req.destroy();
           return;
         }
       }
       const body = JSON.parse(raw || "{}");
+      if (req.method === 'POST' && url.pathname === '/simulate/finalize') return send(res,200,finishEvaluation(body));
+      if (req.method === 'POST' && url.pathname === '/simulate/cancel') {
+        if(activeSimulation?.id === body.evaluation_id) { activeSimulation.worker.terminate(); activeSimulation.cancel(); }
+        return send(res,200,{cancelled:true});
+      }
       if (req.method === "POST" && url.pathname === "/simulate") {
         if (simulationRunning)
           return send(res, 429, {
@@ -82,9 +102,12 @@ http
         const done = () => {
           clearTimeout(timer);
           simulationRunning = false;
+          activeSimulation = null;
         };
+        activeSimulation={id:body.evaluation_id,worker,cancel:()=>{done();if(!res.writableEnded)send(res,409,{error:{message:'Avaliação cancelada.'}});}};
         worker.once("message", (message) => {
           done();
+          if (res.writableEnded) return;
           send(
             res,
             message.error ? 422 : 200,
@@ -109,6 +132,7 @@ http
         "/import": (x) => importTeam(x.text),
         "/export": exportTeam,
         "/team/validate": (x) => validateTeam(x.builds),
+        '/team/analyze': analyzeTeam,
       };
       if (req.method !== "POST" || !actions[url.pathname])
         return send(res, 404, { error: { code: "NOT_FOUND" } });

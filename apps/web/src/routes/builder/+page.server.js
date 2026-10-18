@@ -7,6 +7,7 @@ export async function load({ fetch, url, request }) {
   try {
     let initial = {
       name: "Minha build",
+      nickname: '',
       context_id: url.searchParams.get("context_id") || "gen9ou",
       pokemon: url.searchParams.get("pokemon") || "Bulbasaur",
       level: 100,
@@ -28,6 +29,15 @@ export async function load({ fetch, url, request }) {
         request.headers.get("cookie") || "",
       );
       initial = { ...b.configuration, visibility: "private" };
+      for(const [field,source] of [['item','item'],['ability','ability'],['nature','nature'],['tera_type','teratypes']]) {
+        const candidate=url.searchParams.get(field);
+        const values=[b.alternatives?.[source]||[]].flat(2);
+        if(candidate&&values.includes(candidate))initial[field]=candidate;
+      }
+      for(let slot=0;slot<4;slot++){
+        const candidate=url.searchParams.get('move_'+slot),values=[b.alternatives?.moves?.[slot]||[]].flat(2);
+        if(candidate&&values.includes(candidate))initial.moves[slot]=candidate;
+      }
     }
     const [options, species] = await Promise.all([
       readApi(

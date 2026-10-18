@@ -13,6 +13,7 @@ function base64(buffer) {
   return btoa(result);
 }
 async function portrait(pokemon) {
+  try {
   const response = await fetch(sprite(pokemon) + "?style=artwork");
   if (!response.ok)
     throw Error("A imagem deste Pokémon não está disponível para o PDF.");
@@ -44,6 +45,11 @@ async function portrait(pokemon) {
   );
   bitmap.close();
   return canvas.toDataURL("image/png");
+  } catch {
+    const canvas=document.createElement('canvas');canvas.width=640;canvas.height=640;
+    const context=canvas.getContext('2d');context.fillStyle='#202c3d';context.fillRect(0,0,640,640);context.fillStyle='#e8edf6';context.textAlign='center';context.font='28px sans-serif';context.fillText('Arte indisponível',320,300);context.font='20px sans-serif';context.fillText(pokemon,320,340);
+    return canvas.toDataURL('image/png');
+  }
 }
 /** Geração local: o documento não exige cadastro nem envia a build a terceiros. */
 export async function buildPdf(

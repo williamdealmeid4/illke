@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdir, readFile, writeFile, chmod, access } from "node:fs/promises";
 import { randomBytes } from "node:crypto";
-import { resolve } from "node:path";
+import { resolve, delimiter } from "node:path";
 const root = resolve(import.meta.dirname, "..");
 process.chdir(root);
 const exists = async (path) => {
@@ -20,7 +20,7 @@ async function download(url, path) {
 let php =
   spawnSync("php", ["-v"], { stdio: "ignore" }).status === 0
     ? "php"
-    : resolve(root, ".runtime/php");
+    : resolve(root, process.platform === 'win32' ? '.runtime/php85/php.exe' : '.runtime/php');
 await mkdir(".runtime", { recursive: true });
 if (php !== "php" && !(await exists(php))) {
   if (process.platform !== "linux")
@@ -47,16 +47,20 @@ if (!composerSystem && !(await exists(".runtime/composer.phar")))
 function run(command, args, cwd = root) {
   const result = spawnSync(command, args, {
     cwd,
+    shell: process.platform === 'win32' && command === 'composer',
     stdio: "inherit",
     env: {
       ...process.env,
-      PATH: resolve(root, ".runtime") + ":" + process.env.PATH,
+      PATH: resolve(root, ".runtime") + delimiter + process.env.PATH,
     },
   });
   if (result.status !== 0)
     throw Error("O comando falhou: " + command + " " + args.join(" "));
 }
 const api = resolve(root, "apps/api");
+for(const directory of ['views','sessions','cache/data']) await mkdir(resolve(api,'storage/framework',directory),{recursive:true});
+const extensions=spawnSync(php,['-m'],{encoding:'utf8'});
+for(const extension of ['mbstring','openssl','fileinfo','pdo_sqlite']) if(!extensions.stdout?.toLowerCase().includes(extension)) throw Error('Ative a extensão PHP '+extension+' antes de continuar.');
 run(
   composerSystem ? "composer" : php,
   composerSystem

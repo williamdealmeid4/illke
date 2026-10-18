@@ -17,13 +17,16 @@
     "check": "npm run check -w @illke/web",
     "build": "npm run build -w @illke/web",
     "dev": "node scripts/dev.mjs",
+    "stop": "node scripts/dev.mjs --stop",
+    "doctor": "node scripts/doctor.mjs",
+    "test:browser": "playwright test",
     "setup": "node scripts/setup.mjs",
     "sync:icons": "node scripts/sync-icons.mjs"
   },
   "dependencies": {
     "@smogon/calc": "^0.10.0",
+    "csv-parse": "^7.0.3",
     "pokemon-showdown": "^0.11.10",
-    "csv-parse": "^6.1.0",
     "zod": "^4.1.0"
   },
   "devDependencies": {

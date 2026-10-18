@@ -3,6 +3,8 @@ import { createRequire } from "node:module";
 import { parse } from "csv-parse/sync";
 import { createHash } from "node:crypto";
 import { catalogGeneration } from "./lib/catalog-generation.mjs";
+import { referenceSet, describeReference } from './lib/reference-set.mjs';
+import { evolutionConditions } from './lib/evolution-conditions.mjs';
 const require = createRequire(import.meta.url);
 const { Dex, TeamValidator } = require("pokemon-showdown");
 const root = new URL("../.data/", import.meta.url);
@@ -134,12 +136,15 @@ const showdownSpecies = new Map(
     .map((x) => [Dex.toID(x.name), x]),
 );
 const formsByPokemon = grouped(tables.pokemon_forms, "pokemon_id");
+const evolutionRules = grouped(tables.pokemon_evolution, 'evolved_species_id');
+const evolutionLookup = {items:byId('items'),moves:byId('moves'),types:byId('types')};
 const versionGroupsById = byId("version_groups");
 const entities = [];
 for (const p of tables.pokemon) {
   const s = speciesMap.get(p.species_id);
   const candidate =
     showdownSpecies.get(Dex.toID(p.identifier)) ||
+    showdownSpecies.get(Dex.toID(p.identifier.replace(/-paldea-(combat|blaze|aqua)-breed$/, '-paldea-$1').replace(/-cap$/, '').replace(/-totem-alola$/, '-alola-totem'))) ||
     Dex.species
       .all()
       .find(
@@ -193,6 +198,10 @@ for (const p of tables.pokemon) {
         ? speciesMap.get(s.evolves_from_species_id)?.identifier
         : null,
       evolves_to: (evolutions.get(p.species_id) || []).map((x) => x.identifier),
+      evolution_steps: (evolutions.get(p.species_id) || []).map(target=>({
+        to: target.identifier,
+        conditions: [...new Set((evolutionRules.get(target.id)||[]).map(row=>evolutionConditions(row,evolutionLookup)))],
+      })),
       game_indices: (gameIndices.get(p.id) || []).map((x) => +x.version_id),
       availability_scope:
         "game_indices are historical indices, not proof of obtainability",
@@ -256,7 +265,7 @@ for (const m of tables.moves)
       pp: +m.pp,
       priority: +m.priority,
       category: { 1: "status", 2: "physical", 3: "special" }[m.damage_class_id],
-      effect: effects.get(m.effect_id) || "",
+      effect: effects.get(m.effect_id) || Dex.moves.get(m.identifier).desc || "",
     },
   });
 for (const a of tables.abilities)
@@ -304,6 +313,7 @@ for (let gen = 1; gen <= 9; gen++) {
           evs,
           ivs,
           teraType: first(alternatives.teratypes) || undefined,
+          ...referenceSet(pokemon, alternatives, gen),
         };
         const issues = validator.validateSet(structuredClone(set), {}) || [];
         const role =
@@ -321,12 +331,14 @@ for (let gen = 1; gen <= 9; gen++) {
           ability: set.ability,
           nature: set.nature,
           moves: set.moves,
-          evs,
-          ivs,
+          evs: set.evs,
+          ivs: set.ivs,
+          nickname: '',
           tera_type: set.teraType || "",
           role,
           strategy: `${name}: configuração de referência para ${pokemon} em ${format}. ${role === "wall" ? "O treinamento prioriza resistência." : role === "physical-attacker" ? "O treinamento favorece pressão física." : "O treinamento favorece pressão especial."} Consulte as alternativas e o contexto antes de adaptar à sua equipe.`,
           visibility: "public",
+          ...describeReference(name,set,gen),
         };
         builds.push({
           slug: createHash("sha256")
@@ -341,13 +353,19 @@ for (let gen = 1; gen <= 9; gen++) {
           issues,
         });
       }
+    if(builds.filter(b=>b.context_id===format&&b.legality==='legal').length<6) throw Error('O formato não possui seis referências legais após a normalização.');
     imports.push({
       format,
       status: "imported",
       count: builds.filter((b) => b.context_id === format).length,
     });
   } catch (e) {
-    imports.push({ format, status: "unavailable", message: e.message });
+    for(let index=builds.length-1;index>=0;index--) if(builds[index].context_id===format) builds.splice(index,1);
+    const previous = await readFile(new URL('catalog.json', root), 'utf8').then(JSON.parse).catch(() => null);
+    const retained = previous?.builds.filter(b => b.context_id === format) || [];
+    if (!retained.length) throw Error(`Sem snapshot válido de ${format}: ${e.message}`);
+    builds.push(...retained);
+    imports.push({ format, status: 'retained', count: retained.length, message: e.message });
   }
 }
 const collisions = [];
@@ -365,6 +383,7 @@ for (const entry of entities) {
   entityKeys.add(entry.kind + ":" + entry.slug);
 }
 const output = {
+  schema_version: 2,
   collisions,
   revision,
   sprite_revision: spriteRevision,
@@ -381,6 +400,7 @@ const output = {
   })),
   imports,
   coverage: {
+    legal_builds: builds.filter(b => b.legality === 'legal').length,
     pokemon: entities.filter((e) => e.kind === "pokemon").length,
     items: entities.filter((e) => e.kind === "item").length,
     moves: entities.filter((e) => e.kind === "move").length,
@@ -391,6 +411,9 @@ const output = {
     historical_learnsets: "engine-generation-only",
   },
 };
+output.snapshot_id = createHash('sha256').update(JSON.stringify({ entities, builds, revision, spriteRevision })).digest('hex');
+await mkdir(new URL('snapshots/', root), { recursive: true });
+await writeFile(new URL(`snapshots/${output.snapshot_id}.json`, root), JSON.stringify(output));
 await writeFile(new URL("catalog.tmp.json", root), JSON.stringify(output));
 await rename(new URL("catalog.tmp.json", root), new URL("catalog.json", root));
 console.log(JSON.stringify(output.coverage, null, 2));

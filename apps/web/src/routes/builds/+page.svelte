@@ -26,7 +26,7 @@
     ><option value="">Todos os formatos</option
     >{#each data.contexts as c}<option value={c.id}>{c.label}</option
       >{/each}</select
-  ><button class="button secondary">Filtrar</button>
+  ><label class="sr-only" for="legality">Validação</label><select id="legality" name="legality" value={data.query.legality || 'legal'}><option value="legal">Referências validadas</option><option value="illegal">Aguardando revisão</option><option value="all">Todas as referências</option></select><button class="button secondary">Filtrar</button>
 </form>
 <p class="help">
   Biblioteca de referência em ordem alfabética. Votos indicam aprovação da

@@ -7,6 +7,7 @@
     abilities: "Habilidades",
     sprites: "Pokémon com sprite",
     builds: "Builds de referência",
+    legal_builds: 'Referências validadas',
   };
 </script>
 
@@ -54,8 +55,8 @@
     <h2>Importação de sets por geração</h2>
     <ul>
       {#each data.report.imports || [] as entry}<li>
-          {entry.format}: {entry.status === "imported"
-            ? entry.count + " builds importadas"
+          {entry.format}: {['imported','retained'].includes(entry.status)
+            ? entry.count + " builds " + (entry.status==='retained'?'preservadas da última importação válida':'importadas')
             : "indisponível"}
         </li>{/each}
     </ul>

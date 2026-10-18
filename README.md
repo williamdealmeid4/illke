@@ -68,3 +68,15 @@ O fórum usa apelidos sem identidade verificada. A moderação de tópicos usa o
 ## Fontes e direitos
 
 [PokéAPI](https://github.com/PokeAPI/pokeapi), [PokéAPI/sprites](https://github.com/PokeAPI/sprites), [Pokémon Showdown](https://github.com/smogon/pokemon-showdown), [Smogon Damage Calculator](https://github.com/smogon/damage-calc) e [pkmn/smogon](https://github.com/pkmn/smogon). Sets e análises pertencem a Smogon e seus contribuidores; explicações do illke são próprias. Pokémon e suas imagens pertencem aos respectivos titulares. A fonte Barlow é distribuída sob OFL, incluída junto ao arquivo.
+
+## Biblioteca, filas e limites
+
+Equipes, favoritos e checkpoints ficam no IndexedDB deste navegador. Exporte o backup JSON na página **Equipes** para guardar ou transferir suas equipes; o arquivo exclui credenciais, histórico privado e identificadores de avaliação. Não há cadastro nem sincronização automática entre navegadores.
+
+O motor separa as referências legais confirmadas dos sets pendentes e conserva snapshots imutáveis para avaliações reproduzíveis. A auditoria atual cobre as gerações I–IX; nove registros não possuem arte exata confirmada e mostram o marcador local de imagem indisponível. O diagnóstico de equipe descreve cobertura e funções por heurísticas, sem inventar uma nota competitiva.
+
+As batalhas de avaliação são um piloto contra equipes sintéticas. Comparações usam os mesmos adversários e sementes, teste exato de McNemar e ajuste de Holm. Mesmo assim, os resultados não predizem partidas contra pessoas e a política automática não modela todas as estratégias ou transformações.
+
+\`npm run doctor\` verifica os serviços locais e o catálogo; \`npm run stop\` encerra os processos do projeto. O servidor separa a fila longa de avaliações da fila padrão. A sessão de moderação expira em 30 minutos e suas ações são auditadas. Votos públicos permanecem associados à sessão do navegador; favoritos da biblioteca são locais. Envio ao Discord requer credenciais configuradas e não é coberto pelo envio real nos testes automatizados.
+
+A auditoria npm ainda aponta avisos em dependências transitivas, incluindo componentes do Showdown que não são carregados pelo servidor HTTP do motor. Reavalie esses avisos antes de expor os serviços a tráfego não confiável; o workflow de CI guarda o resultado da auditoria como artefato.

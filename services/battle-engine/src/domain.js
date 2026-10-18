@@ -9,10 +9,10 @@ const calc = require("@smogon/calc");
 const psVersion = require("pokemon-showdown/package.json").version;
 const calcVersion = require("@smogon/calc/package.json").version;
 export const versions = {
-  engine: "1.0.0",
+  engine: "2.0.0",
   showdown: psVersion,
   calculator: calcVersion,
-  evaluator: "1.0.0",
+  evaluator: "2.0.0",
 };
 export const context = getContext("gen9ou");
 const statNames = ["hp", "atk", "def", "spa", "spd", "spe"];
@@ -24,6 +24,7 @@ const statMap = (max) =>
   );
 export const buildSchema = z.object({
   name: z.string().trim().min(1).max(100),
+  nickname: z.string().trim().max(18).default(''),
   context_id: z
     .string()
     .refine(
@@ -43,6 +44,7 @@ export const buildSchema = z.object({
   ivs: statMap(31),
   tera_type: z.string().max(30),
   role: z.enum([
+    'unclassified',
     "physical-attacker",
     "special-attacker",
     "setup",
@@ -55,9 +57,10 @@ export const buildSchema = z.object({
 });
 const globalDex = Dex;
 const id = (s) => Dex.toID(s);
+const optionRestrictions = new Map();
 export function toSet(b) {
   return {
-    name: b.name,
+    name: b.nickname || '',
     species: b.pokemon,
     level: b.level,
     nature: b.nature,
@@ -115,15 +118,22 @@ export function options(name, contextId = "gen9ou") {
       power: x.basePower,
       accuracy: x.accuracy,
     }));
+  const key = context.id + ':' + species.id;
+  if (!optionRestrictions.has(key)) {
+    const validator = new TeamValidator(context.format);
+    optionRestrictions.set(key, Object.fromEntries(moves.map(move => [move.name, validator.validateSet({species:species.name,name:'',ability:context.capabilities.ability?species.abilities['0']:'',nature:'Serious',moves:[move.name],evs:{hp:4}}, {}) || []])));
+  }
   return {
     supported: true,
     pokemon: species.name,
     form: species.forme || "Base",
-    types: species.types,
+    pokemon_types: species.types,
+    move_restrictions: optionRestrictions.get(key),
     stats: species.baseStats,
     abilities: context.capabilities.ability
       ? [...new Set(Object.values(species.abilities))]
       : [],
+    ability_descriptions: Object.fromEntries(Object.values(species.abilities).map(name=>[name,Dex.abilities.get(name).desc || ''])),
     moves,
     natures: Dex.natures
       .all()
@@ -133,7 +143,8 @@ export function options(name, contextId = "gen9ou") {
       .filter(
         (x) => x.exists && x.gen <= context.generation && !x.isNonstandard,
       )
-      .map((x) => ({ id: x.id, name: x.name })),
+      .map((x) => ({ id: x.id, name: x.name, description: x.desc || x.shortDesc || '' })),
+    tera_types: Dex.types.all().filter(x => x.exists).map(x => x.name),
     types: Dex.types
       .all()
       .filter((x) => x.exists)
@@ -198,7 +209,19 @@ export function legal(build) {
     issues,
   };
 }
-export function stats(build) {
+const calculationSchema=buildSchema.pick({context_id:true,pokemon:true,level:true,nature:true,ability:true,item:true,evs:true,ivs:true,tera_type:true}).extend({
+  boosts:z.object(Object.fromEntries(statNames.map(name=>[name,z.number().int().min(-6).max(6).optional()]))).optional(),
+  current_hp:z.number().int().min(1).optional(),
+});
+function calculationBuild(input) {
+  const parsed=calculationSchema.safeParse(input);
+  if(!parsed.success)throw Error(parsed.error.issues.map(issue=>issue.path.join('.')+': '+issue.message).join(' '));
+  const build=parsed.data;
+  if(Object.values(build.evs).reduce((sum,value)=>sum+value,0)>getContext(build.context_id).capabilities.ev_total)throw Error('evs: o total de treinamento excede o limite do formato.');
+  return build;
+}
+export function stats(input) {
+  const build=calculationBuild(input);
   const gen = calc.Generations.get(getContext(build.context_id).generation);
   const p = new calc.Pokemon(gen, build.pokemon, {
     level: build.level,
@@ -211,6 +234,7 @@ export function stats(build) {
   return p.stats;
 }
 export function damage(input) {
+  input={...input,attacker:calculationBuild(input.attacker),defender:calculationBuild(input.defender)};
   const gen = calc.Generations.get(
     getContext(input.attacker.context_id).generation,
   );
@@ -241,9 +265,10 @@ export function damage(input) {
       defenderSide: input.defender_side || {},
     }),
   );
+  const range = result.range();
   return {
-    range: result.range(),
-    description: result.desc(),
+    range,
+    description: range[1] === 0 ? `${input.move} não causa dano direto em ${input.defender.pokemon} nas condições informadas.` : result.desc(),
     rolls: result.damage,
     versions,
   };

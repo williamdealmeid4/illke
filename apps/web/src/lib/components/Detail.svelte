@@ -123,14 +123,15 @@
           </dd>
         </div>
       </dl>
+      {#if a.evolution_steps?.length}<section class="content-panel"><h3>Condições de evolução registradas</h3>{#each a.evolution_steps as step}<p><a class="text-link" href={'/pokemon/'+step.to}>{step.to}</a></p><ul>{#each step.conditions as condition}<li>{condition}</li>{/each}</ul>{/each}<p class="help">Alternativas registradas em diferentes versões. As condições não comprovam disponibilidade no jogo selecionado.</p></section>{/if}
       <div class="actions">
         <a
           class="button"
-          href={"/builder?pokemon=" + encodeURIComponent(entry.name)}
+          href={"/builder?pokemon=" + encodeURIComponent(entry.name)+'&context_id='+(data.context_id || 'gen9ou')}
           ><Plus size={16} /> Criar build</a
         ><a
           class="button secondary"
-          href={"/builds?q=" + encodeURIComponent(entry.name)}
+          href={"/builds?q=" + encodeURIComponent(entry.name)+'&context_id='+(data.context_id || 'gen9ou')}
           >Ver builds por formato</a
         >
       </div>
@@ -140,7 +141,7 @@
     <div class="section-heading">
       <div>
         <h2>Builds de referência</h2>
-        <p>Scarlet / Violet · Singles OU</p>
+        <form><label>Formato das referências<select name="context_id" value={data.context_id || 'gen9ou'} onchange={event=>event.currentTarget.form.requestSubmit()}>{#each data.contexts || [] as context}<option value={context.id}>{context.label}</option>{/each}</select></label></form>
       </div>
     </div>
     <BuildList builds={data.builds?.data || []} />

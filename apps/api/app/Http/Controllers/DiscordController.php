@@ -8,11 +8,29 @@ use App\Models\DiscordDispatch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class DiscordController extends Controller
 {
+    public static function availability(): array
+    {
+        if (! config('services.discord.enabled') || ! config('services.discord.client_id') || ! config('services.discord.client_secret') || ! config('services.discord.token')) {
+            return ['available' => false, 'reason' => 'A integração Discord ainda não foi configurada.'];
+        }
+
+        return Cache::remember('discord-health:'.hash('sha256', config('services.discord.url').config('services.discord.client_id')), 15, function (): array {
+            try {
+                $healthy = Http::connectTimeout(1)->timeout(2)->get(rtrim(config('services.discord.url'), '/').'/health')->successful();
+
+                return ['available' => $healthy, 'reason' => $healthy ? null : 'O bot está temporariamente indisponível.'];
+            } catch (\Throwable) {
+                return ['available' => false, 'reason' => 'O bot está temporariamente indisponível.'];
+            }
+        });
+    }
+
     public static function inviteUrl(): ?string
     {
         $clientId = config('services.discord.client_id');
@@ -24,7 +42,11 @@ class DiscordController extends Controller
     {
         abort_unless(config('services.discord.client_id') && config('services.discord.client_secret'), 503, 'A conexão Discord ainda não está configurada.');
         $state = Str::random(64);
-        $request->session()->put('discord_oauth', ['state' => $state, 'expires' => time() + 300]);
+        $returnTo = (string) $request->query('return_to', '/builder');
+        if (! preg_match('~^/(builder(?:\?team=[a-f0-9-]{36})?|builds/[a-f0-9-]{36})$~i', $returnTo)) {
+            $returnTo = '/builder';
+        }
+        $request->session()->put('discord_oauth', ['state' => $state, 'expires' => time() + 300, 'return_to' => $returnTo]);
 
         return redirect()->away('https://discord.com/oauth2/authorize?'.http_build_query(['client_id' => config('services.discord.client_id'), 'redirect_uri' => config('services.discord.redirect_uri'), 'response_type' => 'code', 'scope' => 'identify guilds', 'state' => $state]));
     }
@@ -54,7 +76,9 @@ class DiscordController extends Controller
         }
         $request->session()->put('discord_access', ['guilds' => $guilds, 'expires' => time() + 900]);
 
-        return redirect()->to(config('app.frontend_url').'/builder?discord=connected');
+        $returnTo = $state['return_to'] ?? '/builder';
+
+        return redirect()->to(config('app.frontend_url').$returnTo.(str_contains($returnTo, '?') ? '&' : '?').'discord=connected');
     }
 
     public function destinations(Request $request): JsonResponse
@@ -85,7 +109,7 @@ class DiscordController extends Controller
         abort_unless($evaluation['legality']['status'] === 'legal', 422, 'Corrija a build antes de enviar ao Discord.');
         $dispatch = DiscordDispatch::firstOrCreate(['session_key' => $this->visitor($request), 'request_key' => $input['request_key']], ['public_id' => (string) Str::uuid(), 'configuration' => $input['configuration'], 'guild_id' => $input['guild_id'], 'channel_id' => $input['channel_id'], 'status' => 'queued']);
         if ($dispatch->wasRecentlyCreated) {
-            SendDiscordBuild::dispatch($dispatch->id);
+            SendDiscordBuild::dispatch($dispatch->id)->onQueue('discord');
         }
 
         return response()->json($dispatch, 202);

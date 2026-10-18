@@ -1,4 +1,4 @@
-import manifest from "../../static/icons/manifest.json";
+import manifest from "./icons-manifest.json";
 export const uiIcons = manifest;
 export const iconId = (value) =>
   String(value || "")

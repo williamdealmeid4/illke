@@ -1737,3 +1737,15 @@ footer > nav {
   align-items: center;
   gap: 5px;
 }
+.builder-section-nav { grid-column:1/-1; display:flex; gap:16px; align-items:center; flex-wrap:wrap; padding:12px; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
+.builder-section-nav button { margin-left:auto; background:var(--accent,#e7bd61); color:#111723; border:0; border-radius:6px; padding:9px 12px; cursor:pointer; }
+.content-panel label { max-width:100%; }
+fieldset.content-panel { min-width:0; }
+textarea { max-width:100%; }
+[id="configuration"],[id="training"],[id="team-analysis"] { scroll-margin-top:140px; }
+@media(max-width:1100px) { .header nav[aria-label="Principal"] {display:none;} .header .mobile-only {display:inline-flex;} }
+@media(max-width:760px) {
+  .builder-section-nav { position:sticky; top:0; z-index:10; gap:10px; font-size:12px; }
+  .builder-section-nav button {margin-left:0;}
+  .content-panel .actions {flex-wrap:wrap;}
+}

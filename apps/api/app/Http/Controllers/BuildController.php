@@ -12,12 +12,23 @@ class BuildController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $request->validate(['q' => ['nullable', 'string', 'max:100'], 'context_id' => ['nullable', 'string', 'max:40']]);
+        $request->validate(['q' => ['nullable', 'string', 'max:100'], 'context_id' => ['nullable', 'string', 'max:40'], 'ids' => ['sometimes', 'array', 'max:100'], 'ids.*' => ['uuid'], 'legality' => ['nullable', 'in:all,legal,illegal']]);
         $query = Build::query()->withCount(['reactions as votes' => fn ($q) => $q->where('kind', 'vote')]);
+        if ($request->has('ids')) {
+            $query->whereIn('public_id', $request->input('ids'));
+        } elseif (! $request->boolean('favorites')) {
+            $query->where('source_active', true);
+            if ($request->input('legality') !== 'all') {
+                $query->where(fn ($q) => $q->whereNull('source_key')->orWhere('legality', $request->input('legality', 'legal')));
+            }
+        }
         if ($request->boolean('mine')) {
             $query->where('session_key', $this->visitor($request));
         } else {
             $query->where('visibility', 'public');
+        }
+        if ($request->boolean('favorites')) {
+            $query->whereHas('reactions', fn ($q) => $q->where('session_key', $this->visitor($request))->where('kind', 'favorite'));
         }
         if ($request->filled('context_id')) {
             $query->where('context_id', $request->string('context_id')->toString());
@@ -26,12 +37,14 @@ class BuildController extends Controller
             $query->where(fn ($q) => $q->where('pokemon', 'like', '%'.$request->string('q').'%')->orWhere('name', 'like', '%'.$request->string('q').'%'));
         }
 
-        return response()->json($query->orderBy('pokemon')->orderBy('id')->paginate(24)->withQueryString());
+        return response()->json($query->orderBy('pokemon')->orderBy('id')->paginate($request->has('ids') || $request->boolean('favorites') ? 100 : 24)->withQueryString());
     }
 
     public function show(Request $request, Build $build): JsonResponse
     {
         $this->readable($request, $build);
+        $reactions = $build->reactions()->where('session_key', $this->visitor($request))->pluck('kind');
+        $build->setAttribute('visitor_reactions', ['vote' => $reactions->contains('vote'), 'favorite' => $reactions->contains('favorite')]);
 
         return response()->json($build);
     }

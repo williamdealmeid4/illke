@@ -97,6 +97,10 @@ await writeFile(
   new URL("manifest.json", root),
   JSON.stringify(manifest, null, 2) + "\n",
 );
+await writeFile(
+  new URL("../apps/web/src/lib/icons-manifest.json", import.meta.url),
+  JSON.stringify(manifest, null, 2) + "\n",
+);
 console.log(
   `${Object.keys(manifest.types).length} tipos, ${Object.keys(manifest.categories).length} categorias e ${Object.keys(manifest.items).length} associações de itens.`,
 );

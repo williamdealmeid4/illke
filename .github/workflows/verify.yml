@@ -1,0 +1,73 @@
+name: Verify
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '31 5 * * 1'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: testing
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: illke
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: illke_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, fileinfo, pdo_sqlite, pdo_pgsql
+          coverage: none
+      - run: npm ci --ignore-scripts
+      - run: node scripts/seed-test-data.mjs
+      - run: npm run setup
+      - run: npm test
+      - run: npm run check
+      - run: npm run build
+      - run: php artisan test --compact
+        working-directory: apps/api
+      - run: php artisan test --compact
+        working-directory: apps/api
+        env:
+          DB_CONNECTION: pgsql
+          DB_DATABASE: illke_test
+          DB_HOST: 127.0.0.1
+          DB_PORT: '5432'
+          DB_USERNAME: illke
+          DB_PASSWORD: test-only-password
+          ILLKE_EXPECTED_DATABASE: pgsql
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - run: npm audit --json > npm-audit.json
+        continue-on-error: true
+      - run: composer audit --format=json
+        working-directory: apps/api
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failures
+          path: test-results/
+  real-sources:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run sync:data
+      - run: npm run audit:assets

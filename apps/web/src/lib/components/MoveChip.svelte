@@ -5,6 +5,6 @@
   let data = $derived(moveIconData(name));
 </script>
 
-<span class="chip move-chip"
-  >{#if data}<TypeIcon type={data.type} size={14} />{/if}{name}</span
+<a class="chip move-chip" href={'/golpe/'+name.toLowerCase().replaceAll(' ','-')}
+  >{#if data}<TypeIcon type={data.type} size={14} />{/if}{name}</a
 >

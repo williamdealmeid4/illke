@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from 'svelte';
+  import { library, toggleFavorite } from '$lib/team-store.js';
   import MoveChip from "$lib/components/MoveChip.svelte";
   import EntityIcon from "$lib/components/EntityIcon.svelte";
   import ShareBuild from "$lib/components/ShareBuild.svelte";
@@ -9,8 +11,10 @@
   let message = $state("");
   let voted = $state(false);
   let saved = $state(false);
+  onMount(() => { voted = !!data.build.visitor_reactions?.vote; library().then(state => saved=state.favorites.includes(data.build.public_id)).catch(e=>message=e.message); });
   async function react(kind) {
     try {
+      if (kind === 'favorite') { const favorites=await toggleFavorite(b.public_id); saved=favorites.includes(b.public_id); message=saved?'Build guardada nos seus favoritos.':'Favorito removido.'; return; }
       await mutate(
         "/builds/" + b.public_id + "/reaction",
         { kind, active: kind === "vote" ? !voted : !saved },
@@ -115,9 +119,14 @@
         : "Este conjunto precisa de revisão de legalidade."} A taxa de sucesso exige
       avaliação com uma equipe e adversários definidos.
     </div>
+    {#if b.validation_issues?.length}<details class="notice"><summary>Por que esta referência precisa de revisão?</summary><ul>{#each b.validation_issues as issue}<li>{issue}</li>{/each}</ul></details>{/if}
     {#if b.alternatives}<details class="content-panel">
         <summary>Alternativas registradas na fonte</summary>
-        <pre class="code">{JSON.stringify(b.alternatives, null, 2)}</pre>
+        {#each Object.entries(b.alternatives).filter(([key])=>['moves','item','ability','nature','teratypes'].includes(key)) as [key,value]}
+          <h3>{{moves:'Golpes',item:'Itens',ability:'Habilidades',nature:'Natures',teratypes:'Tipos Tera'}[key]}</h3>
+          {#if key==='moves'}{#each Array.isArray(value)?value:[] as choices,slot}<p>Posição {slot+1}: {#each [choices].flat() as choice}<a class="chip" href={'/builder?build='+b.public_id+'&move_'+slot+'='+encodeURIComponent(choice)}>{choice} — usar</a>{/each}</p>{/each}
+          {:else}<div class="actions">{#each [value].flat() as choice}<a class="chip" href={'/builder?build='+b.public_id+'&'+(key==='teratypes'?'tera_type':key)+'='+encodeURIComponent(choice)}>{choice} — usar</a>{/each}</div>{/if}
+        {/each}
       </details>{/if}{#if b.source_url}<p class="help">
         Referência: <a
           class="text-link"

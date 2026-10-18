@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Build;
+use App\Models\Reply;
 use App\Models\Topic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,11 +24,15 @@ class TopicController extends Controller
         return response()->json($query->latest('id')->paginate(25)->withQueryString());
     }
 
-    public function show(Topic $topic): JsonResponse
+    public function show(Request $request, Topic $topic): JsonResponse
     {
         abort_if($topic->hidden, 404);
 
-        return response()->json(['topic' => $topic, 'replies' => $topic->replies()->orderBy('id')->paginate(50)]);
+        $topic->setAttribute('can_edit', $topic->session_key === $this->visitor($request) || $this->moderator($request));
+        $replies = $topic->replies()->orderBy('id')->paginate(50);
+        $replies->getCollection()->each(fn ($reply) => $reply->setAttribute('can_edit', $reply->session_key === $this->visitor($request) || $this->moderator($request)));
+
+        return response()->json(['topic' => $topic, 'replies' => $replies, 'build' => $topic->build_id ? Build::whereKey($topic->build_id)->where('visibility', 'public')->first() : null]);
     }
 
     public function store(Request $request): JsonResponse
@@ -60,12 +65,33 @@ class TopicController extends Controller
 
     public function update(Request $request, Topic $topic): JsonResponse
     {
-        $isModerator = config('services.moderator_token') && hash_equals(config('services.moderator_token'), $request->bearerToken() ?? '');
+        $isModerator = $this->moderator($request);
         abort_unless($isModerator || $this->visitor($request) === $topic->session_key, 404);
         $rules = $isModerator ? ['hidden' => ['sometimes', 'boolean'], 'locked' => ['sometimes', 'boolean']] : [];
         $input = $request->validate([...$rules, 'title' => ['sometimes', 'string', 'min:5', 'max:160'], 'body' => ['sometimes', 'string', 'min:10', 'max:20000']]);
         $topic->update($input);
 
         return response()->json($topic);
+    }
+
+    public function updateReply(Request $request, Topic $topic, Reply $reply): JsonResponse
+    {
+        abort_unless($reply->topic_id === $topic->id && ! $topic->hidden && ! $reply->hidden, 404);
+        abort_unless($reply->session_key === $this->visitor($request) || $this->moderator($request), 404);
+        $reply->update($request->validate(['body' => ['required', 'string', 'min:2', 'max:20000']]));
+
+        return response()->json($reply);
+    }
+
+    public function hideReply(Request $request, Topic $topic, Reply $reply): JsonResponse
+    {
+        abort_unless($reply->topic_id === $topic->id && ! $topic->hidden, 404);
+        abort_unless($reply->session_key === $this->visitor($request) || $this->moderator($request), 404);
+        $reply->update(['hidden' => true]);
+        if ($this->moderator($request)) {
+            DB::table('moderation_actions')->insert(['session_key' => $this->visitor($request), 'action' => 'hide_reply', 'target_id' => $reply->id, 'created_at' => now(), 'updated_at' => now()]);
+        }
+
+        return response()->json(['message' => 'Resposta ocultada.']);
     }
 }

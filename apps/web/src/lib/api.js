@@ -7,18 +7,21 @@ export async function readApi(fetch, path, cookie = "") {
   const res = await fetch(base + "/api/v1" + path, {
     headers: { Accept: "application/json", ...(cookie ? { cookie } : {}) },
   });
-  if (!res.ok)
+  if (!res.ok) {
+    const details = await res.json().catch(() => ({}));
     throw new Error(
       res.status === 404
         ? "Registro não encontrado."
-        : "A consulta está indisponível. Tente novamente.",
+        : details.error?.message || details.message || "A consulta está indisponível. Tente novamente.",
     );
+  }
   return res.json();
 }
 export async function mutate(path, body, method = "POST") {
   const session = await fetch("/api/v1/session", {
     headers: { Accept: "application/json" },
   }).then((r) => r.json());
+  if (!session.csrf_token) throw new Error(session.error?.message || session.message || 'Não foi possível iniciar a sessão.');
   const res = await fetch("/api/v1" + path, {
     method,
     headers: {
@@ -28,16 +31,16 @@ export async function mutate(path, body, method = "POST") {
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-  const result = await res.json();
+  const result = await res.json().catch(() => ({ message: 'O serviço retornou uma resposta inválida.' }));
   if (!res.ok)
-    throw new Error(
+    throw Object.assign(new Error(
       Object.values(result.errors || {})
         .flat()
         .join(" ") ||
         result.error?.message ||
         result.message ||
         "Não foi possível concluir a ação.",
-    );
+    ), { fields: result.error?.fields || result.errors || {}, retryAfter: result.error?.retry_after || 0 });
   return result;
 }
 export const sprite = (pokemon) =>
@@ -51,6 +54,7 @@ export const statLabels = {
   spe: "Velocidade",
 };
 export const roles = {
+  unclassified: 'Não classificada',
   "physical-attacker": "Ataque físico",
   "special-attacker": "Ataque especial",
   setup: "Preparação",

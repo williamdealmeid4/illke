@@ -24,4 +24,25 @@ class TeamController extends Controller
 
         return response()->json($engine->request('/team/validate', $input));
     }
+
+    public function analyze(Request $request, EngineClient $engine): JsonResponse
+    {
+        $input = $request->validate(['builds' => ['required', 'array', 'min:1', 'max:6']]);
+
+        return response()->json($engine->request('/team/analyze', $input));
+    }
+
+    public function damage(Request $request, EngineClient $engine): JsonResponse
+    {
+        $input = $request->validate(['attacker' => ['required', 'array'], 'defender' => ['required', 'array'], 'move' => ['required', 'string', 'max:80'], 'weather' => ['nullable', 'string', 'max:40'], 'terrain' => ['nullable', 'string', 'max:40'], 'critical' => ['sometimes', 'boolean']]);
+
+        return response()->json($engine->request('/damage', $input));
+    }
+
+    public function stats(Request $request, EngineClient $engine): JsonResponse
+    {
+        $input = $request->validate(['configuration' => ['required', 'array']]);
+
+        return response()->json($engine->request('/stats', $input['configuration']));
+    }
 }

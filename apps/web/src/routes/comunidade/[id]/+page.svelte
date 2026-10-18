@@ -3,6 +3,7 @@
   import { mutate } from "$lib/api.js";
   import { invalidateAll } from "$app/navigation";
   import Pagination from "$lib/components/Pagination.svelte";
+  import BuildList from '$lib/components/BuildList.svelte';
   let { data } = $props();
   let body = $state("");
   let message = $state("");
@@ -10,6 +11,16 @@
   let report = $state(false);
   let reason = $state("");
   let authorName = $state("");
+  let editing = $state(false), editTitle = $state(''), editBody = $state(''), editReply = $state(null), replyEditBody = $state('');
+  async function editPost() {
+    try {await mutate('/topics/'+data.topic.id,{title:editTitle,body:editBody},'PATCH');editing=false;await invalidateAll();}catch(e){message=e.message;}
+  }
+  async function saveReply(id) {
+    try {await mutate('/topics/'+data.topic.id+'/replies/'+id,{body:replyEditBody},'PATCH');editReply=null;await invalidateAll();}catch(e){message=e.message;}
+  }
+  async function hideReply(id) {
+    try {await mutate('/topics/'+data.topic.id+'/replies/'+id,undefined,'DELETE');await invalidateAll();}catch(e){message=e.message;}
+  }
   onMount(() => {
     authorName = localStorage.getItem("illke-nickname") || "";
   });
@@ -66,6 +77,9 @@
     <div class="post-body">{data.topic.body}</div>
   </div>
 </article>
+{#if data.topic.can_edit}<button class="button secondary" onclick={()=>{editing=!editing;editTitle=data.topic.title;editBody=data.topic.body;}}>Editar meu tópico</button>{/if}
+{#if editing}<form class="content-panel" onsubmit={e=>{e.preventDefault();editPost();}}><label>Título<input bind:value={editTitle} minlength="5" maxlength="160" required/></label><label>Mensagem<textarea bind:value={editBody} minlength="10" maxlength="20000" required></textarea></label><button class="button">Salvar alterações</button></form>{/if}
+{#if data.build}<section class="content-panel"><h2>Build em discussão</h2><BuildList builds={[data.build]}/></section>{/if}
 {#each data.replies.data as reply}<article class="post">
     <div class="post-author">
       <span class="topic-avatar">{reply.author_name?.slice(0, 1)}</span><strong
@@ -77,6 +91,8 @@
         >{new Date(reply.created_at).toLocaleString("pt-BR")}</time
       >
       <div class="post-body">{reply.body}</div>
+      {#if reply.can_edit}<div class="actions"><button class="text-link" onclick={()=>{editReply=reply.id;replyEditBody=reply.body;}}>Editar resposta</button><button class="danger-link" onclick={()=>{if(confirm('Ocultar esta resposta?'))hideReply(reply.id);}}>Ocultar resposta</button></div>{/if}
+      {#if editReply===reply.id}<form onsubmit={e=>{e.preventDefault();saveReply(reply.id);}}><label>Resposta editada<textarea bind:value={replyEditBody} minlength="2" maxlength="20000" required></textarea></label><button class="button">Salvar resposta</button><button class="button secondary" type="button" onclick={()=>editReply=null}>Cancelar</button></form>{/if}
     </div>
   </article>{/each}<Pagination pagination={data.replies} />
 {#if message}<p class="notice" role="status">

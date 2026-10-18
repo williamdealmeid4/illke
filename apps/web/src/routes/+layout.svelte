@@ -29,6 +29,7 @@
   const nav = [
     ["/pokedex", "Pokédex"],
     ["/builds", "Builds"],
+    ['/equipes', 'Minhas equipes'],
     ["/itens", "Itens"],
     ["/golpes", "Golpes"],
     ["/comunidade", "Comunidade"],
@@ -76,7 +77,7 @@
   <footer>
     <a class="brand" href="/">illke</a>
     <nav aria-label="Rodapé">
-      <a href="/cobertura">Cobertura</a><a href="/fontes">Fontes e créditos</a
+      <a href="/cobertura">Cobertura</a><a href="/favoritos">Favoritos</a><a href="/calculos">Calculadora</a><a href="/moderacao">Moderação</a><a href="/fontes">Fontes e créditos</a
       ><a href="/wiki">Guias</a>
     </nav>
     <small

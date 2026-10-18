@@ -9,6 +9,7 @@ use App\Models\Topic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class CatalogController extends Controller
@@ -36,11 +37,16 @@ class CatalogController extends Controller
         return response()->json(CatalogEntry::where('kind', $kind)->where('slug', $slug)->firstOrFail());
     }
 
-    public function sprite(Request $request, string $pokemon): RedirectResponse
+    public function sprite(Request $request, string $pokemon): RedirectResponse|Response
     {
         $id = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $pokemon));
-        $entry = CatalogEntry::where('kind', 'pokemon')->where(fn ($q) => $q->where('name', $pokemon)->orWhere('slug', $pokemon)->orWhere('attributes->showdown_id', $id))->firstOrFail();
-        abort_unless($entry->image, 404);
+        $aliases = [preg_replace('/-Paldea-(Combat|Blaze|Aqua)$/i', '-paldea-$1-breed', $pokemon), preg_replace('/^(Pikachu)-(Original|Hoenn|Sinnoh|Unova|Kalos|Alola|Partner|World)$/i', '$1-$2-cap', $pokemon), preg_replace('/-Alola-Totem$/i', '-totem-alola', $pokemon)];
+        $entry = CatalogEntry::where('kind', 'pokemon')->where(fn ($q) => $q->whereRaw('LOWER(name) = ?', [strtolower($pokemon)])->orWhere('slug', strtolower($pokemon))->orWhereIn('slug', array_map('strtolower', $aliases))->orWhere('attributes->showdown_id', $id))->first();
+        if (! $entry?->image) {
+            $label = htmlspecialchars($pokemon, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+
+            return response('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><rect width="240" height="240" rx="20" fill="#202c3d"/><circle cx="120" cy="85" r="38" fill="none" stroke="#a6b2c7" stroke-width="4"/><path d="M82 85h76" stroke="#a6b2c7" stroke-width="4"/><text x="120" y="158" text-anchor="middle" fill="#e8edf6" font-family="sans-serif" font-size="12">Sprite indisponível</text><text x="120" y="180" text-anchor="middle" fill="#a6b2c7" font-family="sans-serif" font-size="10">'.$label.'</text></svg>', 200, ['Content-Type' => 'image/svg+xml', 'Cache-Control' => 'public, max-age=3600', 'X-Sprite-Fallback' => 'unavailable']);
+        }
 
         return redirect()->away($request->query('style') === 'artwork' ? ($entry->attributes['sprites']['artwork']['url'] ?? $entry->image['url']) : $entry->image['url'])->header('Cache-Control', 'public, max-age=86400');
     }
