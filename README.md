@@ -71,6 +71,20 @@ O fórum usa apelidos sem identidade verificada. A moderação de tópicos usa o
 
 ## Biblioteca, filas e limites
 
+Novas equipes começam com os seis espaços vazios. Use **Remover** no cartão de qualquer integrante, inclusive o último. Ao escolher um Pokémon com referências validadas no formato, o editor carrega uma build convencional e seus golpes. O seletor de golpes permite pesquisar no repertório da espécie; as restrições ainda são conferidas na validação. A tipagem natural é exibida como informação fixa.
+
+## Guia de captura por jogo
+
+Na página de cada Pokémon, **Onde capturar e como se preparar** permite escolher a versão e consultar locais, níveis, métodos, condições e frequência de encontro. A frequência não é a probabilidade de captura de uma bola. As dicas de preparação consideram geração, tipos históricos, momento da batalha, noite e caverna; presentes, Safari, raids e jogos com sistemas próprios são tratados separadamente.
+
+Execute npm run sync:capture após importar o catálogo para atualizar os encontros da mesma revisão da PokéAPI. O setup e a sincronização completa já incluem essa etapa. O arquivo local .data/capture-guide.json é gerado atomicamente e não é versionado; não há consulta externa durante a navegação. Em produção, ILLKE_DATA_DIR pode apontar para a pasta desses dados.
+
+A revisão atual tem registros em 41 das 53 versões listadas, com lacunas nas versões recentes. A interface informa quando não há um local confirmado, sem assumir que a espécie seja impossível de obter. Os nomes de locais e condições permanecem em inglês para corresponder ao jogo e à fonte. As recomendações não calculam uma chance exata nem garantem disponibilidade de itens em qualquer ponto da campanha.
+
+Fontes: tabelas de encontros da PokéAPI na revisão do catálogo; guias oficiais de captura Pokémon, Legends: Arceus e Let’s Go; documentação das mecânicas por geração indicada no próprio guia.
+
+## Persistência e limites competitivos
+
 Equipes, favoritos e checkpoints ficam no IndexedDB deste navegador. Exporte o backup JSON na página **Equipes** para guardar ou transferir suas equipes; o arquivo exclui credenciais, histórico privado e identificadores de avaliação. Não há cadastro nem sincronização automática entre navegadores.
 
 O motor separa as referências legais confirmadas dos sets pendentes e conserva snapshots imutáveis para avaliações reproduzíveis. A auditoria atual cobre as gerações I–IX; nove registros não possuem arte exata confirmada e mostram o marcador local de imagem indisponível. O diagnóstico de equipe descreve cobertura e funções por heurísticas, sem inventar uma nota competitiva.

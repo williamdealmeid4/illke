@@ -12,6 +12,7 @@
     "dev:engine": "npm run dev -w @illke/battle-engine",
     "dev:bot": "npm run start -w @illke/discord-bot",
     "sync:data": "node scripts/sync-data.mjs",
+    "sync:capture": "node scripts/sync-capture.mjs",
     "audit:assets": "node scripts/audit-assets.mjs",
     "test": "node --test tests/*.test.mjs",
     "check": "npm run check -w @illke/web",

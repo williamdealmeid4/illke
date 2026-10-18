@@ -417,3 +417,4 @@ await writeFile(new URL(`snapshots/${output.snapshot_id}.json`, root), JSON.stri
 await writeFile(new URL("catalog.tmp.json", root), JSON.stringify(output));
 await rename(new URL("catalog.tmp.json", root), new URL("catalog.json", root));
 console.log(JSON.stringify(output.coverage, null, 2));
+await import('./sync-capture.mjs').then(module=>module.syncCapture());

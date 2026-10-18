@@ -52,7 +52,66 @@ test('error pages and cancelled requests do not take down the frontend',async({p
 test('mobile editor fits the viewport and exposes a disabled support preset',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.goto('/builder?new=1');
   await expect(page.getByText('Salvo neste navegador',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Adicionar primeiro Pokémon',exact:true}).click();
+  await page.getByLabel('Nome, forma ou número — gerações 1 a 9').fill('Garchomp');
+  await page.getByRole('button',{name:'Selecionar Garchomp',exact:true}).click();
   await page.locator('select:has(option[value="support"])').selectOption('support');await expect(page.getByRole('button',{name:'Distribuir pela função'})).toBeDisabled();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('builder starts empty, loads reference moves and removes the last member permanently',async({page,request})=>{
+  const response=await request.get('/api/v1/builds?q=Garchomp&context_id=gen9ou');
+  const reference=(await response.json()).data.find(build=>build.pokemon==='Garchomp'&&build.source_key&&build.legality==='legal');
+  expect(reference).toBeTruthy();
+  await page.goto('/builder?new=1');
+  await expect(page.getByRole('heading',{name:'Sua equipe está vazia',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:/^Editar /})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:/^Adicionar integrante /})).toHaveCount(6);
+  await page.getByRole('button',{name:'Adicionar integrante 4',exact:true}).click();
+  await page.getByLabel('Nome, forma ou número — gerações 1 a 9').fill('Garchomp');
+  await page.getByRole('button',{name:'Selecionar Garchomp',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Editar Garchomp',exact:true})).toBeVisible();
+  for(let slot=0;slot<reference.configuration.moves.length;slot++) await expect(page.getByRole('button',{name:'Alterar golpe '+(slot+1),exact:true})).toContainText(reference.configuration.moves[slot]);
+  await expect(page.locator('.natural-types')).toContainText('Dragon');
+  await expect(page.locator('.natural-types')).toContainText('Ground');
+  await expect(page.getByLabel('Tipo Tera',{exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Alterar golpe 1',exact:true}).click();
+  await page.getByLabel('Pesquisar golpes que Garchomp aprende').fill('Flamethrower');
+  await page.getByRole('button',{name:/^Flamethrower /}).click();
+  await expect(page.getByRole('button',{name:'Alterar golpe 1',exact:true})).toContainText('Flamethrower');
+  await page.getByRole('button',{name:'Alterar golpe 1',exact:true}).click();
+  await page.getByLabel('Pesquisar golpes que Garchomp aprende').fill('não existe');
+  await expect(page.getByText('Nenhum golpe encontrado no repertório deste Pokémon.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Fechar',exact:true}).click();
+  await expect(page.getByText('Salvo neste navegador',{exact:true})).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('button',{name:'Alterar golpe 1',exact:true})).toContainText('Flamethrower');
+  await page.getByRole('button',{name:'Remover Garchomp da equipe',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Sua equipe está vazia',exact:true})).toBeVisible();
+  await expect(page.getByText('Salvo neste navegador',{exact:true})).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading',{name:'Sua equipe está vazia',exact:true})).toBeVisible();
+  await page.goto('/equipes');
+  const downloadPromise=page.waitForEvent('download');
+  await page.getByRole('button',{name:'Exportar backup',exact:true}).click();
+  const backup=JSON.parse(await readFile(await (await downloadPromise).path(),'utf8'));
+  expect(backup.teams[0].members).toEqual([]);
+});
+
+test('capture guide separates games and changes ball advice for the selected scenario',async({page})=>{
+  await page.goto('/pokemon/pikachu?game=red');
+  const guide=page.getByRole('region',{name:'Guia de captura por jogo',exact:true});
+  await expect(guide.getByLabel('Jogo',{exact:true})).toHaveValue('red');
+  await expect(guide.getByRole('heading',{name:'Viridian Forest',exact:true}).first()).toBeVisible();
+  await expect(guide.getByText(/Opção indicada neste cenário:/)).toContainText('Compare Great Ball e Ultra Ball');
+  await guide.getByLabel('Jogo',{exact:true}).selectOption('violet');
+  await expect(guide.getByText('Nenhum local confirmado nesta fonte para este jogo.',{exact:true})).toBeVisible();
+  await expect(guide.getByRole('heading',{name:'Viridian Forest',exact:true})).toHaveCount(0);
+  await expect(guide.getByText(/Opção indicada neste cenário:/)).toContainText('Quick Ball');
+  await guide.getByLabel('Momento da tentativa',{exact:true}).selectOption('prepared');
+  await guide.getByLabel('É noite',{exact:true}).check();
+  await expect(guide.getByText(/Opção indicada neste cenário:/)).toContainText('Dusk Ball');
+  await page.setViewportSize({width:390,height:844});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 

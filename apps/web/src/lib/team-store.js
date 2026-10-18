@@ -28,10 +28,11 @@ export function cleanMember(member) {
 }
 
 export function cleanTeam(team, freshId = false) {
-  if (!team || !Array.isArray(team.members) || team.members.length < 1 || team.members.length > 6) throw Error('Uma equipe deve ter de um a seis integrantes.');
+  if (!team || !Array.isArray(team.members) || team.members.length > 6) throw Error('Uma equipe deve ter de zero a seis integrantes.');
   if (typeof team.name !== 'string' || !team.name.trim() || team.name.length > 100) throw Error('Nome de equipe inválido.');
   const members = team.members.map(cleanMember);
-  const context = team.context_id || members[0].context_id;
+  const context = team.context_id || members[0]?.context_id || 'gen9ou';
+  if (!/^gen[1-9]ou$/.test(context)) throw Error('Formato de equipe inválido.');
   if (members.some(m => m.context_id !== context)) throw Error('Todos os integrantes devem usar o mesmo formato.');
   return { id: freshId || !team.id ? crypto.randomUUID() : team.id, name: team.name,
     context_id: context, members, notes: String(team.notes || '').slice(0,20000),

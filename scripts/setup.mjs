@@ -92,5 +92,6 @@ if (
   await writeFile("apps/api/database/database.sqlite", "");
 run(php, ["artisan", "migrate", "--no-interaction"], api);
 if (!(await exists(".data/catalog.json"))) await import("./sync-data.mjs");
+if (!(await exists(".data/capture-guide.json"))) await import("./sync-capture.mjs").then(module=>module.syncCapture());
 run(php, ["artisan", "catalog:import"], api);
 console.log("Pronto. Execute npm run dev e abra http://127.0.0.1:5186.");

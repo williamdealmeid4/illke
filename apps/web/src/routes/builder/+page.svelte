@@ -18,11 +18,12 @@
   import ShareBuild from "$lib/components/ShareBuild.svelte";
   import { mutate, sprite, statLabels, roles } from "$lib/api.js";
   import { library, createTeam, saveTeam, getTeam } from '$lib/team-store.js';
+  import { emptyBuild, referenceBuilds } from '$lib/builder.js';
   let { data } = $props();
   let draft = $state(untrack(() => structuredClone(data.initial)));
   let options = $state(untrack(() => data.options));
   let members = $state(
-    untrack(() => (data.initial ? [structuredClone(data.initial)] : [])),
+    untrack(() => (data.initial?.pokemon ? [structuredClone(data.initial)] : [])),
   );
   let selected = $state(0);
   function signature(builds){return JSON.stringify(builds.map(b=>[b.context_id,b.pokemon,b.level,b.nature,b.ability,b.item,b.tera_type,(b.moves||[]).filter(Boolean),Object.keys(statLabels).map(s=>b.evs?.[s]||0),Object.keys(statLabels).map(s=>b.ivs?.[s]??31)]));}
@@ -33,7 +34,7 @@
   let mounted = false, pollErrors = 0;
   let liveStats = $state(null), statSerial = 0;
   $effect(() => {
-    if(!hydrated || !draft) return;
+    if(!hydrated || !draft?.pokemon) return;
     const build=$state.snapshot(draft), serial=++statSerial;
     const timer=setTimeout(async()=>{try{const result=await mutate('/stats',{configuration:configuration(build)});if(serial===statSerial)liveStats=result;}catch{if(serial===statSerial)liveStats=null;}},800);
     return ()=>clearTimeout(timer);
@@ -41,6 +42,11 @@
   let pickerSlot = $state(null);
   let pokemonSearch = $state("");
   let optionsBusy = $state(false);
+  let references = $state(untrack(() => data.references || []));
+  let moveSlot = $state(null), moveSearch = $state('');
+  let moveCandidates = $derived((options?.moves || []).filter(move => !moveSearch.trim() ||
+    (move.name+' '+move.type+' '+move.category).toLowerCase().includes(moveSearch.trim().toLowerCase())));
+  let currentReference = $derived(draft?.pokemon ? references.find(reference => signature([reference.configuration]) === signature([draft])) : null);
   let generation = $derived(Number(draft?.context_id?.match(/^gen(\d+)/)?.[1] || 9));
   let candidates = $derived(data.species.filter((p) => p.gen <= generation &&
     (!pokemonSearch || p.name.toLowerCase().includes(pokemonSearch.toLowerCase().trim()) || String(p.num) === pokemonSearch.trim())));
@@ -49,16 +55,38 @@
     await tick(); document.getElementById("pokemon-search")?.focus();
   }
   async function choosePokemon(pokemon) {
-    await protect('Trocar ou adicionar Pokémon');
-    const slot = pickerSlot;
-    const fresh = {
-      ...clone(data.initial), context_id: draft.context_id, pokemon,
-      name: "Build de " + pokemon, nature: "Serious", ability: "", item: "",
-      moves: [], tera_type: "", strategy: "", evs: Object.fromEntries(Object.keys(statLabels).map(s => [s, 0])),
-      ivs: Object.fromEntries(Object.keys(statLabels).map(s => [s, 31])),
-    };
-    members[slot] = fresh; selected = slot; draft = clone(fresh);
-    pickerSlot = null; refreshOptions();
+    if (busy) return;
+    busy = true;
+    try {
+      await protect('Trocar ou adicionar Pokémon');
+      const slot = pickerSlot;
+      const presets = await referenceBuilds(fetch, pokemon, draft.context_id);
+      const fresh = { ...emptyBuild(draft.context_id), pokemon, name: 'Build de '+pokemon,
+        ...(presets[0]?.configuration || {}), visibility: 'private' };
+      members[slot] = fresh; selected = slot; draft = clone(fresh);
+      pickerSlot = null; moveSlot = null;
+      await refreshOptions();
+      if (!presets.length) message = 'Não há build convencional validada para este Pokémon neste formato. Escolha seus golpes abaixo.';
+    } catch (error) { message = error.message; }
+    finally { busy = false; }
+  }
+  async function applyReference(id) {
+    const reference = references.find(build => build.public_id === id);
+    if (!reference) return;
+    await action(async () => {
+      await protect('Aplicar build convencional');
+      draft = { ...emptyBuild(draft.context_id), ...clone(reference.configuration), visibility: 'private' };
+      members[selected] = clone(draft);
+      moveSlot = null;
+    });
+  }
+  async function openMovePicker(slot) {
+    moveSlot = slot; moveSearch = '';
+    await tick(); document.getElementById('move-search')?.focus();
+  }
+  function chooseMove(move) {
+    draft.moves[moveSlot] = move;
+    moveSlot = null;
   }
   function adaptContext(member, context) {
     const gen = Number(context.match(/^gen(\d+)/)?.[1] || 9);
@@ -107,12 +135,12 @@
         const query = new URLSearchParams(window.location.search);
         const existing = saved.teams.find(t => t.id === (query.get('team') || saved.active_id));
         let team = existing;
-        if (query.has('new') || !team) team = await createTeam({name:'Minha equipe',members:[clone(data.initial)]});
-        else if (data.explicit) pendingReference = clone(data.initial);
+        if (query.has('new') || !team) team = await createTeam({name:'Minha equipe',context_id:data.initial.context_id,members:!query.has('new') && data.initial.pokemon ? [clone(data.initial)] : []});
+        else if (data.explicit && data.initial.pokemon) pendingReference = clone(data.initial);
         if (disposed) return;
         teamId = team.id; teamName = team.name; members = team.members;
         if(!pendingReference) replaceState('/builder?team='+team.id+(query.get('discord')?'&discord='+encodeURIComponent(query.get('discord')):''),page.state);
-        draft = clone(members[0]); history = team.history;
+        draft = clone(members[0] || emptyBuild(team.context_id)); history = team.history;
         await refreshOptions();
         const last = team.evaluations?.at(-1);
         if (last) {
@@ -126,7 +154,7 @@
     return () => { disposed = true; mounted=false; clearTimeout(polling); };
   });
   $effect(() => {
-    if (!draft) return;
+    if (!draft?.pokemon) return;
     const snapshot = $state.snapshot(draft);
     untrack(() => {
       if (hydrated) {
@@ -148,7 +176,7 @@
   async function protect(reason) {
     if (!teamId) return;
     try {
-      members[selected] = clone(draft);
+      if (draft.pokemon) members[selected] = clone(draft);
       const team = await saveTeam(teamId,{name:teamName,members:clone(members),context_id:draft.context_id},reason);
       history = team.history;
     } catch(e) { message=e.message; throw e; }
@@ -166,13 +194,16 @@
   }
   async function restoreVersion(version) {
     await protect('Antes de restaurar versão');
-    members=clone(version.members); selected=0; teamName=version.name; draft=clone(members[0]); await refreshOptions();
+    members=clone(version.members); selected=0; teamName=version.name; draft=clone(members[0] || emptyBuild(version.context_id)); await refreshOptions();
   }
   async function diagnoseTeam() {
     await action(async()=>{ teamAnalysis=await mutate('/teams/analyze',{builds:members.map(configuration)}); });
   }
   async function refreshOptions() {
     const serial = ++requestSerial;
+    moveSlot = null;
+    liveStats = null;
+    if (!draft.pokemon) { options = null; references = []; optionsBusy = false; return; }
     optionsBusy = true;
     try {
       const res = await fetch(
@@ -184,9 +215,10 @@
       );
       if (!res.ok)
         throw Error("Não foi possível carregar as opções deste Pokémon.");
-      const result = await res.json();
+      const [result, presets] = await Promise.all([res.json(), referenceBuilds(fetch, draft.pokemon, draft.context_id)]);
       if (serial !== requestSerial) return;
       options = result;
+      references = presets;
       if (!result.supported) throw Error(result.reason);
       if (!result.context.capabilities.ability) draft.ability = "";
       else if (!result.abilities.includes(draft.ability))
@@ -201,9 +233,9 @@
   async function changeContext() {
     const checkpoint = saveTeam(teamId, {}, 'Alterar formato');
     const context = draft.context_id;
-    members[selected] = clone(draft);
+    if (draft.pokemon) members[selected] = clone(draft);
     members = members.map((m) => adaptContext(m, context));
-    draft = clone(members[selected]);
+    draft = clone(members[selected] || emptyBuild(context));
     history = (await checkpoint).history;
     await refreshOptions();
     message =
@@ -212,7 +244,7 @@
   function selectSlot(i) {
     if (i >= members.length) {
       if (members.length >= 6) return;
-      openPicker(i);
+      openPicker(members.length);
       return;
     }
     selected = i;
@@ -220,16 +252,18 @@
     analysis = null;
     refreshOptions();
   }
-  async function removeSlot() {
-    if (members.length === 1) {
-      message = "Mantenha ao menos um integrante no rascunho.";
-      return;
-    }
-    await protect('Remover integrante');
-    members.splice(selected, 1);
-    selected = 0;
-    draft = clone(members[0]);
-    refreshOptions();
+  async function removeSlot(index = selected) {
+    await action(async () => {
+      await protect('Remover integrante');
+      const context = draft.context_id;
+      members.splice(index, 1);
+      selected = index < selected ? selected - 1 : Math.min(selected, members.length - 1);
+      selected = Math.max(0, selected);
+      draft = clone(members[selected] || emptyBuild(context));
+      pickerSlot = null;
+      analysis = null; validation = null; liveStats = null;
+      await refreshOptions();
+    });
   }
   function preset() {
     if (!['wall','physical-attacker','special-attacker'].includes(draft.role)) { message='Escolha uma distribuição manual para esta função. Não há preset genérico revisado.'; return; }
@@ -398,7 +432,7 @@
     ><button
       class="button secondary small"
       onclick={exportTeam}
-      disabled={!draft}><Download size={15} /> Exportar</button
+      disabled={!members.length}><Download size={15} /> Exportar</button
     >
   </div>
 </div>
@@ -426,14 +460,14 @@
       onchange={changeContext}
       >{#each data.contexts as c}<option value={c.id}>{c.label}</option
         >{/each}</select
-    ><span class="help" role="status">{saveStatus}</span><a class="text-link" href="/equipes">Minhas equipes</a>
+    ><span class="help" role="status">{saveStatus}</span><a class="text-link" href="/equipes">Minhas equipes</a><a class="text-link" href="/builder?new=1">Nova equipe vazia</a>
   </div>
   <div class="team-slots">
-    {#each Array.from({ length: 6 }, (_, i) => i) as i}<button
+    {#each Array.from({ length: 6 }, (_, i) => i) as i}<div class="team-slot-container"><button
         class="team-slot"
         class:selected={selected === i}
         onclick={() => selectSlot(i)}
-        disabled={i > members.length}
+        disabled={busy || !hydrated}
         aria-label={members[i]
           ? "Editar " + members[i].pokemon
           : "Adicionar integrante " + (i + 1)}
@@ -447,7 +481,7 @@
             >{roles[members[i].role]}</small
           >{:else}<Plus size={24} /><small>Adicionar Pokémon</small
           >{/if}</button
-      >{/each}
+      >{#if members[i]}<button class="danger-link remove-member" disabled={busy || !hydrated} onclick={()=>removeSlot(i)} aria-label={'Remover '+members[i].pokemon+' da equipe'}><Trash2 size={14} /> Remover</button>{/if}</div>{/each}
   </div>
   {#if pickerSlot !== null}
     <section class="content-panel pokemon-picker" aria-label="Selecionar Pokémon">
@@ -457,7 +491,7 @@
       <input id="pokemon-search" type="search" bind:value={pokemonSearch} placeholder="Buscar Pokémon" />
       <p class="help" aria-live="polite">{candidates.length} opções{candidates.length > 48 ? ". Exibindo as primeiras 48; digite para buscar." : "."}</p>
       <div class="picker-grid">
-        {#each candidates.slice(0, 48) as p}<button onclick={() => choosePokemon(p.name)} aria-label={"Selecionar " + p.name}>
+        {#each candidates.slice(0, 48) as p}<button disabled={busy} onclick={() => choosePokemon(p.name)} aria-label={"Selecionar " + p.name}>
           <img src={sprite(p.name)} alt="" loading="lazy" width="64" height="64" /><span>{p.name}</span><small>#{p.num} · Geração {p.gen}</small>
         </button>{:else}<p>Nenhum Pokémon nesta geração com esse nome.</p>{/each}
       </div>
@@ -469,6 +503,8 @@
     campanha e Legends ainda não estão disponíveis.
   </p>
   {#if message}<div class="notice" role="status">{message}</div>{/if}
+  {#if !members.length}<section class="empty-panel"><h2>Sua equipe está vazia</h2><p>Escolha os Pokémon que você quer usar. Nenhum integrante será adicionado automaticamente.</p><button class="button" disabled={busy || !hydrated} onclick={()=>openPicker(0)}><Plus size={16} /> Adicionar primeiro Pokémon</button></section>{/if}
+  {#if draft.pokemon}
   <div class="builder-grid">
     <nav class="builder-section-nav" aria-label="Seções do editor"><a href="#configuration">Configuração</a><a href="#training">Treinamento</a><a href="#team-analysis">Análise</a><button type="button" onclick={analyze} disabled={busy||optionsBusy}>Revisar alterações</button></nav>
     <section class="content-panel">
@@ -484,14 +520,16 @@
           <p>Integrante {selected + 1} / {members.length}</p>
         </div>
         <button
-          class="icon-button"
+          class="button secondary small"
           style="margin-left:auto"
-          onclick={removeSlot}
-          aria-label="Remover integrante"><Trash2 size={16} /></button
+          onclick={()=>removeSlot()}
+          aria-label="Remover integrante"><Trash2 size={16} /> Remover</button
         >
       </div>
       <div class="form-grid">
         <span id="configuration"></span>
+        <div class="wide natural-types"><span class="help">Tipagem do Pokémon</span><div class="actions">{#each options?.pokemon_types || [] as type}<span class="natural-type"><TypeIcon {type} size={22} />{type}</span>{/each}</div><small class="help">Definida pela espécie e forma do Pokémon.</small></div>
+        {#if references.length}<label class="wide">Build convencional<select value={currentReference?.public_id || ''} onchange={event=>applyReference(event.currentTarget.value)} disabled={busy || optionsBusy}><option value="">Configuração personalizada</option>{#each references as reference}<option value={reference.public_id}>{reference.name}</option>{/each}</select><small class="help">Ao adicionar o Pokémon, usamos a primeira referência validada deste formato. Você pode escolher outra build ou trocar seus golpes.</small>{#if currentReference?.source_url}<a class="text-link" href={currentReference.source_url} target="_blank" rel="noreferrer">Fonte da build</a>{/if}</label>{/if}
         <div class="wide"><span class="help">Pokémon ou forma</span>
           <button class="button secondary" onclick={() => openPicker(selected)}>Trocar Pokémon</button>
         </div><label
@@ -546,41 +584,28 @@
         ><datalist id="items"
           >{#each options?.items || [] as item}<option value={item.name}
             ></option>{/each}</datalist
-        >{#if capabilities.tera}<label
-            >Tipo Tera<span class="input-with-icon"
-              ><TypeIcon type={draft.tera_type} size={20} /><select
-                bind:value={draft.tera_type}
-                ><option value="">Sem seleção</option
-                >{#each options?.types || [] as type}<option value={type}
-                    >{type}</option
-                  >{/each}</select
-              ></span
-            ></label
-          >{/if}
+        >
         <div class="wide">
           <h3 style="font-size:16px;margin:10px 0 12px">Golpes</h3>
           <div class="moves-inputs">
-            {#each [0, 1, 2, 3] as i}<label
-                >Golpe {i + 1}<span class="input-with-icon"
+            {#each [0, 1, 2, 3] as i}<div class="move-field"
+                ><span class="help">Golpe {i + 1}</span><button class="move-picker-button" disabled={busy || optionsBusy} onclick={()=>openMovePicker(i)} aria-label={'Alterar golpe '+(i+1)}
                   >{#if moveIconData(draft.moves[i])}<TypeIcon
                       type={moveIconData(draft.moves[i]).type}
                       size={20}
-                    />{/if}<input
-                    list="moves"
-                    bind:value={draft.moves[i]}
-                    placeholder="Selecionar golpe"
-                  /></span
-                >{#if options?.move_restrictions?.[draft.moves[i]]?.length}<small class="field-error">Opção com restrições: {options.move_restrictions[draft.moves[i]].join(' ')}</small>{/if}{#if draft.moves[i] && draft.moves.filter(m=>m?.toLowerCase()===draft.moves[i].toLowerCase()).length>1}<small class="field-error">Este golpe está repetido.</small>{/if}</label
+                    />{/if}<span>{draft.moves[i] || 'Selecionar golpe'}</span></button
+                >{#if options?.move_restrictions?.[draft.moves[i]]?.length}<small class="field-error">Opção com restrições: {options.move_restrictions[draft.moves[i]].join(' ')}</small>{/if}{#if draft.moves[i] && draft.moves.filter(m=>m?.toLowerCase()===draft.moves[i].toLowerCase()).length>1}<small class="field-error">Este golpe está repetido.</small>{/if}</div
               >{/each}
           </div>
-          <datalist id="moves"
-            >{#each options?.moves || [] as move}<option value={move.name}
-                >{move.type} · {move.category} · {move.power || "—"}</option
-              >{/each}</datalist
-          >
+          {#if moveSlot !== null}<section class="move-picker" aria-label={'Escolher golpe '+(moveSlot+1)}>
+            <div class="picker-heading"><h4>Escolher golpe {moveSlot+1}</h4><button class="text-link" onclick={()=>moveSlot=null}>Fechar</button></div>
+            <label for="move-search">Pesquisar golpes que {draft.pokemon} aprende</label><input id="move-search" type="search" bind:value={moveSearch} placeholder="Nome, tipo ou categoria" />
+            <p class="help" aria-live="polite">{moveCandidates.length} golpes disponíveis nesta geração</p>
+            <div class="move-results">{#each moveCandidates as move}<button class="move-result" onclick={()=>chooseMove(move.name)} disabled={draft.moves.some((name,index)=>index!==moveSlot && name===move.name)}><TypeIcon type={move.type} size={20}/><span><strong>{move.name}</strong><small>{move.type} · {move.category} · Poder {move.power || '—'}{options?.move_restrictions?.[move.name]?.length ? ' · Sujeito às regras do formato' : ''}</small></span></button>{:else}<p>Nenhum golpe encontrado no repertório deste Pokémon.</p>{/each}</div>
+            <button class="text-link" onclick={()=>chooseMove('')}>Deixar este golpe vazio</button>
+          </section>{/if}
           <p class="help">
-            A lista inclui candidatos por geração. A validação verifica se a
-            combinação é legal.
+            Escolha entre os golpes que este Pokémon aprende nesta geração. A validação também confere as restrições do formato e da combinação.
           </p>
         </div>
         <div class="wide">
@@ -715,6 +740,7 @@
       </div>
     </aside>
   </div>
+  {/if}
   {#if evaluation}<section class="content-panel" aria-live="polite">
       <h2>Avaliação da equipe</h2>
       {#if evaluationStale}<p class="notice">Esta avaliação corresponde à equipe enviada anteriormente. A configuração atual foi alterada; execute outra avaliação para compará-la.</p>{/if}
@@ -780,6 +806,18 @@
 {/if}
 
 <style>
+  .team-slot-container { min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .team-slot-container :global(.team-slot) { width:100%; flex:1; }
+  .remove-member { display:flex; align-items:center; justify-content:center; gap:5px; padding:5px; }
+  .natural-type { display:inline-flex; align-items:center; gap:6px; }
+  .move-field { min-width:0; display:flex; flex-direction:column; gap:6px; }
+  .move-picker-button { width:100%; display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text); text-align:left; cursor:pointer; }
+  .move-picker { margin-top:16px; padding:16px; border:1px solid var(--border); border-radius:8px; }
+  .move-picker > input { width:100%; margin:8px 0; }
+  .move-results { max-height:320px; overflow-y:auto; display:grid; gap:6px; margin:10px 0; }
+  .move-result { display:flex; align-items:center; gap:10px; padding:10px; text-align:left; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer; }
+  .move-result span { display:flex; flex-direction:column; gap:4px; }
+  .move-result small { color:var(--muted); }
   .pokemon-picker { margin-bottom: 20px; }
   .picker-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
   .pokemon-picker > input { width:100%; margin:8px 0; }

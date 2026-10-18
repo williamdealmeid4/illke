@@ -4,6 +4,7 @@
   import EntityIcon from "./EntityIcon.svelte";
   import CategoryBadge from "./CategoryBadge.svelte";
   import BuildList from "./BuildList.svelte";
+  import CaptureGuide from './CaptureGuide.svelte';
   let { data } = $props();
   let entry = $derived(data.entry);
   let a = $derived(entry.attributes);
@@ -137,6 +138,7 @@
       </div>
     </div>
   </div>
+  {#if data.capture}{#key entry.slug}<CaptureGuide guide={data.capture} initialGame={data.game}/>{/key}{/if}
   <section style="margin:40px 0">
     <div class="section-heading">
       <div>

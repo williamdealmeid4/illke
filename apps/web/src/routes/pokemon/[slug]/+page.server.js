@@ -1,5 +1,6 @@
 import { readApi } from "$lib/api.js";
 import { error } from "@sveltejs/kit";
+import { captureGuide } from '$lib/server/capture.js';
 export async function load({ fetch, params, url }) {
   const context_id = /^gen[1-9]ou$/.test(url.searchParams.get('context_id') || '') ? url.searchParams.get('context_id') : 'gen9ou';
   let entry;
@@ -17,5 +18,5 @@ export async function load({ fetch, params, url }) {
       );
     } catch {}
   }
-  return { entry, builds, context_id };
+  return { entry, builds, context_id, capture:await captureGuide(entry), game:url.searchParams.get('game') };
 }

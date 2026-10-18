@@ -50,5 +50,6 @@ test('backups validate all teams before importing and strip unknown private fiel
   const original={app:'illke',schema_version:2,teams:[{name:'Equipe',members:[{...build(),token:'secret'}]}],favorites:[]};
   const parsed=parseBackup(original);assert.equal(parsed.teams[0].members[0].token,undefined);
   assert.ok(parsed.teams[0].id);assert.equal(parsed.teams[0].members[0].name,original.teams[0].members[0].name);
-  assert.throws(()=>parseBackup({...original,teams:[original.teams[0],{name:'Quebrada',members:[]}]}),/integrantes/);
+  assert.deepEqual(parseBackup({...original,teams:[{name:'Vazia',context_id:'gen9ou',members:[]}]}).teams[0].members,[]);
+  assert.throws(()=>parseBackup({...original,teams:[original.teams[0],{name:'Quebrada',members:Array(7).fill(build())}]}),/integrantes/);
 });
