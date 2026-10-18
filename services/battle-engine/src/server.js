@@ -104,10 +104,16 @@ http
           simulationRunning = false;
           activeSimulation = null;
         };
+        let settled = false;
         activeSimulation={id:body.evaluation_id,worker,cancel:()=>{done();if(!res.writableEnded)send(res,409,{error:{message:'Avaliação cancelada.'}});}};
         worker.once("message", (message) => {
+          settled = true;
           done();
           if (res.writableEnded) return;
+          if (!message || (!message.result && !message.error)) {
+            send(res, 500, { error: { message: "O worker terminou sem produzir um resultado." } });
+            return;
+          }
           send(
             res,
             message.error ? 422 : 200,
@@ -117,9 +123,18 @@ http
           );
         });
         worker.once("error", (error) => {
+          settled = true;
           done();
           if (!res.writableEnded)
             send(res, 500, { error: { message: error.message } });
+        });
+        worker.once("exit", (code) => {
+          if (settled) return;
+          settled = true;
+          done();
+          if (!res.writableEnded) {
+            send(res, 500, { error: { message: "O worker encerrou sem resposta (código " + code + ")." } });
+          }
         });
         return;
       }
