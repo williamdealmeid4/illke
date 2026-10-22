@@ -98,21 +98,51 @@ test('builder starts empty, loads reference moves and removes the last member pe
   expect(backup.teams[0].members).toEqual([]);
 });
 
-test('capture guide separates games and changes ball advice for the selected scenario',async({page})=>{
+test('capture atlas separates games, maps and ball advice for the selected scenario',async({page})=>{
   await page.goto('/pokemon/pikachu?game=red');
-  const guide=page.getByRole('region',{name:'Guia de captura por jogo',exact:true});
-  await expect(guide.getByLabel('Jogo',{exact:true})).toHaveValue('red');
-  await expect(guide.getByRole('heading',{name:'Viridian Forest',exact:true}).first()).toBeVisible();
-  await expect(guide.getByText(/Opção indicada neste cenário:/)).toContainText('Compare Great Ball e Ultra Ball');
-  await guide.getByLabel('Jogo',{exact:true}).selectOption('violet');
-  await expect(guide.getByText('Nenhum local confirmado nesta fonte para este jogo.',{exact:true})).toBeVisible();
-  await expect(guide.getByRole('heading',{name:'Viridian Forest',exact:true})).toHaveCount(0);
-  await expect(guide.getByText(/Opção indicada neste cenário:/)).toContainText('Quick Ball');
+  const guide=page.getByRole('region',{name:'Onde encontrar',exact:true});
+  await expect(page.getByLabel('Jogo selecionado',{exact:true})).toHaveValue('red');
+  await expect(guide.locator('.hint-card').filter({hasText:'Viridian Forest'}).first()).toBeVisible();
+  await expect(guide.locator('.map-pin').first()).toBeVisible();
+  await guide.locator('.map-pin').first().click();
+  await expect(guide.locator('.active-hint')).toContainText('Viridian Forest');
+  await expect(guide.getByText(/Opção indicada:/)).toContainText('Compare Great Ball e Ultra Ball');
+  await page.getByLabel('Jogo selecionado',{exact:true}).selectOption('violet');
+  await expect(page.getByLabel('Jogo selecionado',{exact:true})).toHaveValue('violet');
+  await expect(guide.locator('.hint-card').filter({hasText:'Viridian Forest'})).toHaveCount(0);
+  await expect(guide.getByText(/Opção indicada:/)).toContainText('Quick Ball');
   await guide.getByLabel('Momento da tentativa',{exact:true}).selectOption('prepared');
   await guide.getByLabel('É noite',{exact:true}).check();
-  await expect(guide.getByText(/Opção indicada neste cenário:/)).toContainText('Dusk Ball');
+  await expect(guide.getByText(/Opção indicada:/)).toContainText('Dusk Ball');
   await page.setViewportSize({width:390,height:844});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('game catalog filters consoles and opens the correct regional map',async({page})=>{
+  await page.goto('/jogos');
+  await page.getByLabel('Console',{exact:true}).selectOption('gbc');
+  await expect(page.locator('.game-card').filter({hasText:'Pokémon Gold'})).toHaveCount(1);
+  await expect(page.locator('.game-card').filter({hasText:'Pokémon Scarlet'})).toHaveCount(0);
+  await page.getByRole('link',{name:/Pokémon Gold Game Boy Color/}).click();
+  await expect(page).toHaveURL(/\/jogos\/gold\?game=gold/);
+  await expect(page.getByRole('heading',{name:'Pokémon Gold',exact:true})).toBeVisible();
+  await page.getByText('Mapa regional e áreas de Johto',{exact:true}).click();
+  await page.getByLabel('Destacar local',{exact:true}).selectOption('Violet City');
+  await expect(page.locator('.region-map .map-pin')).toBeVisible();
+  await page.setViewportSize({width:390,height:844});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('item map selects source-backed ground items and preserves version',async({page})=>{
+  await page.goto('/item/leftovers?game=firered');
+  const guide=page.getByRole('region',{name:'Onde encontrar',exact:true});
+  await expect(guide.locator('.hint-card')).toHaveCount(2);
+  await guide.locator('.hint-card').filter({hasText:'Route16'}).click();
+  await expect(guide.locator('.active-hint')).toContainText('Route16');
+  await expect(guide.locator('.active-hint')).toContainText('coluna 31, linha 13');
+  await expect(guide.locator('.local-target')).toContainText('Alvo');
+  await expect(guide.locator('.local-scene img')).toHaveAttribute('src',/Route16.webp$/);
+  await expect(guide.getByText('Use o Itemfinder',{exact:true})).toBeVisible();
 });
 
 test('full simulation survives reload and evaluates every distinct alternative',async({page,request})=>{
@@ -120,9 +150,12 @@ test('full simulation survives reload and evaluates every distinct alternative',
   test.setTimeout(900000);
   const catalog=JSON.parse(await readFile('.data/catalog.json','utf8'));
   const team=makeBenchmark(catalog.builds,'gen9ou')[0];
+  const slot=team.findIndex(member=>catalog.builds.filter(build=>build.context_id==='gen9ou'&&build.legality==='legal'&&build.pokemon===member.pokemon).length>1);
+  expect(slot).toBeGreaterThanOrEqual(0);
   await page.addInitScript(members=>{if(!localStorage.getItem('seeded')){localStorage.setItem('illke-team-v1',JSON.stringify({name:'Simulação completa',members}));localStorage.setItem('seeded','1');}},team);
   await page.goto('/builder');
   await expect(page.getByRole('button',{name:'Avaliar equipe completa',exact:true})).toBeEnabled();
+  await page.getByLabel('Procurar alternativa para',{exact:true}).selectOption(String(slot));
   const responsePromise=page.waitForResponse(r=>r.url().endsWith('/api/v1/evaluations')&&r.request().method()==='POST');
   await page.getByRole('button',{name:'Avaliar equipe completa',exact:true}).click();
   const response=await responsePromise;expect(response.status()).toBe(202);let evaluation=await response.json();
@@ -131,8 +164,96 @@ test('full simulation survives reload and evaluates every distinct alternative',
   await expect.poll(async()=>{const response=await page.request.get('/api/v1/evaluations/'+evaluation.public_id);expect(response.ok()).toBe(true);evaluation=await response.json();return evaluation.status;},{timeout:840000,intervals:[1000,2000,3000]}).toBe('completed');
   expect(evaluation.result.samples).toBe(1000);
   expect(evaluation.result.wins+evaluation.result.losses+evaluation.result.draws).toBe(1000);
+  expect(evaluation.result.search_summary.tested).toBeGreaterThan(0);
   expect(evaluation.result.search_summary.tested).toBe(evaluation.result.candidates.length);
   expect(evaluation.result.complete).toBe(true);
   expect(evaluation.snapshot_id).toBe(evaluation.result.snapshot_id);
   await writeFile('.runtime/full-simulation-result.json',JSON.stringify(evaluation,null,2));
+});
+
+
+test('opening plays on entry and reload but not during menu navigation',async({page})=>{
+  await page.goto('/');
+  const opening=page.getByRole('dialog',{name:'Abertura do illke',exact:true});
+  await expect(opening).toBeVisible();
+  await expect(opening.locator('.shell-top')).toHaveCSS('animation-name',/shell-open-top$/);
+  await expect(opening.locator('.opening-ball')).toHaveCSS('animation-name',/ball-turn$/);
+  await opening.getByRole('button',{name:'Pular abertura'}).click();
+  await expect(opening).toHaveCount(0);
+  await expect(page.locator('.app')).not.toHaveAttribute('inert','');
+  await page.getByRole('navigation',{name:'Principal',exact:true}).getByRole('link',{name:'Jogos e mapas',exact:true}).click();
+  await expect(page).toHaveURL(/\/jogos$/);
+  await expect(page.getByRole('dialog',{name:'Abertura do illke',exact:true})).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole('dialog',{name:'Abertura do illke',exact:true})).toBeVisible();
+});
+
+test('opening finishes automatically and restores access to the system',async({page})=>{
+  await page.goto('/');
+  await expect(page.getByRole('dialog',{name:'Abertura do illke',exact:true})).toHaveCount(0,{timeout:5000});
+  await expect(page.locator('.app')).not.toHaveAttribute('inert','');
+  await expect(page.getByRole('link',{name:'Trocar jogo',exact:true})).toBeVisible();
+});
+
+test('opening respects reduced motion without blocking navigation',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/');
+  await expect(page.getByRole('dialog',{name:'Abertura do illke',exact:true})).not.toBeVisible();
+  await expect(page.locator('.app')).not.toHaveAttribute('inert','');
+});
+
+test('sidebar navigation uses one tab and fills the desktop workspace',async({page,context})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.setViewportSize({width:1512,height:982});
+  await page.goto('/');
+  const navigation=page.getByRole('navigation',{name:'Principal',exact:true});
+  await expect(navigation).toBeVisible();
+  const sidebar=await page.locator('.workspace-sidebar').boundingBox();
+  const main=await page.locator('main').boundingBox();
+  expect(sidebar.x).toBe(0);expect(main.x).toBe(sidebar.width);expect(main.width).toBeGreaterThan(1200);
+  for(const [name,path] of [['Jogos e mapas','/jogos'],['Pokédex','/pokedex'],['Itens','/itens']]){
+    await navigation.getByRole('link',{name,exact:true}).click();
+    await expect(page).toHaveURL(new RegExp(path+'(?:\\?|$)'));
+    expect(context.pages()).toHaveLength(1);
+  }
+  expect(await page.locator('a[target="_blank"]').count()).toBe(0);
+});
+
+test('mobile sidebar opens, navigates and closes without horizontal overflow',async({page,context})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.setViewportSize({width:390,height:844});await page.goto('/');
+  await expect(page.locator('.workspace-sidebar')).not.toBeVisible();
+  await page.getByRole('button',{name:'Abrir menu',exact:true}).click();
+  await expect(page.locator('.workspace-sidebar')).toBeVisible();
+  await page.getByRole('navigation',{name:'Principal',exact:true}).getByRole('link',{name:'Jogos e mapas',exact:true}).click();
+  await expect(page).toHaveURL(/\/jogos$/);await expect(page.locator('.workspace-sidebar')).not.toBeVisible();
+  expect(context.pages()).toHaveLength(1);
+  for(const width of [320,390,768,1024,1512]){
+    await page.setViewportSize({width,height:844});
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  }
+});
+
+
+test('game search opens an actionable item walkthrough in the same workspace',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/jogos/firered?kind=item&target=leftovers');
+ await expect(page.locator('.local-target')).toContainText('Alvo');
+ await expect(page.getByRole('heading',{name:'Como chegar e o que fazer'})).toBeVisible();
+ await expect(page.locator('.guide-requirements')).toContainText('Poké Flute');
+ await expect(page.locator('.walkthrough-instructions')).toContainText('pise exatamente');
+ await page.getByRole('button',{name:'Mapa regional',exact:true}).click();
+ await expect(page.locator('.regional-route')).toBeVisible();
+ await page.setViewportSize({width:390,height:844});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('calculator fields and expanded training fit narrow and wide screens',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/calculos');
+ for(const width of [320,390,768,1440]){
+  await page.setViewportSize({width,height:900});
+  for(const details of await page.locator('.damage-calculator details').all())await details.evaluate(el=>el.open=true);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  for(const field of await page.locator('.damage-sides input,.damage-sides select').all()){const box=await field.boundingBox();expect(box.width).toBeGreaterThan(45);expect(box.x+box.width).toBeLessThanOrEqual(width);}
+ }
 });

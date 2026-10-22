@@ -59,7 +59,7 @@ async function download(source, path) {
 await Promise.all(
   types.map(async (type, index) => {
     manifest.types[type] = await download(
-      `https://raw.githubusercontent.com/PokeAPI/sprites/${revision}/sprites/types/generation-ix/scarlet-violet/small/${index + 1}.png`,
+      `https://raw.githubusercontent.com/PokeAPI/sprites/${revision}/sprites/types/${type === "stellar" ? "generation-ix/scarlet-violet" : "generation-viii/sword-shield"}/small/${index + 1}.png`,
       `types/${type}.png`,
     );
   }),

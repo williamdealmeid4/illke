@@ -1,93 +1,25 @@
 <script>
-  import TypeBadge from "$lib/components/TypeBadge.svelte";
-  import {
-    Search,
-    ArrowUpRight,
-    ArrowRight,
-    Plus,
-    Swords,
-    Shield,
-    ChevronRight,
-    MessageSquare,
-  } from "@lucide/svelte";
+  import TypeBadge from '$lib/components/TypeBadge.svelte';
+  import ConsoleIcon from '$lib/components/ConsoleIcon.svelte';
+  import { page } from '$app/state';
+  import { games, consoles } from '$lib/games.js';
+  import { mapFor } from '$lib/maps.js';
+  import { Search, ArrowRight, ArrowUpRight, MapPin } from '@lucide/svelte';
   let { data } = $props();
+  let selected=$derived(page.data.selectedGame || games.find(g=>g.id==='firered'));
+  let region=$derived(mapFor(selected));
 </script>
-
-<svelte:head
-  ><title>illke — Pokémon e builds</title><meta
-    name="description"
-    content="Pokédex, builds por formato, editor de equipes e exportação de builds em PDF."
-  /></svelte:head
->
-<section class="arena-intro">
-  <div class="intro-copy">
-    <h1>Pokémon e builds</h1>
-    <form class="global-search" action="/pokedex">
-      <Search size={20} /><label class="sr-only" for="search"
-        >Pesquisar por nome ou número</label
-      ><input
-        id="search"
-        name="q"
-        placeholder="Nome ou número da Pokédex"
-      /><button type="submit" aria-label="Pesquisar"
-        ><ArrowRight size={20} /></button
-      >
-    </form>
-    <div class="search-suggestions">
-      <span>Pokémon</span><a href="/pokemon/garchomp">Garchomp</a><a
-        href="/pokemon/dragapult">Dragapult</a
-      ><a href="/pokemon/blastoise">Blastoise</a>
-    </div>
-  </div>
-  <div class="featured-match">
-    <div class="match-title">
-      <span class="status-dot"></span> Garchomp e Corviknight
-    </div>
-    <div class="match-pokemon">
-      <a href="/pokemon/garchomp" class="match-mon ground"
-        ><span class="dex-number">#0445</span><img
-          src="/api/v1/sprite/Garchomp"
-          alt="Garchomp"
-          width="220"
-          height="220"
-        /><strong>Garchomp</strong><span>Pressão ofensiva</span>
-        <div class="types">
-          <TypeBadge type="dragon" /><TypeBadge type="ground" />
-        </div></a
-      ><span class="versus">×</span><a
-        href="/pokemon/corviknight"
-        class="match-mon steel"
-        ><span class="dex-number">#0823</span><img
-          src="/api/v1/sprite/Corviknight"
-          alt="Corviknight"
-          width="220"
-          height="220"
-        /><strong>Corviknight</strong><span>Defesa e suporte</span>
-        <div class="types">
-          <TypeBadge type="flying" /><TypeBadge type="steel" />
-        </div></a
-      >
-    </div>
-    <a class="match-footer" href="/builds?context_id=gen9ou"
-      >Builds de Scarlet / Violet <ArrowUpRight size={17} /></a
-    >
-  </div>
-</section>
-<div class="catalog-ticker">
-  <span>Catálogo</span><a href="/pokedex"
-    ><strong
-      >{data.summary?.counts?.pokemon?.toLocaleString("pt-BR") || "—"}</strong
-    > Pokémon e formas</a
-  ><a href="/builds"
-    ><strong>{data.summary?.builds?.toLocaleString("pt-BR") || "—"}</strong> builds
-    de referência</a
-  ><a href="/itens"
-    ><strong
-      >{data.summary?.counts?.item?.toLocaleString("pt-BR") || "—"}</strong
-    > itens</a
-  ><a href="/cobertura" class="ticker-source"
-    >Ver cobertura <ChevronRight size={14} /></a
-  >
+<svelte:head><title>illke — Pokédex, mapas e equipes</title><meta name="description" content="Consulte Pokémon e itens por jogo, veja locais de encontro no mapa e monte equipes."/></svelte:head>
+{#if data.error}<div class="notice error" role="alert">{data.error}</div>{/if}
+<div class="desk-heading"><div><h1>Pokédex e mapas</h1><p>Locais de encontro, itens e equipes por jogo.</p></div></div>
+<div class="home-desk">
+  <section class="dex-lookup" aria-label="Consultar Pokémon">
+    <form class="global-search" action="/pokedex"><Search size={22}/><label class="sr-only" for="search">Pesquisar por nome ou número</label><input id="search" name="q" placeholder="Nome ou número da Pokédex"/><button type="submit" aria-label="Pesquisar"><ArrowRight size={20}/></button></form>
+    <div class="lookup-links"><a href="/pokemon/pikachu"><img src="/api/v1/sprite/Pikachu" alt="" width="64" height="64"/>Pikachu</a><a href="/pokemon/garchomp"><img src="/api/v1/sprite/Garchomp" alt="" width="64" height="64"/>Garchomp</a><a href="/pokemon/eevee"><img src="/api/v1/sprite/Eevee" alt="" width="64" height="64"/>Eevee</a></div>
+    <div class="desk-counts"><a href="/pokedex"><strong>{data.summary?.counts?.pokemon?.toLocaleString('pt-BR') || '—'}</strong> Pokémon e formas</a><a href="/itens"><strong>{data.summary?.counts?.item?.toLocaleString('pt-BR') || '—'}</strong> itens</a><a href="/builds"><strong>{data.summary?.builds?.toLocaleString('pt-BR') || '—'}</strong> builds</a></div>
+    <div class="lookup-shortcuts"><a href="/itens">Buscar item</a><a href="/golpes">Consultar golpe</a><a href="/calculos">Calcular dano</a></div>
+  </section>
+  <section class="home-region" aria-label="Mapa do jogo"><div class="region-caption"><ConsoleIcon platform={selected.consoles[0]} size={44}/><div><h2>{selected.name}</h2><span>{selected.region} · {selected.consoles.map(c=>consoles[c]).join(' / ')}</span></div><a href="/jogos" class="text-link">Trocar jogo</a></div><a class="home-map-link" href={'/jogos/'+selected.id+'?game='+selected.id}>{#if region?.image}<img src={region.image} alt={'Mapa de '+selected.region}/>{:else}<span>Consultar mapas disponíveis</span>{/if}<span class="map-link-label"><MapPin size={16}/>Abrir mapa e locais de encontro</span></a></section>
 </div>
 <section class="home-catalog">
   <div class="section-heading">
@@ -125,46 +57,4 @@
       <p>{data.error || "A importação está em preparação."}</p>
       <a href="/cobertura">Consultar cobertura</a>
     </div>{/if}
-</section>
-<section class="workbench-promo">
-  <div class="promo-copy">
-    <span class="section-kicker"><Swords size={20} /></span>
-    <h2>Editor de equipes</h2>
-    <p>
-      Equipes de até seis Pokémon, com análise individual e validação por
-      formato.
-    </p>
-    <a href="/builder" class="button"><Plus size={17} /> Criar equipe</a>
-  </div>
-  <div class="team-preview" aria-label="Exemplo de composição de equipe">
-    <div class="preview-header">
-      <span>Equipe de exemplo</span>
-    </div>
-    <div class="preview-slots">
-      {#each ["Blastoise", "Torkoal", "Torterra"] as name}<div>
-          <img
-            src={"/api/v1/sprite/" + name}
-            alt={name}
-            width="110"
-            height="110"
-            loading="lazy"
-          /><span>{name}</span>
-        </div>{/each}<a href="/builder" aria-label="Adicionar Pokémon à equipe"
-        ><Plus size={27} /><span>Adicionar</span></a
-      >
-    </div>
-    <div class="preview-note">
-      <Shield size={16} /><span>Validação de golpes, habilidades e itens.</span>
-    </div>
-  </div>
-</section>
-<section class="community-promo">
-  <div>
-    <MessageSquare size={24} />
-    <h2>Fórum</h2>
-    <p>Tópicos sobre equipes, builds e jogos Pokémon.</p>
-  </div>
-  <a href="/comunidade" class="button secondary"
-    >Ver tópicos <ArrowRight size={16} /></a
-  >
 </section>

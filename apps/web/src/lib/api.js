@@ -6,14 +6,15 @@ export async function readApi(fetch, path, cookie = "") {
       : "";
   const res = await fetch(base + "/api/v1" + path, {
     headers: { Accept: "application/json", ...(cookie ? { cookie } : {}) },
+    signal: AbortSignal.timeout(15000),
   });
   if (!res.ok) {
     const details = await res.json().catch(() => ({}));
-    throw new Error(
+    throw Object.assign(new Error(
       res.status === 404
         ? "Registro não encontrado."
         : details.error?.message || details.message || "A consulta está indisponível. Tente novamente.",
-    );
+    ), {status:res.status});
   }
   return res.json();
 }

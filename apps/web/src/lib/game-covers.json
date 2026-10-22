@@ -1,0 +1,793 @@
+{
+  "red": {
+    "image": "/covers/red.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy/master/Named_Boxarts/Pokemon%20-%20Red%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy",
+    "kind": "box",
+    "sha256": "48f38b05a808b61aa7578260b94dcbf9826597fb0b4cc1b0b274ff07eeb66c5c"
+  },
+  "blue": {
+    "image": "/covers/blue.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy/master/Named_Boxarts/Pokemon%20-%20Blue%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy",
+    "kind": "box",
+    "sha256": "388f13f807861fa72520a3f7755f0d2e5f4bbfe9436e508a7a6f4177ede0d6de"
+  },
+  "green": {
+    "image": "/covers/green.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy/master/Named_Boxarts/Pokemon%20-%20Green%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy",
+    "kind": "box",
+    "sha256": "1ee16f2ec8d9ac7654c919aec283f7bc9c1d5620d32e79262ed824991e21e203"
+  },
+  "gold": {
+    "image": "/covers/gold.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color/master/Named_Boxarts/Pokemon%20-%20Gold%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29%20%28GB%20Compatible%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color",
+    "kind": "box",
+    "sha256": "d443bb5a99c64eb88faf4d9f0c60bff9f64bae299adb1f2c9512e979a4661812"
+  },
+  "silver": {
+    "image": "/covers/silver.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color/master/Named_Boxarts/Pokemon%20-%20Silver%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29%20%28GB%20Compatible%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color",
+    "kind": "box",
+    "sha256": "8e69b4e9b61c3cf45009270b991513d0deab090558e29c8d2f8ffcbf901e4f98"
+  },
+  "ruby": {
+    "image": "/covers/ruby.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20Ruby%20Version%20%28USA%2C%20Europe%29%20%28Rev%201%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "0c264af577ca175f0d73b6766b1100dd4b78d6728bbcfb07298679500f0316e1"
+  },
+  "sapphire": {
+    "image": "/covers/sapphire.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20Sapphire%20Version%20%28USA%2C%20Europe%29%20%28Rev%201%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "2bcea4502d475507ed7f07f3bbaf45f36ec30446c5a02519f950bea31b3154fb"
+  },
+  "emerald": {
+    "image": "/covers/emerald.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20Emerald%20Version%20%28USA%2C%20Europe%29%20%28Alternate%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "d600bfd1c6bbb433c88fd1228888e03dd0134674c3c73a739cbacbef7270e480"
+  },
+  "firered": {
+    "image": "/covers/firered.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20FireRed%20Version%20%28USA%2C%20Europe%29%20%28Rev%201%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "d7c4f0661bf528d6555969da7b18efc7611fc35d0a4d911538fd1c398c7ce964"
+  },
+  "leafgreen": {
+    "image": "/covers/leafgreen.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20LeafGreen%20Version%20%28USA%2C%20Europe%29%20%28Rev%201%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "7d73f2d7fecd2b5d2339bdf4d6000d45f20e046951f6e89dd2f73476498bc373"
+  },
+  "diamond": {
+    "image": "/covers/diamond.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20Diamond%20Version%20%28USA%29%20%28Rev%205%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "653c4ca73a651b88d127932eeb00d32530c1a0d73c1823f8ce0c1e62e3bc6628"
+  },
+  "pearl": {
+    "image": "/covers/pearl.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20Pearl%20Version%20%28USA%29%20%28Rev%205%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "6f034335a65d26b56cfdbca37c08c0d22157fb5f1cbe35bc71ca99f880df794b"
+  },
+  "platinum": {
+    "image": "/covers/platinum.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20Platinum%20Version%20%28USA%29%20%28Rev%201%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "6ee7d02d2b7410db3f0cd425bc27c1217e5193b454560d639180f01b6380a9e8"
+  },
+  "heartgold": {
+    "image": "/covers/heartgold.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20HeartGold%20Version%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "aba83351cb8e5f04d94458b5beeef2e83db7905f9c706e640c35fdf6b2bcf3b7"
+  },
+  "soulsilver": {
+    "image": "/covers/soulsilver.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20SoulSilver%20Version%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "f236af4b4b049e132c81e66a4735a8f2808453dc020ca8f329b483383c04d084"
+  },
+  "black": {
+    "image": "/covers/black.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20Black%20Version%20%28USA%2C%20Europe%29%20%28NDSi%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "b8cfbdd19331672fadf5bcfcf1666229148648a19c837c79b0f15c76dcec6737"
+  },
+  "white": {
+    "image": "/covers/white.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20White%20Version%20%28USA%2C%20Europe%29%20%28NDSi%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "705ff9224c1baa144be33afd2d3bfdb826c938bc4415ebf87b0d839c8125accd"
+  },
+  "black-2": {
+    "image": "/covers/black-2.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20Black%20Version%202%20%28USA%2C%20Europe%29%20%28NDSi%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "8eb7886092c881e7caaff7891fc0161bd3b93866c92e0c626ab289d2bfd61144"
+  },
+  "white-2": {
+    "image": "/covers/white-2.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20-%20White%20Version%202%20%28USA%2C%20Europe%29%20%28NDSi%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "4c5bcda70909347b4c8083f081dbc5d9cf815bb1bf0070c7611110c468a071e9"
+  },
+  "x": {
+    "image": "/covers/x.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20X%20%28USA%29%20%28En%2CJa%2CFr%2CDe%2CEs%2CIt%2CKo%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "969f5799fa5cad9c7d3a066c9f2a579cc533b1fa9b72ff5ba20eb1bcc625b019"
+  },
+  "y": {
+    "image": "/covers/y.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Y%20%28USA%29%20%28En%2CJa%2CFr%2CDe%2CEs%2CIt%2CKo%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "d2a5d8eb385a09b458c9a46d44a82151a288089f22df7bab81928e2d38c9ce2a"
+  },
+  "sun": {
+    "image": "/covers/sun.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Sun%20%28USA%29%20%28En%2CJa%2CFr%2CDe%2CEs%2CIt%2CZh%2CKo%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "f325ae8ae5c48bda6ed30f3ee34400de9dc73faedb591e8e0a9b9adf0284de51"
+  },
+  "moon": {
+    "image": "/covers/moon.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Moon%20%28USA%29%20%28En%2CJa%2CFr%2CDe%2CEs%2CIt%2CZh%2CKo%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "923c1d2ea03abab6500ae241024d1ffb426d9970dc871597e27ae3567b244175"
+  },
+  "ultra-sun": {
+    "image": "/covers/ultra-sun.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Ultra%20Sun%20%28USA%29%20%28En%2CJa%2CFr%2CDe%2CEs%2CIt%2CZh%2CKo%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "a3f55995772378814063fb2e96f1751c47b4aca059d71af4beeba2a3c66f2757"
+  },
+  "ultra-moon": {
+    "image": "/covers/ultra-moon.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Ultra%20Moon%20%28USA%29%20%28En%2CJa%2CFr%2CDe%2CEs%2CIt%2CZh%2CKo%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "885ab1a1ab4896dd0090374958727f829ffbf7666c24881df49d849c6da19cad"
+  },
+  "lets-go-pikachu": {
+    "image": "/covers/lets-go-pikachu.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pika_vee.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "ed010bfb35fb8577d883f8a866937a7568ae2696db27073d34b350dcfc251169"
+  },
+  "lets-go-eevee": {
+    "image": "/covers/lets-go-eevee.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pika_vee.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "ed010bfb35fb8577d883f8a866937a7568ae2696db27073d34b350dcfc251169"
+  },
+  "sword": {
+    "image": "/covers/sword.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sword_shield.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "4daa51f7d8289eae3992c2ae67e3af1bf031faea97e89d6b4df6bf5d8a08cd8a"
+  },
+  "shield": {
+    "image": "/covers/shield.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sword_shield.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "4daa51f7d8289eae3992c2ae67e3af1bf031faea97e89d6b4df6bf5d8a08cd8a"
+  },
+  "brilliant-diamond": {
+    "image": "/covers/brilliant-diamond.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_bdsp.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "63499c0f01e689b009b0a00b713529f54b1f58f59ba2f67a84bc9a0613b8a441"
+  },
+  "shining-pearl": {
+    "image": "/covers/shining-pearl.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_bdsp.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "63499c0f01e689b009b0a00b713529f54b1f58f59ba2f67a84bc9a0613b8a441"
+  },
+  "legends-arceus": {
+    "image": "/covers/legends-arceus.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokemonlegendsarceus.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "d95e00575ae5a6f13458887bb9dcef2b3336fa23319c555aa844f56579767fd0"
+  },
+  "scarlet": {
+    "image": "/covers/scarlet.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sv.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "f81261efda74077375673156004cf8dade51015fe61762aebbf764b0aedfbeec"
+  },
+  "violet": {
+    "image": "/covers/violet.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sv.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "f81261efda74077375673156004cf8dade51015fe61762aebbf764b0aedfbeec"
+  },
+  "legends-za": {
+    "image": "/covers/legends-za.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_legends_z-a.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "61d39f87b6b3019aa28613bd0e4eebec8a75da3e20bf2dd22eb4539751cb69a6"
+  },
+  "extra-stadium-2": {
+    "image": "/covers/extra-stadium-2.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_64/master/Named_Boxarts/Pokemon%20Stadium%202%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_64",
+    "kind": "box",
+    "sha256": "05f631761dc79b5775b9a044ebfc33d2598a883728e7cb11573917491ef5b593"
+  },
+  "extra-snap": {
+    "image": "/covers/extra-snap.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_64/master/Named_Boxarts/Pokemon%20Snap%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_64",
+    "kind": "box",
+    "sha256": "17ca1f3c511fceaa80dcff17be39fd364b7d00b88a14e8a812c51f519d832c74"
+  },
+  "extra-colosseum": {
+    "image": "/covers/extra-colosseum.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_GameCube/master/Named_Boxarts/Pokemon%20Colosseum%20%28USA%29%20%28Bonus%20Disc%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_GameCube",
+    "kind": "box",
+    "sha256": "2fbc38a9d561f08133dcd1d9a28e8ef7526a5c8c428556dfd12711d50c1da62a"
+  },
+  "extra-channel": {
+    "image": "/covers/extra-channel.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_GameCube/master/Named_Boxarts/Pokemon%20Channel%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_GameCube",
+    "kind": "box",
+    "sha256": "784946ea189b65fe0e9a8a40897dbe76165e162fe2accbfa38007fda425cfa72"
+  },
+  "extra-colosseum-bonus-disc": {
+    "image": "/covers/extra-colosseum-bonus-disc.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_GameCube/master/Named_Boxarts/Pokemon%20Colosseum%20Bonus%20Disc%20%28Japan%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_GameCube",
+    "kind": "box",
+    "sha256": "6a88b35839eab7c06d230409293989fd77529abc09a95ebd5616d489e1b6a530"
+  },
+  "extra-battle-revolution": {
+    "image": "/covers/extra-battle-revolution.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Wii/master/Named_Boxarts/Pokemon%20Battle%20Revolution%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Wii",
+    "kind": "box",
+    "sha256": "3b19585f8e162a707c6865968970cb30a5ee33717677404f7f8be9c7df37c307"
+  },
+  "extra-ranch": {
+    "image": "/covers/extra-ranch.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Wii/master/Named_Boxarts/My%20Pokemon%20Ranch%20%28USA%29%20%28WiiWare%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Wii",
+    "kind": "box",
+    "sha256": "6a19ce40948e2c279d6f03f911f7960ec22dff51fd6be5e60aa2ae07100330e9"
+  },
+  "extra-rumble": {
+    "image": "/covers/extra-rumble.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Wii/master/Named_Boxarts/Pokemon%20Rumble%20%28USA%29%20%28Demo%29%20%28WiiWare%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Wii",
+    "kind": "box",
+    "sha256": "ffcc4e77f2d89e1b5dabe856778fa24eb27e9c9d6a3c2e4375108382aa82808e"
+  },
+  "extra-trading-card-game": {
+    "image": "/covers/extra-trading-card-game.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color/master/Named_Boxarts/Pokemon%20Trading%20Card%20Game%20%28USA%2C%20Australia%29%20%28SGB%20Enhanced%29%20%28GB%20Compatible%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color",
+    "kind": "box",
+    "sha256": "7937ce7e7bcbd7abf8965c497a56eb3967cc6d31ec802c2e54cc5f3e30274195"
+  },
+  "extra-pinball": {
+    "image": "/covers/extra-pinball.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color/master/Named_Boxarts/Pokemon%20Pinball%20%28USA%2C%20Australia%29%20%28Rumble%20Version%29%20%28SGB%20Enhanced%29%20%28GB%20Compatible%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color",
+    "kind": "box",
+    "sha256": "b126f1df64ef4cc65c942b6b424ab1c4ba9eac2b27f6721d8d4087f9dcaf0ca9"
+  },
+  "extra-puzzle-challenge": {
+    "image": "/covers/extra-puzzle-challenge.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color/master/Named_Boxarts/Pokemon%20Puzzle%20Challenge%20%28USA%2C%20Australia%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Color",
+    "kind": "box",
+    "sha256": "b104b3576b025b69ee4b988e2d47d9776d3ea457d7f8816fbca2eeb0f7d915e6"
+  },
+  "extra-pinball-ruby-sapphire": {
+    "image": "/covers/extra-pinball-ruby-sapphire.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20Pinball%20-%20Ruby%20_%20Sapphire%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "77ec408ef78ffc34cc0b39d2982b8cdc83d939c3bbdfbed13954852fd485d4dc"
+  },
+  "extra-mystery-dungeon-red-rescue-team": {
+    "image": "/covers/extra-mystery-dungeon-red-rescue-team.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20Mystery%20Dungeon%20-%20Red%20Rescue%20Team%20%28USA%29%20%28Demo%29%20%28Kiosk%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance",
+    "kind": "box",
+    "sha256": "73a5c9c5d37f7ef9664b0f25ba188989b1ad77b4fc7580df6bc3db7ad5345806"
+  },
+  "extra-dash": {
+    "image": "/covers/extra-dash.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Dash%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "5aeb3d4a3dec7bf1c31f583abda699dfa72515af8ed65f85df90ebb5564ee631"
+  },
+  "extra-trozei": {
+    "image": "/covers/extra-trozei.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Trozei%21%20%28USA%29%20%28Demo%29%20%28Kiosk%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "b5dcf9b5e32b0f5cf0f5f10d697a67c30d720d5b983ea34eeb65188dffd72bb6"
+  },
+  "extra-ranger": {
+    "image": "/covers/extra-ranger.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Ranger%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "2db302ae702f3e351e08baf054483a765e3b76ce8d75a685faaf79d81180c654"
+  },
+  "extra-ranger-shadows-of-almia": {
+    "image": "/covers/extra-ranger-shadows-of-almia.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Ranger%20-%20Shadows%20of%20Almia%20%28USA%29%20%28Demo%29%20%28Kiosk%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "07ac4848b261b2829deea21d4f43708ecf424060c4ed0697e03d881cf6743d08"
+  },
+  "extra-ranger-guardian-signs": {
+    "image": "/covers/extra-ranger-guardian-signs.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Ranger%20-%20Guardian%20Signs%20%28USA%29%20%28Demo%29%20%28Kiosk%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "24f133a838651fd08ab4b83672e6cb9fc4c452cfc9132480498b21758df9e748"
+  },
+  "extra-mystery-dungeon-blue-rescue-team": {
+    "image": "/covers/extra-mystery-dungeon-blue-rescue-team.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Mystery%20Dungeon%20-%20Blue%20Rescue%20Team%20%28USA%29%20%28Demo%29%20%28Kiosk%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "c211e13d86c46d43bc2dadc08ebd92115c346de6cf977735673f6d7d9face360"
+  },
+  "extra-mystery-dungeon-explorers-of-time": {
+    "image": "/covers/extra-mystery-dungeon-explorers-of-time.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Mystery%20Dungeon%20-%20Explorers%20of%20Time%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "cdd0dd0aa5cb6584807744d32fdbf9cc00cac6af13240cbd4d6c1992373ccff6"
+  },
+  "extra-mystery-dungeon-explorers-of-darkness": {
+    "image": "/covers/extra-mystery-dungeon-explorers-of-darkness.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Mystery%20Dungeon%20-%20Explorers%20of%20Darkness%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "d4f5e38ac7fc3f5e3fb3ff818ad8d71e0142769036ef6ee0e7e7d82339fab50f"
+  },
+  "extra-mystery-dungeon-explorers-of-sky": {
+    "image": "/covers/extra-mystery-dungeon-explorers-of-sky.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Mystery%20Dungeon%20-%20Explorers%20of%20Sky%20%28USA%29%20%28Demo%29%20%28Kiosk%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "a699296a51e6b64c676e7e1cb5e8bfe0622bdde9fab8f9fecea3a6eb0922d907"
+  },
+  "extra-conquest": {
+    "image": "/covers/extra-conquest.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_DS/master/Named_Boxarts/Pokemon%20Conquest%20%28USA%2C%20Australia%29%20%28NDSi%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_DS",
+    "kind": "box",
+    "sha256": "148f07e9a107553fe4430ad9752c856c14ca77d6ef283c04361e23554a0775d5"
+  },
+  "extra-rumble-blast": {
+    "image": "/covers/extra-rumble-blast.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Rumble%20Blast%20%28USA%29%20%28Rev%201%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "f96098280abdf8bc1c84bd0b552d89c904e0b92773022519e575e8115604184b"
+  },
+  "extra-rumble-world": {
+    "image": "/covers/extra-rumble-world.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Rumble%20World%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "d38dcb2bf2802d2b2d07a04e6e4334795faafe5e1f6e76ec644950dce91b6716"
+  },
+  "extra-shuffle": {
+    "image": "/covers/extra-shuffle.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Shuffle.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "ad8e8f6c0886a01f168168d586e64415ed79c7ead4a90b8629badae48ee3921d"
+  },
+  "extra-picross": {
+    "image": "/covers/extra-picross.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Picross%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "f67ee4ff9cd5d4d18f41899d42f9f5315d9aa6d49b123b3aebc3eaf9ff887500"
+  },
+  "extra-art-academy": {
+    "image": "/covers/extra-art-academy.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Art%20Academy%20%28USA%29%20%28En%2CFr%2CEs%29%20%28Rev%202%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "bcb54706072ffb21bc8a7b2416016897302164fcb3c2abb989083ee556c00252"
+  },
+  "extra-super-mystery-dungeon": {
+    "image": "/covers/extra-super-mystery-dungeon.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Super%20Mystery%20Dungeon%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "be4125cc8d83e50dab25efed39248a7f2b619b3832e71c13037035d110af6e6a"
+  },
+  "extra-mystery-dungeon-gates-to-infinity": {
+    "image": "/covers/extra-mystery-dungeon-gates-to-infinity.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS/master/Named_Boxarts/Pokemon%20Mystery%20Dungeon%20-%20Gates%20to%20Infinity%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_3DS",
+    "kind": "box",
+    "sha256": "b8dc8b921cc1da5c2f6d7ac220bd113ac1845b33d508b838da193685844b8b3f"
+  },
+  "extra-quest": {
+    "image": "/covers/extra-quest.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokemonquest.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "65a66a1b8d09c085a3879c9cd110ae26a3adc52ad7caf2fde0791e95ff164e98"
+  },
+  "extra-cafe-remix": {
+    "image": "/covers/extra-cafe-remix.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_maze.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "9c9c7f757ddd3ad48dd831dcf8b1b7aaf6ca80cceff5946fef893b2c0882610c"
+  },
+  "extra-unite": {
+    "image": "/covers/extra-unite.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokemonunite.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "1f5477ac20d71875dd560f2baeb4080d66c7d3e296441fc4e854bd7275a1f38c"
+  },
+  "extra-pokken-tournament-dx": {
+    "image": "/covers/extra-pokken-tournament-dx.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokkenDX.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "8907f18e8e4624d2b897d3f328cf532b7f9d7a8c1ba450f14575aff5c1a52f7a"
+  },
+  "extra-mystery-dungeon-rescue-team-dx": {
+    "image": "/covers/extra-mystery-dungeon-rescue-team-dx.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_dungeonDX.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "c5cae29a40bcdfb3991b129606af6df8aecee8a96c0b247288e087706dc9502d"
+  },
+  "extra-new-pokemon-snap": {
+    "image": "/covers/extra-new-pokemon-snap.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokemonsnap.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "44bfecb4ec00c524ef474ac04da4dcd5fda8456b104ebf9b1bbe12c411b6bd59"
+  },
+  "extra-detective-pikachu-returns": {
+    "image": "/covers/extra-detective-pikachu-returns.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_detective_pikachu.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "360baf711a19ea88331d9636787b55acf185ee3de5d7680346e6ca23a549d748"
+  },
+  "extra-home": {
+    "image": "/covers/extra-home.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokemonhome.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "3c8b8babd857d5d57236794305eb7628b3c392cfce0e5795f5f9fad1dc649d44"
+  },
+  "extra-champions": {
+    "image": "/covers/extra-champions.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokemonchampions.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "44e05885fa496674b4d3fe6af653dd279b1043977fd7e596e7d29ab990fef6f5"
+  },
+  "extra-pokopia": {
+    "image": "/covers/extra-pokopia.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pocoapokemon.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "f7a25923b8a7be49bfa81db682ae443083a8691e4f0ed700f5699f385bccb1d8"
+  },
+  "extra-party-mini": {
+    "image": "/covers/extra-party-mini.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Party%20Mini%20%28USA%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "cecd6aafcf567938b3e130a8e83a4b661fb507bb8d29822f656f6a255e6b3fa8"
+  },
+  "extra-pinball-mini": {
+    "image": "/covers/extra-pinball-mini.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Pinball%20Mini%20%28USA%2C%20Europe%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "d19aeb1573efc9006dcf0a64f50e41cf00164b842ae6f2b2d63e7a3be5062c5c"
+  },
+  "extra-puzzle-collection": {
+    "image": "/covers/extra-puzzle-collection.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Puzzle%20Collection%20%28USA%2C%20Europe%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "9288a8ef02ec86e59b2c957c35d60c02f21ee5e5030dab51b2c7c0023c303448"
+  },
+  "extra-puzzle-collection-vol-2": {
+    "image": "/covers/extra-puzzle-collection-vol-2.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Puzzle%20Collection%20Vol.%202%20%28Japan%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "97d7eff58aa0a65561e53c2a3a47333c2a28720277c459c45c6890c0dfbd8efa"
+  },
+  "extra-zany-cards": {
+    "image": "/covers/extra-zany-cards.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Zany%20Cards%20%28USA%2C%20Europe%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "a55b81f928b674ed7ac06151c0a17f22d9842ed111b38f160e3e874e07eff8be"
+  },
+  "extra-tetris": {
+    "image": "/covers/extra-tetris.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Tetris%20%28Europe%29%20%28En%2CJa%2CFr%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "bd1caccf4232918809f5294e5db120568713de2ce05b65f0018fb8722337d166"
+  },
+  "extra-race-mini": {
+    "image": "/covers/extra-race-mini.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Race%20Mini%20%28Japan%29%20%28Preview%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "kind": "box",
+    "sha256": "c0cb69e7b6fa48e5f7a30c08e46b86a5ae42a6ec6497f06be9144d2a49c6fa69"
+  },
+  "red-japan": {
+    "image": "/covers/red-japan.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy/master/Named_Boxarts/Pokemon%20-%20Red%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy",
+    "kind": "box",
+    "sha256": "48f38b05a808b61aa7578260b94dcbf9826597fb0b4cc1b0b274ff07eeb66c5c"
+  },
+  "blue-japan": {
+    "image": "/covers/blue-japan.png",
+    "source": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy/master/Named_Boxarts/Pokemon%20-%20Blue%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.png",
+    "origin": "https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy",
+    "kind": "box",
+    "sha256": "388f13f807861fa72520a3f7755f0d2e5f4bbfe9436e508a7a6f4177ede0d6de"
+  },
+  "yellow": {
+    "image": "/covers/yellow.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_other_gb-pikachu.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "d52e8ce14f1348931999b3b70990c7e1e105ca41e6b3d1907eedb4c70f97f7fd"
+  },
+  "extra-hey-you-pikachu": {
+    "image": "/covers/extra-hey-you-pikachu.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_other_64-genki.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "08af887a11446a35858f03bbb5db9dcaeec664716c3eab7b13c88133443bff30"
+  },
+  "extra-pokepark-wii-pikachu-s-adventure": {
+    "image": "/covers/extra-pokepark-wii-pikachu-s-adventure.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_wii_pokepark.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "0de7775784e4898ab5ac8faa060cf3b64544401e4fadd13dd4d8169082639c38"
+  },
+  "extra-rumble-u": {
+    "image": "/covers/extra-rumble-u.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_ds_scrambleU.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "37953f74ec25bcdb489af145da7ff3b250b55ae724923b20e23044eb75428970"
+  },
+  "extra-pokken-tournament": {
+    "image": "/covers/extra-pokken-tournament.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokken_wiiU.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "13f87fcf32763de844f0d48b96fcade915adbb6c2f0c7d3d8274e98c3245c60f"
+  },
+  "extra-trading-card-game-2": {
+    "image": "/covers/extra-trading-card-game-2.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_other_gbc-gr.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "efeacb185042cfe0ead0b2e26b56a0c1d8892319e9e3b3e87a78f90ffcf92538"
+  },
+  "extra-battle-trozei": {
+    "image": "/covers/extra-battle-trozei.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_ds_battletrozei.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "360b7eefeb88dfcdb60aacfa95c5f0c127b0227fcbecaefc5fe665b4ba5a3227"
+  },
+  "extra-detective-pikachu": {
+    "image": "/covers/extra-detective-pikachu.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_meitantei_pikachu.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "ac2099a30116567839eaf45e8cdff29ffbd15445d8c472fb530b988f3b3de217"
+  },
+  "extra-bank": {
+    "image": "/covers/extra-bank.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_ds_pokemonbank.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "0d225c2d605fd7e05c164da07462d8e45575e91e989eba15d8391c728f811ab7"
+  },
+  "extra-pokedex-3d-pro": {
+    "image": "/covers/extra-pokedex-3d-pro.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_ds_zenkokuzukan_pro.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "bd02261e20caf2c8fb5efb70f97f0cef569647ddf5474ed41862bed049e08836"
+  },
+  "extra-go": {
+    "image": "/covers/extra-go.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-pokemongo.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "d5757cc10201761b81b6d7effcad06c9f1c45a067126de0e7bf633973e833f4d"
+  },
+  "extra-sleep": {
+    "image": "/covers/extra-sleep.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-sleep.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "659450b535d6e144b1ecbf455e2cb74da97f5cc557258de2a8f1f2c8d97c276d"
+  },
+  "extra-masters-ex": {
+    "image": "/covers/extra-masters-ex.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-masters.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "33fc16083cd5d1f514dfccbc3cba92b11031bf049e967b519f3775843977bbe0"
+  },
+  "extra-trading-card-game-pocket": {
+    "image": "/covers/extra-trading-card-game-pocket.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-tcgp.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "7c9420f1c073f1371decddb972866730539845493124502f6c817e53269d67bf"
+  },
+  "extra-magikarp-jump": {
+    "image": "/covers/extra-magikarp-jump.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-koiking.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "a7e194a6c920e7853499058d528939770b335f0ad2df4c4a6ed681abda643f2f"
+  },
+  "extra-smile": {
+    "image": "/covers/extra-smile.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-smile.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "4b80c9805fbf0211ad3892a8da9d7a8f73a9fc9699f7e627cca4d288fe796641"
+  },
+  "extra-rumble-rush": {
+    "image": "/covers/extra-rumble-rush.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-pokemon-scramblesp.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "91f2151e9e4ad40a5efbd8c3db0f3f421ba4ea1bae29076f326d4276c2f77356"
+  },
+  "extra-duel": {
+    "image": "/covers/extra-duel.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-pokemon-comaster.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "02550bcb9c98215113b9f3161d9b020c4e6fc3170fcbea3e195d7de5e9d3774a"
+  },
+  "extra-pokedex-for-ios": {
+    "image": "/covers/extra-pokedex-for-ios.png",
+    "source": "https://www.pokemon.co.jp/img/app/icon-app-pokedex.png",
+    "origin": "https://www.pokemon.co.jp/app/",
+    "kind": "official-art",
+    "sha256": "93751070ab6f7502375aebe45a628052f0ac3f5d66c444c23b9dda4f75be86b6"
+  },
+  "extra-pokken-tournament-arcade": {
+    "image": "/covers/extra-pokken-tournament-arcade.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_pokken.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "59866865525eb4f4d8ca2189bc3072b3ceb35a26d9f0f4a8aaa8d9d71bf45bb2"
+  },
+  "the-isle-of-armor-sword": {
+    "image": "/covers/the-isle-of-armor-sword.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sword_shield_expansion.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "a9dea86e87d9e78b859cfe81558bf7237214a8e069d71e8e57d2f2ed1d7f6ad7"
+  },
+  "the-isle-of-armor-shield": {
+    "image": "/covers/the-isle-of-armor-shield.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sword_shield_expansion.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "a9dea86e87d9e78b859cfe81558bf7237214a8e069d71e8e57d2f2ed1d7f6ad7"
+  },
+  "the-crown-tundra-sword": {
+    "image": "/covers/the-crown-tundra-sword.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sword_shield_expansion.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "a9dea86e87d9e78b859cfe81558bf7237214a8e069d71e8e57d2f2ed1d7f6ad7"
+  },
+  "the-crown-tundra-shield": {
+    "image": "/covers/the-crown-tundra-shield.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sword_shield_expansion.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "a9dea86e87d9e78b859cfe81558bf7237214a8e069d71e8e57d2f2ed1d7f6ad7"
+  },
+  "the-teal-mask-scarlet": {
+    "image": "/covers/the-teal-mask-scarlet.png",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sv_dlc.png",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "acadbdd4ad0ebf9a1787bc2dd312925359d76d28bda104f6a39abb69ff6cdb66"
+  },
+  "the-teal-mask-violet": {
+    "image": "/covers/the-teal-mask-violet.png",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sv_dlc.png",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "acadbdd4ad0ebf9a1787bc2dd312925359d76d28bda104f6a39abb69ff6cdb66"
+  },
+  "the-indigo-disk-scarlet": {
+    "image": "/covers/the-indigo-disk-scarlet.png",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sv_dlc.png",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "acadbdd4ad0ebf9a1787bc2dd312925359d76d28bda104f6a39abb69ff6cdb66"
+  },
+  "the-indigo-disk-violet": {
+    "image": "/covers/the-indigo-disk-violet.png",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_sv_dlc.png",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "acadbdd4ad0ebf9a1787bc2dd312925359d76d28bda104f6a39abb69ff6cdb66"
+  },
+  "mega-dimension": {
+    "image": "/covers/mega-dimension.jpg",
+    "source": "https://www.pokemon.co.jp/img/game/archive/thumb_legends_z-a_m.jpg",
+    "origin": "https://www.pokemon.co.jp/game/",
+    "kind": "official-art",
+    "sha256": "427c07f6398b8809bc41f18e3024ba608cdf4a8c26b587408ee37daa41bf7ed5"
+  }
+}

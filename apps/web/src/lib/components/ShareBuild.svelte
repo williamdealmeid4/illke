@@ -4,6 +4,7 @@
   import { mutate } from "$lib/api.js";
   let { build, analysis = null } = $props();
   let pdfBusy = $state(false);
+  let mounted = $state(false);
   let discordBusy = $state(false);
   let discordAvailable = $state(false);
   let message = $state("");
@@ -20,6 +21,7 @@
   let returnTo = $state('/builder');
   let channels = $derived(guilds.find((g) => g.id === guildId)?.channels || []);
   onMount(() => {
+    mounted = true;
     const query=new URLSearchParams(window.location.search);
     returnTo=window.location.pathname+(query.get('team')?'?team='+encodeURIComponent(query.get('team')):'');
     fetch("/api/v1/session", { headers: { Accept: "application/json" } })
@@ -127,7 +129,7 @@
   <button
     class="button"
     onclick={pdf}
-    disabled={pdfBusy || !build.moves?.filter(Boolean).length}
+    disabled={!mounted || pdfBusy || !build.moves?.filter(Boolean).length}
     ><FileDown size={17} />{pdfBusy ? "Gerando PDF…" : "Salvar PDF"}</button
   ><button
     class="button secondary"

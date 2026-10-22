@@ -1,0 +1,116 @@
+{
+  "sources": [
+    {
+      "name": "RetroArch assets / FlatUX",
+      "url": "https://github.com/libretro/retroarch-assets",
+      "revision": "d9f969054dc7fbb6fa89519036d2b971e0855b51",
+      "license": "CC BY 4.0",
+      "attribution": "baxysquare and RetroArch assets contributors (FlatUX)",
+      "license_url": "https://github.com/libretro/retroarch-assets/blob/d9f969054dc7fbb6fa89519036d2b971e0855b51/COPYING"
+    },
+    {
+      "name": "Twemoji",
+      "url": "https://github.com/jdecked/twemoji",
+      "license": "CC BY 4.0",
+      "attribution": "Twitter, Inc. and other contributors"
+    }
+  ],
+  "files": [
+    {
+      "platform": "gb",
+      "file": "gb.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Game%20Boy.png",
+      "sha256": "5e218de42220925b42e0dbaa58daae114d543df2c8209c48cd3fea00329db290"
+    },
+    {
+      "platform": "gbc",
+      "file": "gbc.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Game%20Boy%20Color.png",
+      "sha256": "9c3f0165ac0b0abd6bba37566cb54fe0203c760ee47526a3ec75978c494481df"
+    },
+    {
+      "platform": "gba",
+      "file": "gba.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Game%20Boy%20Advance.png",
+      "sha256": "bc153bf5a70686bc2e331b0fc192d33c4c9d2765cdc4e5b4d7e40ebe2da57251"
+    },
+    {
+      "platform": "ds",
+      "file": "ds.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Nintendo%20DS.png",
+      "sha256": "48478d33d1ebaa930e58d1c9f6fc99a78586be5cff30d5cd9b9bec390a77ff43"
+    },
+    {
+      "platform": "3ds",
+      "file": "3ds.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Nintendo%203DS.png",
+      "sha256": "927260d4d849b4e3ed19bb076207023c1210717b622e4b3dc322fb8890995029"
+    },
+    {
+      "platform": "switch",
+      "file": "switch.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Switch.png",
+      "sha256": "b73b00555c60008c9f294efc4a6001a46b01df90d3242e0765699a979bd0b7e8"
+    },
+    {
+      "platform": "switch2",
+      "file": "switch2.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Switch%202.png",
+      "sha256": "01b78547642b0f9ecfd2648566541bc9203e873c1c0554058b5d08f6072eea6d"
+    },
+    {
+      "platform": "n64",
+      "file": "n64.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Nintendo%2064.png",
+      "sha256": "5e5722e7765109d8d749936d6396a06ea8540aca7ee4bb49660c756a154287af"
+    },
+    {
+      "platform": "gc",
+      "file": "gc.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20GameCube.png",
+      "sha256": "c5e08eca091eaf33e2472cf0310a7da8748f72ba7af693d17c87032e5f4da417"
+    },
+    {
+      "platform": "wii",
+      "file": "wii.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Wii.png",
+      "sha256": "f17f3695e828ab96ffa99bf57656bb1b875c007464158e6365752e42511c530d"
+    },
+    {
+      "platform": "wiiu",
+      "file": "wiiu.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Wii%20U.png",
+      "sha256": "bc6cd0b4ec8d54a9c15fba93a3ea396fc2e49946a19f7c0a2f7dbce4e7ad854e"
+    },
+    {
+      "platform": "mini",
+      "file": "mini.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Nintendo%20-%20Pokemon%20Mini.png",
+      "sha256": "3e68147bdfbcd328576ee5eb6b87bc42075bfc4d54ac2ae383b6475dee1a2310"
+    },
+    {
+      "platform": "pico",
+      "file": "pico.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/Sega%20-%20PICO.png",
+      "sha256": "d6240e2c5433f1160e5de34f44d3c4968e6dee3c160cc63b45ed66263fbedc8d"
+    },
+    {
+      "platform": "arcade",
+      "file": "arcade.png",
+      "source": "https://raw.githubusercontent.com/libretro/retroarch-assets/d9f969054dc7fbb6fa89519036d2b971e0855b51/xmb/flatux/png/FBNeo%20-%20Arcade%20Games.png",
+      "sha256": "43ef40389b73786cf91588ccc784500acd0cc94ffe953a31cfe7efe40cfadfc3"
+    },
+    {
+      "platform": "mobile",
+      "file": "mobile.svg",
+      "source": "https://raw.githubusercontent.com/jdecked/twemoji/v16.0.1/assets/svg/1f4f1.svg",
+      "sha256": "331d62f00a03f10e07dc3a7660891469b6b76e57d78b57a865645a5ae5378486"
+    },
+    {
+      "platform": "pc",
+      "file": "pc.svg",
+      "source": "https://raw.githubusercontent.com/jdecked/twemoji/v16.0.1/assets/svg/1f5a5.svg",
+      "sha256": "ce7e8d2565b18e0fddd4e770bc3dc20d18adf75fb140409ca6e1ac1a296f397c"
+    }
+  ]
+}

@@ -27,7 +27,7 @@
   "dependencies": {
     "@smogon/calc": "^0.10.0",
     "csv-parse": "^7.0.3",
-    "pokemon-showdown": "^0.11.10",
+    "pokemon-showdown": "0.11.11",
     "zod": "^4.1.0"
   },
   "devDependencies": {
@@ -35,5 +35,12 @@
   },
   "engines": {
     "node": ">=24.17.0"
+  },
+  "overrides": {
+    "tar": "^7.5.22",
+    "nodemailer": "^10.2.1",
+    "uuid": "^11.1.1",
+    "cookie": "^0.7.2",
+    "@tootallnate/once": "^3.0.0"
   }
 }

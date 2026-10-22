@@ -4,6 +4,8 @@
   import EntityIcon from "./EntityIcon.svelte";
   import CategoryBadge from "./CategoryBadge.svelte";
   import Pagination from "./Pagination.svelte";
+  import { page } from "$app/state";
+  import { withGame } from "$lib/games.js";
   let { data } = $props();
   const links = {
     pokemon: "/pokemon/",
@@ -43,7 +45,9 @@
       : "Propriedades e efeitos dos registros do catálogo."}
   </p>
 </div>
+{#if page.data.selectedGame}<div class="catalog-game-note"><strong>{page.data.selectedGame.name}</strong><span>Abra um Pokémon ou item para ver as pistas desta versão. O catálogo abaixo reúne todas as gerações.</span><a class="text-link" href="/jogos">Trocar jogo</a></div>{/if}
 <form class="toolbar">
+  {#if page.data.selectedGame}<input type="hidden" name="game" value={page.data.selectedGame.id}/>{/if}
   <label class="sr-only" for="q">Pesquisar</label><input
     id="q"
     name="q"
@@ -89,7 +93,7 @@
   {#if data.kind === "pokemon"}<div class="pokemon-grid">
       {#each data.catalog.data as p}<a
           class="pokemon-card"
-          href={links[data.kind] + p.slug}
+          href={withGame(links[data.kind] + p.slug,page.data.selectedGame?.id)}
           ><div class="pokemon-card-top">
             <span>#{String(p.national_number).padStart(4, "0")}</span
             ><ArrowUpRight size={15} />
@@ -115,7 +119,7 @@
         ><tbody
           >{#each data.catalog.data as p}<tr
               ><td
-                ><a href={links[data.kind] + p.slug}
+                ><a href={withGame(links[data.kind] + p.slug,page.data.selectedGame?.id)}
                   ><span class="catalog-name"
                     ><EntityIcon entry={p} /><span>{p.name}</span></span
                   ></a

@@ -127,3 +127,14 @@ test("options exclude species introduced after the chosen generation", () => {
   assert.equal(options("Garchomp", "gen1ou").supported, false);
   assert.equal(options("Garchomp", "gen4ou").supported, true);
 });
+
+
+test('simulation result protocol ignores Node watch dependency notifications', async () => {
+  const {isSimulationMessage,SIMULATION_MESSAGE}=await import('../services/battle-engine/src/simulation-protocol.js');
+  assert.equal(isSimulationMessage({'watch:require':['/module.js']}),false);
+  assert.equal(isSimulationMessage({'watch:import':['file:///module.js']}),false);
+  assert.equal(isSimulationMessage(null),false);
+  assert.equal(isSimulationMessage({result:{samples:1000}}),false);
+  assert.equal(isSimulationMessage({type:SIMULATION_MESSAGE,result:{samples:1000}}),true);
+  assert.equal(isSimulationMessage({type:SIMULATION_MESSAGE,error:'Falha no worker'}),true);
+});

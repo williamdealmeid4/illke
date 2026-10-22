@@ -1,6 +1,6 @@
-import { apiRequest } from '$lib/server/transport.js';
+import { apiRequest } from './lib/server/transport.js';
 
-export async function handle({ event, resolve }) {
+async function route({ event, resolve }) {
   if (event.url.pathname.startsWith("/api/")) {
     try {
       const headers = new Headers(event.request.headers);
@@ -17,6 +17,7 @@ export async function handle({ event, resolve }) {
           ? undefined
           : await event.request.arrayBuffer(),
         redirect: "manual",
+        signal: AbortSignal.timeout(20000),
       });
       return response;
     } catch {
@@ -36,4 +37,20 @@ export async function handleFetch({ event, request, fetch }) {
   if (!headers.has('cookie') && event.request.headers.has('cookie')) headers.set('cookie', event.request.headers.get('cookie'));
   return apiRequest(request.url, { method: request.method, headers,
     body: ['GET','HEAD'].includes(request.method) ? undefined : await request.arrayBuffer() });
+}
+
+export async function handle(args) {
+  const { event } = args;
+  // Mutations proxied to the API must originate from this site; Laravel still validates CSRF.
+  if (event.url.pathname.startsWith('/api/') && !['GET','HEAD','OPTIONS'].includes(event.request.method)) {
+    const origin = event.request.headers.get('origin');
+    if (origin !== event.url.origin) return Response.json({message:'Origem da solicitação inválida.'},{status:403});
+  }
+  const response = await route(args);
+  response.headers.set('X-Content-Type-Options','nosniff');
+  response.headers.set('Referrer-Policy','strict-origin-when-cross-origin');
+  response.headers.set('X-Frame-Options','DENY');
+  response.headers.set('Permissions-Policy','camera=(), microphone=(), geolocation=()');
+  if (event.url.pathname.startsWith('/api/') && !event.url.pathname.startsWith('/api/v1/sprite/')) response.headers.set('Cache-Control','private, no-store');
+  return response;
 }

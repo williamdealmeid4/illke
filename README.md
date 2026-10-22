@@ -91,6 +91,22 @@ O motor separa as referências legais confirmadas dos sets pendentes e conserva 
 
 As batalhas de avaliação são um piloto contra equipes sintéticas. Comparações usam os mesmos adversários e sementes, teste exato de McNemar e ajuste de Holm. Mesmo assim, os resultados não predizem partidas contra pessoas e a política automática não modela todas as estratégias ou transformações.
 
-\`npm run doctor\` verifica os serviços locais e o catálogo; \`npm run stop\` encerra os processos do projeto. O servidor separa a fila longa de avaliações da fila padrão. A sessão de moderação expira em 30 minutos e suas ações são auditadas. Votos públicos permanecem associados à sessão do navegador; favoritos da biblioteca são locais. Envio ao Discord requer credenciais configuradas e não é coberto pelo envio real nos testes automatizados.
+`npm run doctor` verifica os serviços locais e o catálogo; `npm run stop` encerra os processos do projeto. O servidor separa a fila longa de avaliações da fila padrão. A sessão de moderação expira em 30 minutos e suas ações são auditadas. Votos públicos permanecem associados à sessão do navegador; favoritos da biblioteca são locais. Envio ao Discord requer credenciais configuradas e não é coberto pelo envio real nos testes automatizados.
 
-A auditoria npm ainda aponta avisos em dependências transitivas, incluindo componentes do Showdown que não são carregados pelo servidor HTTP do motor. Reavalie esses avisos antes de expor os serviços a tráfego não confiável; o workflow de CI guarda o resultado da auditoria como artefato.
+A auditoria npm desta revisão não apresenta vulnerabilidades conhecidas. O relatório `security_best_practices_report.md` registra os ajustes e os limites da revisão; o workflow de CI guarda a auditoria como artefato.
+
+## Jogos, mapas e pistas
+
+`/jogos` reúne 154 títulos e expansões, incluindo a série principal, derivados e aplicativos, com filtros por console e região. A escolha fica salva em um cookie do navegador e acompanha as fichas de Pokémon e itens. O catálogo geral continua exibindo todas as espécies; selecionar um jogo filtra as pistas de obtenção, não comprova a disponibilidade de cada registro do catálogo.
+
+Os mapas clássicos de Kanto, Johto, Hoenn e Sevii têm coordenadas regionais verificadas. Outras regiões têm arte de referência, sem marcadores quando faltam coordenadas. As imagens são locais e as fontes estão identificadas na interface e em `apps/web/static/maps/sources.json`. As recomendações de bolas e preparação usam a geração, o tipo histórico e o método do encontro selecionado.
+
+`npm run sync:capture` prepara encontros locais por versão, com fallback para PokéAPI quando o snapshot não estiver disponível. O snapshot acompanha a revisão do catálogo. Para atualizar os 613 eventos explícitos de itens de FireRed/LeafGreen e Emerald, execute `python3 scripts/sync-item-guides.py`. Para reconstruir os mapas clássicos na revisão fixada, execute `python3 scripts/sync-maps.py`. A cobertura é parcial: lojas, presentes, eventos, DLCs e jogos derivados não têm dados completos. A interface indica as lacunas sem inventar locais.
+
+A navegação permanece na mesma aba, com menu lateral no computador e menu recolhível no celular. A abertura animada da logo aparece ao abrir ou recarregar o site, sem repetir nas navegações pelo menu, pode ser pulada e respeita a preferência de movimento reduzido.
+
+Os ícones de tipagem são sprites dos jogos Sword/Shield (Stellar: Scarlet/Violet), sem redesenho. `npm run sync:icons` recupera os arquivos e seus hashes. As imagens dos consoles são do acervo existente RetroArch / FlatUX, de baxysquare e contribuidores; PC e celular usam Twemoji. `python3 scripts/sync-console-icons.py` recupera os arquivos originais. Créditos, revisões e hashes estão em `/consoles/sources.json` e na página `/fontes`.
+
+Os guias agora incluem mapas locais reconstruídos com os tiles originais de FireRed/LeafGreen e Emerald, alvos de itens, áreas de grama/água e etapas de acesso. `python3 scripts/sync-walkthrough-maps.py` reconstrói 301 mapas locais usando Pillow. As conexões físicas entre áreas não calculam passos nem barreiras de progresso dentro de uma sala. Os caminhos ainda não cobrem todas as versões.
+
+As capas e artes oficiais disponíveis são servidas localmente, com origem e hash em `/covers/sources.json`. `python3 scripts/sync-game-covers.py` recupera o acervo. Títulos sem imagem confirmada exibem uma indicação explícita; arte promocional não é apresentada como capa física.

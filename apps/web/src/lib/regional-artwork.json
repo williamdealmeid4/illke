@@ -1,0 +1,79 @@
+{
+  "galar-artwork": {
+    "image": "/maps/galar-artwork.webp",
+    "width": 492,
+    "height": 822,
+    "source": "https://www.invenglobal.com/articles/7687/pokemon-shield-and-sword-revealed-by-nintendo",
+    "original": "https://static.invenglobal.com/upload/image/2019/02/27/o1551276991145708.png",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "paldea-artwork": {
+    "image": "/maps/paldea-artwork.webp",
+    "width": 1600,
+    "height": 1131,
+    "source": "https://vandal.elespanol.com/juegos/switch/pokemon-escarlata-y-purpura/115404",
+    "original": "https://mediamaster.vandal.net/master/115404/pokemon-escarlata-y-purpura-20228316571265_14.jpg",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "kalos-artwork": {
+    "image": "/maps/kalos-artwork.webp",
+    "width": 800,
+    "height": 524,
+    "source": "https://www.pokepedia.fr/Kalos",
+    "original": "https://www.pokepedia.fr/images/thumb/d/d1/Kalos_-_XY.png/800px-Kalos_-_XY.png",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "alola-artwork": {
+    "image": "/maps/alola-artwork.webp",
+    "width": 700,
+    "height": 495,
+    "source": "https://www.wikidex.net/wiki/Alola",
+    "original": "https://images.wikidexcdn.net/mwuploads/wikidex/thumb/2/2d/latest/20180208020259/Mapa_Alola_se%C3%B1alizado_SL.png/700px-Mapa_Alola_se%C3%B1alizado_SL.png",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "unova-artwork": {
+    "image": "/maps/unova-artwork.webp",
+    "width": 1400,
+    "height": 933,
+    "source": "https://www.pinterest.com/pin/d--826199494109760108/",
+    "original": "https://i.pinimg.com/originals/ea/c7/9f/eac79fe6b932a6a7507640cf4d26815e.jpg",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "sinnoh-artwork": {
+    "image": "/maps/sinnoh-artwork.webp",
+    "width": 1200,
+    "height": 849,
+    "source": "https://www.wikidex.net/wiki/Archivo:Sinnoh_Pt.jpg",
+    "original": "https://images.wikidexcdn.net/mwuploads/wikidex/thumb/4/44/latest/20230102025400/Sinnoh_Pt.jpg/1200px-Sinnoh_Pt.jpg",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "hisui-artwork": {
+    "image": "/maps/hisui-artwork.webp",
+    "width": 1600,
+    "height": 889,
+    "source": "https://www.bisafans.de/routendex/hisui/",
+    "original": "https://media.bisafans.de/a218c4a/spiele/editionen/legenden-arceus/hisui.jpg",
+    "label": "Arte regional de referência; sem coordenadas verificadas"
+  },
+  "kanto-artwork": {
+    "image": "/maps/kanto-map-frlg.svg",
+    "width": 240,
+    "height": 160,
+    "source": "/maps/sources.json",
+    "label": "Mapa de referência FireRed/LeafGreen; não corresponde necessariamente a esta edição"
+  },
+  "johto-artwork": {
+    "image": "/maps/johto-town-map-gsc.png",
+    "width": 160,
+    "height": 144,
+    "source": "/maps/sources.json",
+    "label": "Mapa de referência Gold/Silver/Crystal; não corresponde ao mapa de HeartGold/SoulSilver"
+  },
+  "hoenn-artwork": {
+    "image": "/maps/hoenn-map-emerald.svg",
+    "width": 240,
+    "height": 160,
+    "source": "/maps/sources.json",
+    "label": "Mapa de referência Emerald; não corresponde ao mapa de Omega Ruby/Alpha Sapphire"
+  }
+}

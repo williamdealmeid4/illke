@@ -4,7 +4,8 @@
   import EntityIcon from "./EntityIcon.svelte";
   import CategoryBadge from "./CategoryBadge.svelte";
   import BuildList from "./BuildList.svelte";
-  import CaptureGuide from './CaptureGuide.svelte';
+  import GameGuide from "./GameGuide.svelte";
+
   let { data } = $props();
   let entry = $derived(data.entry);
   let a = $derived(entry.attributes);
@@ -128,22 +129,25 @@
       <div class="actions">
         <a
           class="button"
-          href={"/builder?pokemon=" + encodeURIComponent(entry.name)+'&context_id='+(data.context_id || 'gen9ou')}
+          href={"/builder?pokemon=" + encodeURIComponent(entry.name) + "&context_id=" + data.referenceContext}
           ><Plus size={16} /> Criar build</a
         ><a
           class="button secondary"
-          href={"/builds?q=" + encodeURIComponent(entry.name)+'&context_id='+(data.context_id || 'gen9ou')}
+          href={"/builds?q=" + encodeURIComponent(entry.name) + "&context_id=" + data.referenceContext}
+
           >Ver builds por formato</a
         >
       </div>
     </div>
   </div>
-  {#if data.capture}{#key entry.slug}<CaptureGuide guide={data.capture} initialGame={data.game}/>{/key}{/if}
+  <GameGuide guide={data.guide}/>
+
   <section style="margin:40px 0">
     <div class="section-heading">
       <div>
         <h2>Builds de referência</h2>
-        <form><label>Formato das referências<select name="context_id" value={data.context_id || 'gen9ou'} onchange={event=>event.currentTarget.form.requestSubmit()}>{#each data.contexts || [] as context}<option value={context.id}>{context.label}</option>{/each}</select></label></form>
+        <form><label>Formato das referências<select name="context_id" value={data.referenceContext || "gen9ou"} onchange={event=>event.currentTarget.form.requestSubmit()}>{#each data.contexts || [] as context}<option value={context.id}>{context.label}</option>{/each}</select></label></form>
+
       </div>
     </div>
     <BuildList builds={data.builds?.data || []} />
@@ -179,6 +183,7 @@
         </div>{/each}
     </dl>
   </div>{/if}
+{#if entry.kind === "item"}<GameGuide guide={data.guide}/>{/if}
 <p class="help">
   Fonte: <a
     class="text-link"

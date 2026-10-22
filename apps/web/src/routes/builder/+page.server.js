@@ -1,9 +1,10 @@
 import { readApi } from "$lib/api.js";
 import { emptyBuild, referenceBuilds } from '$lib/builder.js';
-export async function load({ fetch, url, request }) {
+export async function load({ fetch, url, request, parent }) {
+ const {selectedGame}=await parent();
   try {
     let initial = {
-      ...emptyBuild(url.searchParams.get("context_id") || "gen9ou"),
+      ...emptyBuild(url.searchParams.get("context_id") || (selectedGame?.generation && selectedGame.generation <= 9 ? `gen${selectedGame.generation}ou` : "gen9ou")),
       pokemon: url.searchParams.get("pokemon") || "",
     };
     if (url.searchParams.has("build")) {
@@ -53,7 +54,7 @@ export async function load({ fetch, url, request }) {
       explicit:
         url.searchParams.has("build") ||
         url.searchParams.has("pokemon") ||
-        url.searchParams.has("context_id"),
+        url.searchParams.has("context_id") || !!selectedGame,
       error: null,
     };
   } catch (e) {

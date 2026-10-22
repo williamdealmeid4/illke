@@ -1,3 +1,4 @@
+import { isSimulationMessage } from "./simulation-protocol.js";
 import { Worker } from "node:worker_threads";
 import { analyzeTeam } from './team-analysis.js';
 import { finishEvaluation, makeBenchmark } from './simulation.js';
@@ -106,7 +107,8 @@ http
         };
         let settled = false;
         activeSimulation={id:body.evaluation_id,worker,cancel:()=>{done();if(!res.writableEnded)send(res,409,{error:{message:'Avaliação cancelada.'}});}};
-        worker.once("message", (message) => {
+        worker.on("message", (message) => {
+          if (!isSimulationMessage(message) || settled) return;
           settled = true;
           done();
           if (res.writableEnded) return;
