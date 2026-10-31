@@ -1,5 +1,6 @@
 <script>
-  import { Box, Sparkles, CircleHelp, Swords } from "@lucide/svelte";
+  import { Box, CircleHelp, Swords } from "@lucide/svelte";
+  import AbilitySymbol from "./AbilitySymbol.svelte";
   import { itemIconIndex, uiIcons } from "$lib/icons.js";
   import TypeIcon from "./TypeIcon.svelte";
   let {
@@ -18,7 +19,7 @@
     kind === "item" ? itemIconIndex(name) || itemIconIndex(entry?.slug) : null,
   );
   let Fallback = $derived(
-    { ability: Sparkles, item: Box, move: Swords }[kind] || CircleHelp,
+    { item: Box, move: Swords }[kind] || CircleHelp,
   );
   let hasMoveType = $derived(
     kind === "move" && uiIcons.types[entry?.attributes?.type],
@@ -72,5 +73,6 @@
       type={entry.attributes.type}
       size={Math.min(size, 32)}
     />
+  {:else if kind === "ability"}<AbilitySymbol entry={entry || { name }} size={Math.min(size - 8, 28)} />
   {:else}<Fallback size={Math.min(size - 8, 24)} strokeWidth={1.5} />{/if}
 </span>

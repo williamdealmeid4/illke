@@ -1,66 +1,132 @@
-"""Fetch existing box scans and official publisher artwork; keep sources explicit."""
-import concurrent.futures, hashlib, json, re, unicodedata, urllib.parse, urllib.request
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["Pillow>=11"]
+# ///
+"""Download sourced game art locally: uv run scripts/sync-game-covers.py.
+
+Researched overrides take precedence over exact title matching. Validate every
+image with Pillow and SHA-256. Exit unsuccessfully if any title remains missing.
+"""
+import concurrent.futures
+import hashlib
+import io
+import json
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1]
+import re
 import subprocess
-GAMES=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import{games}from'./apps/web/src/lib/games.js';process.stdout.write(JSON.stringify(games))"],cwd=ROOT))
-PLATFORMS={'gb':'Nintendo_-_Game_Boy','gbc':'Nintendo_-_Game_Boy_Color','gba':'Nintendo_-_Game_Boy_Advance','ds':'Nintendo_-_Nintendo_DS','3ds':'Nintendo_-_Nintendo_3DS','n64':'Nintendo_-_Nintendo_64','gc':'Nintendo_-_GameCube','wii':'Nintendo_-_Wii','wiiu':'Nintendo_-_Wii_U','mini':'Nintendo_-_Pokemon_Mini'}
-def request(url):return urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'illke-asset-sync'}),timeout=12).read()
-def norm(s):
- s=unicodedata.normalize('NFKD',s).encode('ascii','ignore').decode().lower()
- s=re.sub(r'\([^)]*\)|\bversion\b','',s)
- return re.sub('[^a-z0-9]','',s)
+import ssl
+import time
+import unicodedata
+import urllib.parse
+import urllib.request
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = ROOT / 'apps/web/src/lib/game-covers.json'
+OUT = ROOT / 'apps/web/static/covers'
+PLATFORMS = {'gb':'Nintendo_-_Game_Boy','gbc':'Nintendo_-_Game_Boy_Color','gba':'Nintendo_-_Game_Boy_Advance','ds':'Nintendo_-_Nintendo_DS','3ds':'Nintendo_-_Nintendo_3DS','n64':'Nintendo_-_Nintendo_64','gc':'Nintendo_-_GameCube','wii':'Nintendo_-_Wii','wiiu':'Nintendo_-_Wii_U','mini':'Nintendo_-_Pokemon_Mini'}
+
+def request(url):
+    for attempt in range(3):
+        try:
+            return urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'illke-asset-sync/2.0'}), timeout=30).read()
+        except urllib.error.URLError as error:
+            # Windows curl uses the OS certificate store; uv's Python bundles a
+            # different CA set. Keep certificate verification enabled in both.
+            if isinstance(error.reason, ssl.SSLCertVerificationError):
+                return subprocess.check_output(['curl.exe', '--fail', '--silent', '--show-error', '--location', '--max-time', '30', url])
+            if attempt == 2:
+                raise
+            time.sleep(attempt + 1)
+        except Exception:
+            if attempt == 2:
+                raise
+            time.sleep(attempt + 1)
+
+def raster(data):
+    with Image.open(io.BytesIO(data)) as im:
+        ext = {'PNG':'png', 'JPEG':'jpg', 'WEBP':'webp'}[im.format]
+        width, height = im.size
+        im.verify()
+    if min(width, height) < 32:
+        raise ValueError('image is too small')
+    return ext, width, height
+
+def norm(value):
+    value = unicodedata.normalize('NFKD', value).encode('ascii','ignore').decode().lower()
+    value = re.sub(r'\([^)]*\)|\bversion\b', '', value)
+    return re.sub('[^a-z0-9]', '', value)
+
 def listing(pair):
- key,repo=pair
- try:
-  rows=json.loads(request(f'https://api.github.com/repos/libretro-thumbnails/{repo}/git/trees/master?recursive=1'))['tree']
-  return key,[r['path'] for r in rows if r['path'].startswith('Named_Boxarts/') and 'pokemon' in r['path'].lower()]
- except:return key,[]
-with concurrent.futures.ThreadPoolExecutor(max_workers=10) as pool:lists=dict(pool.map(listing,PLATFORMS.items()))
-# Official publisher archive artwork is used where a physical box scan is unavailable.
-OFFICIAL={
- 'legends-za':'legends_z-a','legends-arceus':'pokemonlegendsarceus','scarlet':'sv','violet':'sv','sword':'sword_shield','shield':'sword_shield','brilliant-diamond':'bdsp','shining-pearl':'bdsp','lets-go-pikachu':'pika_vee','lets-go-eevee':'pika_vee','pokemon-new-pokemon-snap':'pokemonsnap','pokemon-new-snap':'pokemonsnap','new-pokemon-snap':'pokemonsnap','pokemon-home':'pokemonhome','pokemon-quest':'pokemonquest','pokemon-unite':'pokemonunite','pokemon-cafe-remix':'maze','pokemon-champions':'pokemonchampions','pokemon-pokopia':'pocoapokemon','pokemon-detective-pikachu-returns':'detective_pikachu','pokemon-mystery-dungeon-rescue-team-dx':'dungeonDX','pokemon-pokken-tournament-dx':'pokkenDX',
-}
-OFFICIAL.update({'yellow':'other_gb-pikachu','crystal':'other_gbc-crystal','omega-ruby':'ds_oras','alpha-sapphire':'ds_oras','extra-hey-you-pikachu':'other_64-genki','extra-xd-gale-of-darkness':'other_xd','extra-box-ruby-sapphire':'other_pbrs','extra-pokepark-wii-pikachu-s-adventure':'wii_pokepark','extra-pokepark-2-wonders-beyond':'wii_pokepark2','extra-rumble-u':'ds_scrambleU','extra-pokken-tournament':'pokken_wiiU','extra-trading-card-game-2':'other_gbc-gr','extra-battle-trozei':'ds_battletrozei','extra-detective-pikachu':'meitantei_pikachu','extra-bank':'ds_pokemonbank','extra-pokedex-3d-pro':'ds_zenkokuzukan_pro','mega-dimension':'legends_z-a_m','extra-pokken-tournament-arcade':'pokken'})
-for g in GAMES:
- if g['id'].startswith(('the-isle-of-armor','the-crown-tundra')):OFFICIAL[g['id']]='sword_shield_expansion'
- if g['id'].startswith(('the-teal-mask','the-indigo-disk')):OFFICIAL[g['id']]='sv_dlc'
-APP={'extra-go':'pokemongo','extra-sleep':'sleep','extra-masters-ex':'masters','extra-trading-card-game-pocket':'tcgp','extra-magikarp-jump':'koiking','extra-smile':'smile','extra-rumble-rush':'pokemon-scramblesp','extra-duel':'pokemon-comaster','extra-pokedex-for-ios':'pokedex'}
-# Match actual generated catalog identifiers by title when they carry a prefix.
-for game in GAMES:
- for title,key in [('New Pokémon Snap','pokemonsnap'),('Pokémon HOME','pokemonhome'),('Pokémon Quest','pokemonquest'),('Pokémon UNITE','pokemonunite'),('Pokémon Café ReMix','maze'),('Pokémon Champions','pokemonchampions'),('Pokémon Pokopia','pocoapokemon'),('Pokémon Detective Pikachu Returns','detective_pikachu'),('Pokémon Mystery Dungeon: Rescue Team DX','dungeonDX'),('Pokkén Tournament DX','pokkenDX')]:
-  if game['name']==title:OFFICIAL[game['id']]=key
-out=ROOT/'apps/web/static/covers';out.mkdir(exist_ok=True)
-records=json.loads((ROOT/'apps/web/src/lib/game-covers.json').read_text()) if (ROOT/'apps/web/src/lib/game-covers.json').exists() else {}
-def cover(game):
- if game["id"] in records:return game["id"],records[game["id"]]
- candidates=[]
- for platform in game['consoles']:
-  for path in lists.get(platform,[]):
-   filename=path.split('/')[-1].removesuffix('.png')
-   if norm(filename)==norm(game['name']):candidates.append((platform,path))
- try:
-  if candidates:
-   platform,path=sorted(candidates,key=lambda p:('USA' not in p[1],'Europe' not in p[1],p[1]))[0]
-   source='https://raw.githubusercontent.com/libretro-thumbnails/'+PLATFORMS[platform]+'/master/'+urllib.parse.quote(path)
-   data=request(source);ext='png';kind='box';origin='https://github.com/libretro-thumbnails/'+PLATFORMS[platform]
-  elif game['id'] in APP:
-   ext='png';source='https://www.pokemon.co.jp/img/app/icon-app-'+APP[game['id']]+'.png';data=request(source);kind='official-art';origin='https://www.pokemon.co.jp/app/'
-  elif game['id'] in OFFICIAL:
-   key=OFFICIAL[game['id']];ext='jpg' if key not in ['sv_dlc'] else 'png'
-   source='https://www.pokemon.co.jp/img/game/archive/thumb_'+key+'.'+ext
-   
-   try:data=request(source)
-   except:ext='png';source=source.removesuffix('.jpg')+'.png';data=request(source)
-   kind='official-art';origin='https://www.pokemon.co.jp/game/'
-  else:return
-  if not(data.startswith(b'\x89PNG') or data.startswith(b'\xff\xd8')):return
-  file=game['id']+'.'+ext;(out/file).write_bytes(data)
-  return game['id'],{'image':'/covers/'+file,'source':source,'origin':origin,'kind':kind,'sha256':hashlib.sha256(data).hexdigest()}
- except:return
-with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
- for row in pool.map(cover,GAMES):
-  if row:records[row[0]]=row[1]
-(ROOT/'apps/web/src/lib/game-covers.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n')
-(out/'sources.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n')
-print(len(records),'verified images;',len(GAMES)-len(records),'titles without a verified image')
+    platform, repo = pair
+    try:
+        rows = json.loads(request(f'https://api.github.com/repos/libretro-thumbnails/{repo}/git/trees/master?recursive=1'))['tree']
+        return platform, [row['path'] for row in rows if row['path'].startswith('Named_Boxarts/')]
+    except Exception as error:
+        print(f'Listing unavailable: {repo}: {error}')
+        return platform, []
+
+def main():
+    games = json.loads(subprocess.check_output(['node','--input-type=module','-e',"import{games}from'./apps/web/src/lib/games.js';process.stdout.write(JSON.stringify(games))"], cwd=ROOT))
+    records = json.loads(MANIFEST.read_text(encoding='utf-8'))
+    overrides = json.loads((ROOT/'scripts/game-cover-overrides.json').read_text(encoding='utf-8'))
+    OUT.mkdir(exist_ok=True)
+    needs_matching = [g for g in games if g['id'] not in records and g['id'] not in overrides]
+    platforms = {p for g in needs_matching for p in g['consoles'] if p in PLATFORMS}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        lists = dict(pool.map(listing, [(p, PLATFORMS[p]) for p in platforms]))
+
+    def cover(game):
+        identifier = game['id']
+        existing = records.get(identifier)
+        override = overrides.get(identifier)
+        try:
+            if existing and (not override or override[0] == existing['source']):
+                try:
+                    data = (ROOT/'apps/web/static'/existing['image'].lstrip('/')).read_bytes()
+                    ext, width, height = raster(data)
+                    if hashlib.sha256(data).hexdigest() == existing['sha256']:
+                        return identifier, {**existing, 'width':width, 'height':height}, None
+                except (OSError, ValueError, SyntaxError):
+                    pass  # Missing or damaged cache: fetch the attributed source.
+            if override:
+                source, origin, kind = override
+            elif existing:
+                source, origin, kind = (existing[k] for k in ['source','origin','kind'])
+            else:
+                matches = [(p, path) for p in game['consoles'] for path in lists.get(p, []) if norm(path.split('/')[-1].removesuffix('.png')) == norm(game['name'])]
+                if not matches:
+                    raise ValueError('no researched source or exact box-art match')
+                platform, path = sorted(matches, key=lambda pair: ('Preview' in pair[1], 'Demo' in pair[1], 'USA' not in pair[1], 'Europe' not in pair[1], pair[1]))[0]
+                origin = 'https://github.com/libretro-thumbnails/' + PLATFORMS[platform]
+                source = 'https://raw.githubusercontent.com/libretro-thumbnails/' + PLATFORMS[platform] + '/master/' + urllib.parse.quote(path)
+                kind = 'box'
+            data = request(source)
+            ext, width, height = raster(data)
+            filename = identifier + '.' + ext
+            print('Downloaded:', identifier)
+            return identifier, {'image':'/covers/'+filename,'source':source,'origin':origin,'kind':kind,'sha256':hashlib.sha256(data).hexdigest(),'width':width,'height':height}, data
+        except Exception as error:
+            print(f'MISSING {identifier}: {error}')
+            return identifier, None, None
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(cover, games))
+    records = {key: row for key, row, data in results if row}
+    print(f'{len(records)}/{len(games)} verified images; {len(games)-len(records)} missing')
+    if len(records) != len(games):
+        raise SystemExit(1)  # Preserve the last complete files and manifests.
+    for key, row, data in results:
+        if data is not None:
+            target = OUT / Path(row['image']).name
+            pending = target.with_suffix(target.suffix + '.pending')
+            pending.write_bytes(data)
+            pending.replace(target)
+    content = json.dumps(records, ensure_ascii=False, indent=2) + '\n'
+    for target in [MANIFEST, OUT/'sources.json']:
+        pending = target.with_suffix('.json.pending')
+        pending.write_text(content, encoding='utf-8')
+        pending.replace(target)
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,227 @@
+{
+  "green": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_gb-rg.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "red-japan": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_gb-rg.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "blue-japan": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_gb-blue.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-race-mini": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Race%20Mini%20%28Japan%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "box"
+  ],
+  "crystal": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_gbc-crystal.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "omega-ruby": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_ds_oras.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "alpha-sapphire": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_ds_oras.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-stadium-japao": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_64-stadium.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-xd-gale-of-darkness": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_xd.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-box-ruby-sapphire": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_other_pbrs.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-pokepark-2-wonders-beyond": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_ds_pokepark2.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-mystery-dungeon-adventure-squad-fire": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_wii_dungeon.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-mystery-dungeon-adventure-squad-storm": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_wii_dungeon.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-mystery-dungeon-adventure-squad-light": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_wii_dungeon.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-typing-adventure": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_ds_typing.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-dream-radar": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_ds_ar_searcher.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "extra-pokedex-3d": [
+    "https://www.pokemon.co.jp/img/game/archive/thumb_3ds_3dzukanbw.jpg",
+    "https://www.pokemon.co.jp/game/",
+    "official-art"
+  ],
+  "winds": [
+    "https://windswaves.pokemon.com/_images/global/logos/pokemon_winds_logo_en-medium-up-2x.png",
+    "https://windswaves.pokemon.com/en-us/",
+    "logo"
+  ],
+  "waves": [
+    "https://windswaves.pokemon.com/_images/global/logos/pokemon_waves_logo_en-medium-up-2x.png",
+    "https://windswaves.pokemon.com/en-us/",
+    "logo"
+  ],
+  "extra-stadium": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_64/master/Named_Boxarts/Pokemon%20Stadium%20%28USA%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_64",
+    "box"
+  ],
+  "extra-puzzle-league": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Nintendo_64/master/Named_Boxarts/Pokemon%20Puzzle%20League%20%28USA%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_Nintendo_64",
+    "box"
+  ],
+  "extra-colosseum-kakucho-disc": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_GameCube/master/Named_Boxarts/Pokemon%20Colosseum%20-%20Kakuchou%20Disc%20%28Japan%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_GameCube",
+    "box"
+  ],
+  "extra-pichu-bros-mini": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pichu%20Bros.%20Mini%20%28Japan%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "box"
+  ],
+  "extra-togepi-s-great-adventure": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Togepi%20no%20Daibouken%20%28Japan%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "box"
+  ],
+  "extra-breeder-mini": [
+    "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini/master/Named_Boxarts/Pokemon%20Sodateyasan%20Mini%20%28Japan%29.png",
+    "https://github.com/libretro-thumbnails/Nintendo_-_Pokemon_Mini",
+    "box"
+  ],
+  "extra-pokemon-project-studio-red": [
+    "https://www.pokepedia.fr/images/7/70/ProjectStudioRouge_boite.png",
+    "https://www.pokepedia.fr/Pok%C3%A9mon_Project_Studio_Bleu_et_Rouge",
+    "box"
+  ],
+  "extra-pokemon-project-studio-blue": [
+    "https://www.pokepedia.fr/images/8/84/ProjectStudioBleu_boite.png",
+    "https://www.pokepedia.fr/Pok%C3%A9mon_Project_Studio_Bleu_et_Rouge",
+    "box"
+  ],
+  "extra-camp": [
+    "https://www.pokepedia.fr/images/e/eb/Ic%C3%B4ne_Camp_Pok%C3%A9mon.png",
+    "https://www.pokepedia.fr/Camp_Pok%C3%A9mon",
+    "official-art"
+  ],
+  "extra-pokeland": [
+    "https://www.pokepedia.fr/images/c/c7/Logo_Pok%C3%A9land.png",
+    "https://www.pokepedia.fr/Pok%C3%A9land",
+    "logo"
+  ],
+  "extra-battrio": [
+    "https://www.pokepedia.fr/images/0/03/Logo_Pok%C3%A9mon_Battrio.png",
+    "https://www.pokepedia.fr/Pok%C3%A9mon_Battrio",
+    "logo"
+  ],
+  "extra-pokemon-team-turbo": [
+    "https://pokemondungeon.com/wp-content/uploads/2026/09/Team_Turbo_EN_boxart.png",
+    "https://pokemondungeon.com/pokemon-team-turbo-box-art/",
+    "box"
+  ],
+  "extra-pokemon-masters-arena": [
+    "https://pokemondungeon.com/wp-content/uploads/2026/10/usca_pokemon_masters_arena_windows_front_cover-5025.jpg",
+    "https://pokemondungeon.com/pokemon-masters-arena/",
+    "box"
+  ],
+  "extra-frienda": [
+    "https://pokemonfrienda.com/ogp.jpg",
+    "https://pokemonfrienda.com/",
+    "official-art"
+  ],
+  "extra-play-it": [
+    "https://pokemondungeon.com/wp-content/uploads/2026/09/Play_It_EN_boxart.jpg",
+    "https://pokemondungeon.com/pokemon-play-it-box-art/",
+    "box"
+  ],
+  "extra-play-it-version-2": [
+    "https://pokemondungeon.com/wp-content/uploads/2026/10/playit-play-it-version-2-en-boxart-768x743.jpg",
+    "https://pokemondungeon.com/pokemon-play-it/",
+    "box"
+  ],
+  "extra-pokemon-advanced-generation-i-ve-begun-hiragana-and-katakana": [
+    "https://pokemondungeon.com/wp-content/uploads/2026/10/pico-ag-ive-begun-hiragana-and-katakana-jp-boxa.jpg",
+    "https://pokemondungeon.com/pokemon-sega-pico-and-beena/",
+    "box"
+  ],
+  "extra-pokemon-advanced-generation-pokemon-number-battle": [
+    "https://pokemondungeon.com/wp-content/uploads/2026/10/pico-ag-pokemon-number-battle-jp-boxart.png",
+    "https://pokemondungeon.com/pokemon-sega-pico-and-beena/",
+    "box"
+  ],
+  "extra-mezastar": [
+    "https://world.pokemonmezastar.com/share/img/ogp.jpg",
+    "https://world.pokemonmezastar.com/",
+    "official-art"
+  ],
+  "extra-playhouse": [
+    "https://www.pokemonplayhouse.com/assets/locales/en_US/media/head/logo.png",
+    "https://www.pokemonplayhouse.com/en-us/",
+    "logo"
+  ],
+  "extra-transporter": [
+    "https://www.pokepedia.fr/images/c/c8/Logo_Pok%C3%A9_Transfert.png",
+    "https://www.pokepedia.fr/Pok%C3%A9_Transfert",
+    "logo"
+  ],
+  "extra-pokemon-tcg-online": [
+    "https://www.pokepedia.fr/images/8/81/Logo_JCC_Pok%C3%A9mon_Online.png",
+    "https://www.pokepedia.fr/JCC_Pok%C3%A9mon_Online",
+    "logo"
+  ],
+  "extra-trading-card-game-live": [
+    "https://www.pokepedia.fr/images/f/f5/Logo_JCC_Pok%C3%A9mon_Live.png",
+    "https://www.pokepedia.fr/JCC_Pok%C3%A9mon_Live",
+    "logo"
+  ],
+  "extra-pokerom": [
+    "https://upload.wikimedia.org/wikipedia/en/7/79/Pikachu_Pok%C3%A9ROM.png",
+    "https://en.wikipedia.org/wiki/Pok%C3%A9ROM",
+    "box"
+  ],
+  "extra-ga-ole": [
+    "https://media.pocketmonsters.net/pages/489/logo.png",
+    "https://www.pocketmonsters.net/dex/games/95",
+    "logo"
+  ],
+  "extra-tretta": [
+    "https://media.pocketmonsters.net/pages/185/logo.png",
+    "https://www.pocketmonsters.net/content/Pokemon_Tretta",
+    "logo"
+  ]
+}

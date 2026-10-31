@@ -2,11 +2,12 @@
   import "../app.css";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import { Menu, X, Sun, Moon, Plus, BookOpen, Gamepad2, Users, Heart, Calculator, Package, Swords, Sparkles, Home, Library } from "@lucide/svelte";
+  import { Menu, X, Sun, Moon, Plus, Gamepad2, Users, Heart, Calculator, Package, Swords, Sparkles, Home, Library } from "@lucide/svelte";
   import { onMount } from "svelte";
   import { games, consoles } from "$lib/games.js";
   import Opening from "$lib/components/Opening.svelte";
   import ConsoleIcon from "$lib/components/ConsoleIcon.svelte";
+  import PokedexIcon from "$lib/components/PokedexIcon.svelte";
   let { children, data } = $props();
   let mounted = $state(false);
   let open = $state(false);
@@ -30,7 +31,7 @@
   }
   const nav = [
     ["/jogos", "Jogos e mapas", Gamepad2],
-    ["/pokedex", "Pokédex", BookOpen],
+    ["/pokedex", "Pokédex", PokedexIcon],
     ["/builds", "Builds", Swords],
     ['/equipes', 'Minhas equipes', Users],
     ["/itens", "Itens", Package],
