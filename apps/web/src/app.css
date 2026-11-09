@@ -3171,3 +3171,302 @@ button.danger-link:hover:not(:disabled) {
   background: var(--surface);
   border: 1px solid var(--border);
 }
+
+/* ==========================================================================
+   VISUAL REFINEMENT PASS — CATALOGS, DETAILS, BUILDS, GAMES & CHECKBOXES
+   ========================================================================== */
+
+/* Custom crisp checkboxes across the entire platform */
+input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  padding: 0;
+  margin: 0;
+  border-radius: 5px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+label.check,
+.capture-scenario > label:has(input[type="checkbox"]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: border-color .15s ease;
+}
+label.check:hover,
+.capture-scenario > label:has(input[type="checkbox"]):hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+/* Calculator quick moves & condition bar */
+.calc-move-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.calc-move-quick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.calc-move-quick > span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+}
+.calc-move-quick button.chip {
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.calc-move-quick button.chip:hover,
+.calc-move-quick button.chip.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface2));
+  color: var(--text);
+}
+.calc-submit-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Entry Detail Showcase (Items, Moves, Abilities) */
+.entry-detail-panel {
+  padding: 26px;
+}
+.entry-detail-panel .entry-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+.entry-showcase-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 71, 56, 0.2), transparent 70%),
+    var(--bg);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px -10px rgba(0, 0, 0, 0.5);
+}
+.entry-showcase-body {
+  flex: 1;
+  min-width: 0;
+}
+.entry-showcase-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.entry-showcase-body h2 {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+.entry-effect-lead {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Game Detail Search & Regional Reference (/jogos/[id]) */
+.guide-target-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.guide-target-form label select,
+.guide-target-form label input {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+.guide-examples {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.guide-examples a {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 12.5px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.guide-examples a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.region-reference {
+  margin-top: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(165deg, var(--surface) 0%, color-mix(in srgb, var(--surface) 84%, var(--bg)) 100%);
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+.region-reference > summary {
+  padding: 18px 22px;
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  transition: background .15s ease;
+}
+.region-reference > summary::-webkit-details-marker {
+  display: none;
+}
+.region-reference > summary::after {
+  content: "Expandir mapa ▾";
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.region-reference[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+.region-reference[open] > summary::after {
+  content: "Recolher mapa ▴";
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+.region-reference > .map-panel {
+  border: 0;
+  border-radius: 0;
+  padding: 20px 22px;
+  background: transparent;
+}
+
+/* Active hint card inside Walkthrough map panel */
+.guide-map {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.active-hint {
+  margin-top: 4px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+}
+.active-hint strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.active-hint p {
+  margin: 0;
+  font-size: 13.5px;
+}
+.active-hint p.help {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.game-guide .hint-search {
+  max-width: none;
+  margin-bottom: 16px;
+}
+
+/* Build rows on /builds and Pokemon detail */
+.build-list {
+  display: grid;
+  gap: 14px;
+}
+.build-row {
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  background: linear-gradient(165deg, var(--surface) 0%, color-mix(in srgb, var(--surface) 82%, var(--bg)) 100%);
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.42);
+}
+.build-row > img {
+  padding: 8px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 71, 56, 0.14), transparent 70%),
+    var(--bg);
+  border: 1px solid var(--border);
+}
+
+/* Catalog tables (/itens & /golpes) */
+.catalog-table .table th {
+  background: var(--surface2);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.catalog-table .table td {
+  font-variant-numeric: tabular-nums;
+}
+.catalog-name {
+  font-weight: 700;
+  color: var(--text);
+}
+.catalog-table tr:hover .catalog-name {
+  color: var(--accent);
+}

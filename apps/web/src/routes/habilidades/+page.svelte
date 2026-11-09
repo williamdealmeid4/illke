@@ -104,7 +104,7 @@
   .search-field:focus-within{outline:2px solid var(--accent); outline-offset:2px}
   .search-field input:focus-visible{outline:none}
   .ability-search select{max-width:165px; font-size:11px; background:var(--surface); padding:11px 10px}
-  .ability-search button{display:flex; align-items:center; justify-content:center; gap:14px; border:1px solid var(--accent); background:var(--accent); color:var(--bg); padding:11px 15px; font-size:12px; font-weight:700}
+  .ability-page .ability-search button{display:flex; align-items:center; justify-content:center; gap:10px; border:1px solid var(--accent); background:linear-gradient(135deg, var(--accent), var(--accent-strong)); color:#fff; border-radius:10px; padding:11px 18px; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px -4px rgba(255, 71, 56, 0.45)}
   .results-heading{display:flex; align-items:center; justify-content:space-between; gap:15px; margin-bottom:22px}
   .results-heading h2{font-size:22px; margin-bottom:7px}
   .results-heading p{font-size:12px; margin:0}
@@ -112,9 +112,9 @@
   .result-count>span{color:var(--muted); font-size:11px}
   .filter-summary{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:11px; margin:-3px 0 19px; color:var(--muted)}
   .filter-summary a{display:flex; gap:6px; align-items:center; color:var(--text)}
-  .ability-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px}
-  .ability-card{display:flex; flex-direction:column; border:1px solid var(--border); background:var(--surface); border-radius:9px; padding:20px; min-width:0; transition:transform .15s,border-color .15s}
-  .ability-card:hover{border-color:var(--accent); transform:translateY(-3px)}
+  .ability-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+  .ability-card{display:flex; flex-direction:column; border:1px solid var(--border); background:linear-gradient(165deg, var(--surface), var(--surface2)); border-radius:14px; padding:22px; min-width:0; transition:transform .2s cubic-bezier(.22,1,.36,1),border-color .2s,box-shadow .2s}
+  .ability-card:hover{border-color:color-mix(in srgb, var(--accent) 55%, var(--border)); transform:translateY(-4px); box-shadow:0 16px 34px -14px rgba(0,0,0,.5)}
   .card-top{display:flex; align-items:center; gap:8px; margin-bottom:22px}
   .ability-symbol{display:grid; place-items:center; width:48px; height:48px; background:var(--surface2); border:1px solid var(--border); border-radius:12px; color:var(--accent)}
   .ability-symbol[data-category="weather"]{color:var(--blue)}

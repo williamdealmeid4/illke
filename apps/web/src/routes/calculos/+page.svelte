@@ -5,12 +5,12 @@
   import { Swords, ArrowLeftRight, Sparkles, ShieldAlert } from '@lucide/svelte';
   const training=value=>Object.fromEntries(Object.keys(statLabels).map(key=>[key,value]));
   const initial=pokemon=>({name:'Comparação',pokemon,context_id:'gen9ou',level:100,nature:'Serious',ability:'',item:'',moves:['Tackle'],evs:training(0),ivs:training(31),tera_type:'',role:'physical-attacker',strategy:'',visibility:'private'});
-  let ready=$state(false);
+  let ready=$state(false),hasCalculatedManually=$state(false);
   let attacker=$state(initial('Garchomp')),defender=$state(initial('Corviknight')), context=$state('gen9ou'), move=$state('Earthquake'),weather=$state(''),terrain=$state(''),critical=$state(false),result=$state(null),previous=$state(null),message=$state(''),busy=$state(false),species=$state([]),members=$state([]),attackerOptions=$state(null),defenderOptions=$state(null);
   async function options(side){const build=side==='attacker'?attacker:defender;const response=await fetch('/api/v1/options?'+new URLSearchParams({pokemon:build.pokemon,context_id:context}));if(!response.ok)throw Error('Não foi possível carregar o Pokémon.');const data=await response.json();if(side==='attacker')attackerOptions=data;else defenderOptions=data;if(!data.abilities?.includes(build.ability))build.ability=data.abilities?.[0]||'';}
-  onMount(()=>{(async()=>{try{members=(await library()).teams.flatMap(t=>t.members.map(m=>({...m,team_name:t.name})));species=await fetch('/api/v1/species').then(r=>r.json());await Promise.all([options('attacker'),options('defender')]);}catch(e){message=e.message;}finally{ready=true;}})();});
+  onMount(()=>{(async()=>{try{members=(await library()).teams.flatMap(t=>t.members.map(m=>({...m,team_name:t.name})));species=await fetch('/api/v1/species').then(r=>r.json());await Promise.all([options('attacker'),options('defender')]);result=await mutate('/damage',{attacker:$state.snapshot(attacker),defender:$state.snapshot(defender),move,weather,terrain,critical});}catch(e){message=e.message;}finally{ready=true;}})();});
   async function choose(side,value){try{if(value!==''){const member=structuredClone(members[Number(value)]);delete member.team_name;member.context_id=context;if(side==='attacker')attacker=member;else defender=member;}await options(side);}catch(e){message=e.message;}}
-  async function calculate(){busy=true;message='';try{attacker.context_id=context;defender.context_id=context;previous=result;result=await mutate('/damage',{attacker:$state.snapshot(attacker),defender:$state.snapshot(defender),move,weather,terrain,critical});}catch(e){message=e.message;}finally{busy=false;}}
+  async function calculate(){busy=true;message='';try{attacker.context_id=context;defender.context_id=context;if(hasCalculatedManually)previous=result;hasCalculatedManually=true;result=await mutate('/damage',{attacker:$state.snapshot(attacker),defender:$state.snapshot(defender),move,weather,terrain,critical});}catch(e){message=e.message;}finally{busy=false;}}
   async function changeContext(){attacker.context_id=context;defender.context_id=context;try{await Promise.all([options('attacker'),options('defender')]);}catch(e){message=e.message;}}
   function swapSides() {
     const temp = $state.snapshot(attacker);
@@ -126,16 +126,24 @@
   <datalist id="calc-items">{#each attackerOptions?.items||[] as item}<option value={item.name}></option>{/each}</datalist>
 
   <form class="content-panel calc-action-panel" onsubmit={e=>{e.preventDefault();calculate();}}>
-    <div class="form-grid">
+    <div class="calc-move-bar">
+      <div class="calc-move-quick">
+        <span>Golpes rápidos:</span>
+        {#each ['Earthquake','Dragon Claw','Outrage','Iron Head','U-turn','Body Press'] as quickMove}
+          <button type="button" class="chip" class:active={move===quickMove} onclick={()=>{move=quickMove;}}>{quickMove}</button>
+        {/each}
+      </div>
+    </div>
+    <div class="form-grid calc-conditions-grid">
       <label>Golpe<input bind:value={move} list="damage-moves" required/></label>
       <label>Clima<select bind:value={weather}>{#each [['','Sem clima'],['Sun','Sol (Sun)'],['Rain','Chuva (Rain)'],['Sand','Tempestade de Areia (Sand)'],['Hail','Granizo (Hail)'],['Snow','Neve (Snow)']] as [val,label]}<option value={val}>{label}</option>{/each}</select></label>
       <label>Terreno<select bind:value={terrain}><option value="">Sem terreno</option>{#each ['Electric','Grassy','Misty','Psychic'] as value}<option>{value}</option>{/each}</select></label>
-      <label><input type="checkbox" bind:checked={critical}/> Acerto crítico</label>
+      <div class="calc-submit-row">
+        <label class="check"><input type="checkbox" bind:checked={critical}/> Acerto crítico</label>
+        <button class="button" disabled={busy || !ready}><Swords size={16}/> {busy?'Calculando…':'Calcular dano'}</button>
+      </div>
     </div>
     <datalist id="damage-moves">{#each attackerOptions?.moves||[] as option}<option value={option.name}></option>{/each}</datalist>
-    <div class="actions" style="margin-top:18px">
-      <button class="button" disabled={busy || !ready}><Swords size={16}/> {busy?'Calculando…':'Calcular dano'}</button>
-    </div>
   </form>
 
   {#if result}

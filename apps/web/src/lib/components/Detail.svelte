@@ -154,18 +154,23 @@
     </div>
     <BuildList builds={data.builds?.data || []} />
   </section>
-{:else}<div class="content-panel">
+{:else}<div class="content-panel entry-detail-panel">
     <div class="entry-heading">
-      <EntityIcon {entry} size={64} decorative={false} />
-      <div>
-        <h2>{entry.name}</h2>
-        {#if entry.kind === "move"}<div class="move-classification">
-            <TypeBadge type={a.type} /><CategoryBadge category={a.category} />
-          </div>{/if}
+      <div class="entry-showcase-icon">
+        <EntityIcon {entry} size={64} decorative={false} />
+      </div>
+      <div class="entry-showcase-body">
+        <div class="entry-showcase-meta">
+          <span class="chip">{entry.kind === "item" ? "Item do catálogo" : entry.kind === "move" ? "Golpe registrado" : "Habilidade"}</span>
+          {#if entry.generation}<span class="chip">Geração {entry.generation}</span>{/if}
+          {#if entry.kind === "move"}<div class="move-classification">
+              <TypeBadge type={a.type} /><CategoryBadge category={a.category} />
+            </div>{/if}
+        </div>
+        <h2>Efeito e propriedades</h2>
+        <p class="entry-effect-lead">{a.effect || "Descrição indisponível na fonte."}</p>
       </div>
     </div>
-    <h3>Propriedades</h3>
-    <p>{a.effect || "Descrição indisponível na fonte."}</p>
     <dl class="detail-data">
       {#each Object.entries(a).filter(([k, v]) => k !== "effect" && !["type", "category"].includes(k) && v !== null && typeof v !== "object") as [key, value]}<div
         >
