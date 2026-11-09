@@ -1,5 +1,6 @@
 <script>
   import TypeBadge from '$lib/components/TypeBadge.svelte';
+  import EntityIcon from '$lib/components/EntityIcon.svelte';
   import ConsoleIcon from '$lib/components/ConsoleIcon.svelte';
   import { page } from '$app/state';
   import { games, consoles } from '$lib/games.js';
@@ -15,7 +16,7 @@
 <div class="home-desk">
   <section class="dex-lookup" aria-label="Consultar Pokémon">
     <form class="global-search" action="/pokedex"><Search size={22}/><label class="sr-only" for="search">Pesquisar por nome ou número</label><input id="search" name="q" placeholder="Nome ou número da Pokédex"/><button type="submit" aria-label="Pesquisar"><ArrowRight size={20}/></button></form>
-    <div class="lookup-links"><a href="/pokemon/pikachu"><img src="/api/v1/sprite/Pikachu" alt="" width="64" height="64"/>Pikachu</a><a href="/pokemon/garchomp"><img src="/api/v1/sprite/Garchomp" alt="" width="64" height="64"/>Garchomp</a><a href="/pokemon/eevee"><img src="/api/v1/sprite/Eevee" alt="" width="64" height="64"/>Eevee</a></div>
+    <div class="lookup-links"><a href="/pokemon/pikachu" data-type="electric"><img src="/api/v1/sprite/Pikachu" alt="" width="64" height="64"/>Pikachu</a><a href="/pokemon/garchomp" data-type="dragon"><img src="/api/v1/sprite/Garchomp" alt="" width="64" height="64"/>Garchomp</a><a href="/pokemon/eevee" data-type="normal"><img src="/api/v1/sprite/Eevee" alt="" width="64" height="64"/>Eevee</a></div>
     <div class="desk-counts"><a href="/pokedex"><strong>{data.summary?.counts?.pokemon?.toLocaleString('pt-BR') || '—'}</strong> Pokémon e formas</a><a href="/itens"><strong>{data.summary?.counts?.item?.toLocaleString('pt-BR') || '—'}</strong> itens</a><a href="/builds"><strong>{data.summary?.builds?.toLocaleString('pt-BR') || '—'}</strong> builds</a></div>
     <div class="lookup-shortcuts"><a href="/itens">Buscar item</a><a href="/golpes">Consultar golpe</a><a href="/calculos">Calcular dano</a></div>
   </section>
@@ -33,19 +34,14 @@
   {#if data.summary?.pokemon?.length}<div class="pokemon-grid">
       {#each data.summary.pokemon as pokemon}<a
           class="pokemon-card"
+          data-type={String(pokemon.attributes.types?.[0] || "normal").toLowerCase()}
           href={"/pokemon/" + pokemon.slug}
           ><div class="pokemon-card-top">
             <span>#{String(pokemon.national_number).padStart(4, "0")}</span
             ><ArrowUpRight size={15} />
           </div>
           <div class="pokemon-image">
-            {#if pokemon.image}<img
-                src={pokemon.image.url}
-                alt={pokemon.name}
-                width="150"
-                height="150"
-                loading="lazy"
-              />{:else}<span class="muted">Sem sprite</span>{/if}
+            <EntityIcon entry={pokemon} size={160}/>
           </div>
           <h3>{pokemon.name}</h3>
           <div class="types">

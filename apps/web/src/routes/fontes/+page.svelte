@@ -4,6 +4,8 @@
   <p>Origem dos dados, imagens e cálculos.</p>
 </div>
 <div class="prose">
+  <h2>Imagens complementares dos jogos</h2>
+  <p>Capas, logos e imagens dos jogos que faltavam no acervo foram recuperados do <a href="https://archives.bulbagarden.net/">Bulbagarden Archives</a>. Cada arquivo local mantém origem e hash no <a href="/covers/sources.json">manifesto de imagens</a>. Logos e capturas são identificados na interface; os direitos das imagens pertencem aos respectivos titulares.</p>
   <h2>Catálogo e imagens</h2>
   <p>
     <a href="https://github.com/PokeAPI/pokeapi">PokéAPI</a>: dados de espécies,

@@ -53,9 +53,9 @@ test('local item evidence survives upstream outage and is not applied to other c
   try {
     const entry={kind:'item',slug:'leftovers',attributes:{}};
     const guide=await loadGuide(entry,'firered');
-    assert.equal(guide.status,'ready');assert.equal(guide.hints.length,2);assert.ok(guide.hints.some(h=>h.area==='route-12'));
-    assert.equal((await loadGuide(entry,'ruby')).hints.length,0);
-    assert.equal((await loadGuide(entry,'leafgreen')).hints.length,2);
+    assert.equal(guide.status,'ready');assert.equal(guide.hints.filter(h=>!h.researched).length,2);assert.ok(guide.hints.some(h=>h.area==='route-12'));
+    assert.equal((await loadGuide(entry,'ruby')).hints.filter(h=>!h.researched).length,0);
+    assert.equal((await loadGuide(entry,'leafgreen')).hints.filter(h=>!h.researched).length,2);
   } finally {globalThis.fetch=original;}
 });
 test('API mutations reject foreign origins before proxying',async()=>{

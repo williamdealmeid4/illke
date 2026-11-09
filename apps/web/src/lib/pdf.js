@@ -23,11 +23,11 @@ async function portrait(pokemon) {
   canvas.width = 640;
   canvas.height = 640;
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#202c3d";
+  ctx.fillStyle = "#171a21";
   ctx.beginPath();
   ctx.arc(320, 320, 285, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#e7bd61";
+  ctx.strokeStyle = "#e6404e";
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.arc(320, 320, 285, 0, Math.PI * 2);
@@ -74,24 +74,24 @@ export async function buildPdf(
     doc.setFontSize(size);
     doc.text(safe(value), x, y, options);
   };
-  doc.setFillColor("#111723");
-  doc.rect(0, 0, 210, 86, "F");
-  doc.setFillColor("#e7bd61");
+  doc.setFillColor("#0d0f13");
+  doc.rect(0, 0, 210, 94, "F");
+  doc.setFillColor("#e6404e");
   doc.rect(14, 15, 3, 9, "F");
   text("illke", 21, 22, 22, "#e8edf6");
   text("Ficha de batalha", 14, 35, 10, "#a6b2c7");
   const title = doc.splitTextToSize(safe(build.pokemon), 111);
-  text(title, 14, 50, title.length > 1 ? 25 : 29, "#e8edf6");
+  text(title.slice(0,2), 14, 48, title.length > 1 ? 20 : 26, "#e8edf6");
   text(
     doc.splitTextToSize(safe(build.name), 110).slice(0, 2),
     14,
-    70,
-    13,
-    "#e7bd61",
+    71,
+    11,
+    "#ff6872",
   );
-  text(`${build.context_id}  /  Nível ${build.level}`, 14, 83, 10, "#a6b2c7");
+  text(`${build.context_id}  /  Nível ${build.level}`, 14, 87, 10, "#a6b2c7");
   doc.addImage(image, "PNG", 138, 17, 61, 61);
-  let y = 95;
+  let y = 105;
   function rule() {
     doc.setDrawColor("#d7dfe9");
     doc.line(14, y, 196, y);
@@ -100,18 +100,19 @@ export async function buildPdf(
   function newPage() {
     doc.addPage();
     y = 20;
-    text(build.pokemon + " / " + build.name, 14, y, 14);
+    text(doc.splitTextToSize(safe(build.pokemon + " / " + build.name),182).slice(0,2), 14, y, 11);
     y += 12;
   }
   function ensure(height) {
     if (y + height > 265) newPage();
   }
   function section(title) {
-    ensure(22);
+    ensure(28);
     text(title, 14, y, 16);
     y += 9;
   }
   function paragraph(value, width = 182) {
+    doc.setFontSize(11);
     const lines = doc.splitTextToSize(safe(value), width);
     for (const line of lines) {
       ensure(6);
@@ -129,23 +130,30 @@ export async function buildPdf(
     ["Formato", build.context_id],
   ];
   for (let i = 0; i < fields.length; i += 2) {
+    doc.setFontSize(12);
+    const rowLines=fields.slice(i,i+2).map(([,v])=>doc.splitTextToSize(safe(v),82));
+    const rowHeight=9+Math.max(...rowLines.map(l=>l.length))*5.5;
+    ensure(rowHeight);
     for (let j = 0; j < 2; j++) {
       const [label, value] = fields[i + j];
       const x = j ? 108 : 14;
       text(label, x, y, 9, "#52617a");
-      text(doc.splitTextToSize(safe(value), 85).slice(0, 2), x, y + 6, 12);
+      text(rowLines[j], x, y + 6, 12);
     }
-    y += 16;
+    y += rowHeight;
   }
   rule();
   section("Golpes");
   for (const [index, move] of build.moves.filter(Boolean).entries()) {
-    text(String(index + 1).padStart(2, "0"), 14, y, 10, "#875a08");
-    text(move, 27, y, 12);
-    y += 7;
+    doc.setFontSize(12);
+    const lines=doc.splitTextToSize(safe(move),165);
+    ensure(lines.length*6+3);
+    text(String(index + 1).padStart(2, "0"), 14, y, 10, "#ba253b");
+    text(lines, 27, y, 12);
+    y += lines.length*6+3;
   }
   y += 4;
-  ensure(42);
+  ensure(60);
   rule();
   section("Treinamento");
   const columns = Object.keys(statLabels);

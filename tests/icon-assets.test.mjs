@@ -3,7 +3,18 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { consoles } from '../apps/web/src/lib/games.js';
+import { games } from '../apps/web/src/lib/games.js';
 const staticRoot=new URL('../apps/web/static/',import.meta.url);
+test('every game has a downloaded image with provenance and matching bytes',async()=>{
+  const manifest=JSON.parse(await readFile(new URL('covers/sources.json',staticRoot),'utf8'));
+  for(const game of games){
+    const image=manifest[game.id];assert.ok(image,game.id);
+    assert.ok(image.source.startsWith('https://'),game.id);
+    const bytes=await readFile(new URL(image.image.slice(1),staticRoot));
+    assert.ok(bytes.subarray(0,8).toString('hex')==='89504e470d0a1a0a'||bytes.subarray(0,2).toString('hex')==='ffd8',game.id);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),image.sha256,game.id);
+  }
+});
 test('type images retain the original game source and exact downloaded bytes',async()=>{
   const manifest=JSON.parse(await readFile(new URL('icons/manifest.json',staticRoot),'utf8'));
   assert.equal(Object.keys(manifest.types).length,19);

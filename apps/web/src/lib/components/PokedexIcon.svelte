@@ -1,9 +1,7 @@
-<script>
-  let { size = 18, strokeWidth = 1.75 } = $props();
-</script>
-
-<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width={strokeWidth} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="pokedex-icon">
-  <path d="M5 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-  <circle cx="7" cy="7" r="1.5" />
-  <path d="M11 6h1m3 0h1M3 11h7l2-2h7M7 15h8v3H7zM21 8v9" />
+<script>let {size=18}=$props();</script>
+<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <rect x="4" y="2" width="16" height="20" rx="2"/>
+ <circle cx="8" cy="6" r="1.5"/><path d="M13 5h1m3 0h.01M4 10h8l3-2h5"/>
+ <rect x="7" y="12" width="10" height="5" rx=".6"/>
+ <path d="M8 19h3m4-1v3m-1.5-1.5h3"/>
 </svg>

@@ -45,7 +45,7 @@ export async function mutate(path, body, method = "POST") {
   return result;
 }
 export const sprite = (pokemon) =>
-  "/api/v1/sprite/" + encodeURIComponent(pokemon);
+  "/media/pokemon/" + encodeURIComponent(pokemon);
 export const statLabels = {
   hp: "HP",
   atk: "Ataque",

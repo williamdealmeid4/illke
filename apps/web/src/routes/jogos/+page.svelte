@@ -5,7 +5,6 @@
  import { page } from '$app/state';
  import { mapFor } from '$lib/maps.js';
  import ConsoleIcon from '$lib/components/ConsoleIcon.svelte';
- import GameCover from '$lib/components/GameCover.svelte';
  import { Search, Map, ArrowUpRight, Check } from '@lucide/svelte';
  let mounted=$state(false);
  onMount(()=>{mounted=true;});
@@ -22,7 +21,7 @@
  {#if filtered.some(g=>g.category===group)}<section class="game-section"><div class="section-heading"><h2>{group}</h2></div><div class="game-grid">
  {#each filtered.filter(g=>g.category===group) as game}<a class="game-card" class:chosen={page.data.selectedGame?.id===game.id} href={withGame('/jogos/'+game.id,game.id)}>
   <div class="game-card-top"><div class="console-stack">{#each game.consoles as c}<span title={consoles[c]}><ConsoleIcon platform={c} size={36}/></span>{/each}</div>{#if page.data.selectedGame?.id===game.id}<Check size={20}/>{:else}<ArrowUpRight size={18}/>{/if}</div>
-  <GameCover cover={covers[game.id]} name={game.name}/>
+  {#if covers[game.id]}<div class="game-cover" class:logo={covers[game.id].kind==='logo'}><img src={covers[game.id].image} alt="" width="240" height="240" loading="lazy"/><span>{({box:'Capa original',logo:'Logo do jogo','reference-art':'Imagem do jogo','official-art':'Arte oficial'})[covers[game.id].kind] || 'Imagem do jogo'}</span></div>{:else}<div class="game-cover unavailable"><ConsoleIcon platform={game.consoles[0]} size={120}/><span>Referência da plataforma · capa ainda sem fonte confirmada</span></div>{/if}
   <h3>{game.name}</h3><p>{game.consoles.map(c=>consoles[c]).join(' / ')}</p><div class="game-card-bottom"><span>{game.region}</span><span class="coverage-tag" class:available={!!game.map}>{game.status==='announced'?'Anunciado · 2027':game.map?'Mapa e pistas':mapFor(game)?'Mapa regional':game.version?'Pistas parciais':'Sem pistas na fonte'}</span></div>
  </a>{/each}</div></section>{/if}
 {/each}

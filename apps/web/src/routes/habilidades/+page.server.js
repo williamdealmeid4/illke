@@ -1,36 +1,30 @@
-import { readApi } from '$lib/api.js';
-import { abilityCategories, filterAbilities, paginateAbilities } from '$lib/abilities.js';
-
-// Filter complete successful API snapshots; failed requests are never cached.
-let cached = null;
-let expires = 0;
-let pending = null;
-async function allAbilities(fetch) {
-  if (cached && Date.now() < expires) return cached;
-  if (!pending) pending = (async () => {
-    const first = await readApi(fetch, '/catalog/ability?page=1');
-    const rest = await Promise.all(Array.from({ length: Math.max(0, first.last_page - 1) },
-      (_, index) => readApi(fetch, `/catalog/ability?page=${index + 2}`)));
-    cached = [first, ...rest].flatMap((page) => page.data);
-    expires = Date.now() + 300_000;
-    return cached;
-  })().finally(() => { pending = null; });
-  return pending;
-}
-
+import { readApi } from "$lib/api.js";
+import {classifyAbility} from '$lib/ability-categories.js';
 export async function load({ fetch, url }) {
-  const query = Object.fromEntries(url.searchParams);
-  if (!abilityCategories.some((category) => category.id === query.category)) query.category = '';
-  if (!/^[1-9]$/.test(query.generation || '')) query.generation = '';
   try {
-    const entries = await allAbilities(fetch);
-    const scope = filterAbilities(entries, { ...query, category: '' });
-    return { query, catalog: paginateAbilities(filterAbilities(entries, query), url),
-      categories: abilityCategories.map((category) => ({ ...category,
-        count: category.id === 'all' ? scope.length : filterAbilities(scope, { category: category.id }).length })),
-      total: entries.length, error: null };
-  } catch {
-    return { query, catalog: null, categories: abilityCategories, total: 0,
-      error: 'Não foi possível carregar as habilidades. Tente novamente em instantes.' };
+    const params=new URLSearchParams(url.searchParams); params.delete('page'); params.delete('category');
+    const first=await readApi(fetch,'/catalog/ability?'+params);
+    const rest=await Promise.all(Array.from({length:first.last_page-1},(_,i)=>readApi(fetch,'/catalog/ability?'+params+'&page='+(i+2))));
+    const entries=[...first.data,...rest.flatMap(p=>p.data)];
+    const category=url.searchParams.get('category');
+    const filtered=entries.filter(e=>!category||classifyAbility(e.attributes.effect).id===category);
+    const current=Math.max(1,Number(url.searchParams.get('page'))||1);
+    const total=filtered.length;
+    const pageUrl=n=>{const p=new URLSearchParams(url.searchParams);p.set('page',n);return url.origin+url.pathname+'?'+p;};
+    return {
+      catalog: {...first,data:filtered.slice((current-1)*36,current*36), total,current_page:current,last_page:Math.ceil(total/36),from:total?(current-1)*36+1:0,to:Math.min(current*36,total),prev_page_url:current>1?pageUrl(current-1):null,next_page_url:current*36<total?pageUrl(current+1):null},
+      kind: "ability",
+      title: "Habilidades",
+      query: Object.fromEntries(url.searchParams),
+      error: null,
+    };
+  } catch (e) {
+    return {
+      catalog: null,
+      kind: "ability",
+      title: "Habilidades",
+      query: Object.fromEntries(url.searchParams),
+      error: e.message,
+    };
   }
 }

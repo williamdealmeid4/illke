@@ -18,3 +18,5 @@ output/
 .playwright-cli/
 test-results/
 playwright-report/
+.impeccable/
+docs/superpowers/

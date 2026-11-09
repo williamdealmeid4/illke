@@ -2,6 +2,7 @@ import { addWalkthrough } from './walkthrough.js';
 import { captureGuide } from './capture.js';
 import { getGame } from '../games.js';
 import itemLocations from './item-locations.json' with { type: 'json' };
+import {researchedGuide} from './research.js';
 const cache = new Map();
 const pending = new Map();
 const TTL = 24 * 60 * 60 * 1000;
@@ -80,5 +81,13 @@ async function rawGuide(entry, gameId) {
 }
 
 export async function loadGuide(entry, gameId) {
- return addWalkthrough(await rawGuide(entry,gameId),entry);
+ const game=getGame(gameId);
+ const researched=game?researchedGuide(entry,game):null;
+ if(researched?.status==='absent')return addWalkthrough({game,pokemon:null,held:[],machines:[],...researched},entry);
+ const raw=await rawGuide(entry,gameId);
+ if(!raw||!researched)return addWalkthrough(raw,entry);
+ // Keep source-backed local coordinates and encounter rates; supplement gifts,
+ // starters, shops and transfers absent from wild encounter tables.
+ const hints=[...raw.hints,...researched.hints];
+ return addWalkthrough({...raw,...researched,hints,status:hints.length?'ready':researched.status,sources:[raw.source,researched.source]},entry);
 }

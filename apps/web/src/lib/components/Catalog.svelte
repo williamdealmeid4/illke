@@ -6,6 +6,7 @@
   import Pagination from "./Pagination.svelte";
   import { page } from "$app/state";
   import { withGame } from "$lib/games.js";
+  import {abilityCategories, classifyAbility} from '$lib/ability-categories.js';
   let { data } = $props();
   const links = {
     pokemon: "/pokemon/",
@@ -42,7 +43,7 @@
   <p>
     {data.kind === "pokemon"
       ? "Espécies e formas, com filtros por nome, tipo e geração."
-      : "Propriedades e efeitos dos registros do catálogo."}
+      : data.kind === 'ability' ? 'Encontre habilidades pela função e consulte seus efeitos.' : "Propriedades e efeitos dos registros do catálogo."}
   </p>
 </div>
 {#if page.data.selectedGame}<div class="catalog-game-note"><strong>{page.data.selectedGame.name}</strong><span>Abra um Pokémon ou item para ver as pistas desta versão. O catálogo abaixo reúne todas as gerações.</span><a class="text-link" href="/jogos">Trocar jogo</a></div>{/if}
@@ -55,7 +56,7 @@
     placeholder={data.kind === "pokemon"
       ? "Nome, forma ou número da Pokédex"
       : "Pesquisar por nome"}
-  />{#if data.kind === "pokemon"}<label class="sr-only" for="generation"
+  />{#if data.kind === 'ability'}<label class="sr-only" for="category">Categoria de navegação</label><select id="category" name="category" value={data.query.category || ''} onchange={event=>event.currentTarget.form.requestSubmit()}><option value="">Todas as funções</option>{#each abilityCategories as category}<option value={category.id}>{category.label}</option>{/each}</select>{/if}{#if data.kind === "pokemon"}<label class="sr-only" for="generation"
       >Geração de estreia</label
     ><select
       id="generation"
@@ -78,6 +79,8 @@
     ><Search size={16} /> Buscar</button
   >
 </form>
+{#if data.query.q || data.query.type || data.query.generation || data.query.category}<a class="text-link" href={page.url.pathname}>Limpar pesquisa e filtros</a>{/if}
+{#if data.kind === 'ability'}<p class="help">Categorias de navegação inferidas do efeito principal pelo illke. Uma habilidade pode ter várias funções. Os efeitos originais são mantidos no idioma da fonte.</p>{/if}
 {#if data.error}<div class="notice error" role="alert">
     {data.error}
   </div>{:else if !data.catalog?.data?.length}<div class="empty-panel">
@@ -93,6 +96,7 @@
   {#if data.kind === "pokemon"}<div class="pokemon-grid">
       {#each data.catalog.data as p}<a
           class="pokemon-card"
+          data-type={String(p.attributes.types?.[0] || "normal").toLowerCase()}
           href={withGame(links[data.kind] + p.slug,page.data.selectedGame?.id)}
           ><div class="pokemon-card-top">
             <span>#{String(p.national_number).padStart(4, "0")}</span
@@ -107,7 +111,8 @@
           </div></a
         >{/each}
     </div>
-  {:else}<div class="table-wrap">
+  {:else if data.kind === 'ability'}<div class="ability-grid">{#each data.catalog.data as p}<a class="ability-card" href={withGame(links[data.kind]+p.slug,page.data.selectedGame?.id)}><div class="ability-card-heading"><EntityIcon entry={p} size={48}/><div><h2>{p.name}</h2><span>{classifyAbility(p.attributes.effect).label}</span></div><ArrowUpRight size={18}/></div><p>{p.attributes.effect || 'Descrição ainda indisponível na fonte.'}</p><span class="text-link">Consultar habilidade</span></a>{/each}</div>
+  {:else}<div class="table-wrap catalog-table">
       <table class="table">
         <thead
           ><tr

@@ -1,8 +1,14 @@
-<svelte:head><title>Guias de estratégia — illke</title></svelte:head>
+<script>
+ import tutorial from '../../../../../docs/TUTORIAL.md?raw';
+ const sections=tutorial.split('\n## ').slice(1).map((s,i)=>({id:'guia-'+i,title:s.split('\n')[0],paragraphs:s.slice(s.indexOf('\n')).trim().split(/\n\s*\n/)}));
+</script>
+<svelte:head><title>Como usar o illke — Tutorial completo</title></svelte:head>
 <div class="page-header">
-  <h1>Guia de builds e equipes</h1>
-  <p>Formatos, funções, treinamento e interpretação dos resultados.</p>
+  <h1>Como usar o illke</h1>
+  <p>Da primeira pesquisa à sua equipe: consulte, compare e guarde suas escolhas.</p>
 </div>
+<div class="tutorial-layout"><nav aria-label="Sumário do tutorial">{#each sections as section}<a href={'#'+section.id} class="text-link">{section.title}</a>{/each}<a href="/tutorial.txt" download class="text-link">Baixar tutorial</a></nav><article>{#each sections as section}<section><h2 id={section.id}>{section.title}</h2>{#each section.paragraphs as paragraph}<p>{paragraph.replaceAll('`','')}</p>{/each}</section>{/each}</article></div>
+<details><summary>Referência rápida de estratégia</summary>
 <div class="prose">
   <h2>Comece pelo formato</h2>
   <p>
@@ -44,3 +50,4 @@
     >
   </div>
 </div>
+</details>

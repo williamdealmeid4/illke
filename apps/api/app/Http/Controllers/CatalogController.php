@@ -42,6 +42,15 @@ class CatalogController extends Controller
         $id = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $pokemon));
         $aliases = [preg_replace('/-Paldea-(Combat|Blaze|Aqua)$/i', '-paldea-$1-breed', $pokemon), preg_replace('/^(Pikachu)-(Original|Hoenn|Sinnoh|Unova|Kalos|Alola|Partner|World)$/i', '$1-$2-cap', $pokemon), preg_replace('/-Alola-Totem$/i', '-totem-alola', $pokemon)];
         $entry = CatalogEntry::where('kind', 'pokemon')->where(fn ($q) => $q->whereRaw('LOWER(name) = ?', [strtolower($pokemon)])->orWhere('slug', strtolower($pokemon))->orWhereIn('slug', array_map('strtolower', $aliases))->orWhere('attributes->showdown_id', $id))->first();
+        if ($entry && ! $entry->image && ! empty($entry->attributes['sprites']['artwork'])) {
+            return redirect()->away($entry->attributes['sprites']['artwork']['url']);
+        }
+        if ($entry && ! $entry->image && ! empty($entry->attributes['species_slug'])) {
+            $base = CatalogEntry::where('kind', 'pokemon')->where('slug', $entry->attributes['species_slug'])->first();
+            if ($base?->image) {
+                return redirect()->away($base->attributes['sprites']['artwork']['url'] ?? $base->image['url'])->header('X-Sprite-Fallback', 'species-reference');
+            }
+        }
         if (! $entry?->image) {
             $label = htmlspecialchars($pokemon, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 

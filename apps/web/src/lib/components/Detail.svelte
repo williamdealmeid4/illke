@@ -37,12 +37,13 @@
     {#each a.types || [] as type}<TypeBadge {type} />{/each}
   </div>
 </div>
-{#if entry.kind === "pokemon"}<div class="detail-grid">
+{#if entry.kind === "pokemon"}<div class="detail-grid" data-type={String(a.types?.[0] || "normal").toLowerCase()}>
     <aside>
-      <div class="detail-portrait">
+      <div class="detail-portrait" data-type={String(a.types?.[0] || "normal").toLowerCase()}>
         <EntityIcon
           entry={{ ...entry, image: a.sprites?.artwork || entry.image }}
           size={240}
+          variant="artwork"
           decorative={false}
         />
       </div>
@@ -64,6 +65,7 @@
         <div class="stats">
           {#each Object.entries(a.stats || {}) as [stat, value]}<div
               class="stat"
+              data-tier={Number(value) >= 120 ? "elite" : Number(value) >= 90 ? "high" : Number(value) >= 60 ? "mid" : "low"}
             >
               <span>{stats[stat] || stat}</span><strong>{value}</strong>
               <div class="stat-track">

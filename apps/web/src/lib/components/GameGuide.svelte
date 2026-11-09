@@ -27,6 +27,7 @@
  {:else}
   <div class="guide-context"><ConsoleIcon platform={guide.game.consoles[0]} size={38}/><div><strong>{guide.game.name}</strong><span>{guide.game.region} · {guide.game.consoles.map(c=>consoles[c]).join(' / ')}</span></div><a href={withGame(page.url.pathname,guide.game.id)} class="text-link">Atualizar pistas</a></div>
   <p class:field-error={guide.status==='error'} role={guide.status==='error'?'alert':undefined}>{guide.message}</p>
+  {#if !['absent','transfer'].includes(guide.status) && guide.game.status!=='announced'}
   {#if guide.hints.length}
    <label class="hint-search"><Search size={18}/><span class="sr-only">Filtrar pistas</span><input bind:value={filter} placeholder="Filtrar local ou método…" type="search"/></label>
   {/if}
@@ -39,6 +40,7 @@
   {#if guide.held.length}<h3>Pokémon que podem carregar este item</h3><div class="actions">{#each guide.held as p}<a class="chip" href={withGame('/pokemon/'+p.pokemon,guide.game.id)}>{p.pokemon} · {p.chance}%</a>{/each}</div>{/if}
   {#if guide.machines.length}<p>Este item é uma TM/HM registrada para {guide.game.name}. A fonte ainda não indica o ponto de obtenção.</p>{/if}
   {#if guide.partial}<p class="help">O mapa exibe uma amostra de até seis portadores. Alguns locais podem não ter sido carregados; a lista de portadores permanece disponível acima.</p>{/if}
-  <p class="help">Dados: <a class="text-link" href={guide.source}>PokéAPI</a>. Mapas e coordenadas: <a class="text-link" href="/fontes#mapas">fontes e créditos</a>.</p>
+  {/if}
+  <p class="help">Dados: <a class="text-link" href={guide.source}>Consultar fonte da informação</a>{#if guide.checked} · pesquisa em {guide.checked}{/if}. Mapas e coordenadas: <a class="text-link" href="/fontes#mapas">fontes e créditos</a>.</p>
  {/if}
 </section>

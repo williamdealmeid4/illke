@@ -2,16 +2,24 @@ import { error } from '@sveltejs/kit';
 import { getGame } from '$lib/games.js';
 import { readApi } from '$lib/api.js';
 import { loadGuide } from '$lib/server/guides.js';
+import {findMachines,researchCoverage} from '$lib/server/research.js';
+import gameSources from '$lib/server/game-guide-sources.json';
 export async function load({params,url,fetch}) {
  const game=getGame(params.id);
  if(!game)error(404,'Jogo não encontrado.');
- const kind=url.searchParams.get('kind')==='item'?'item':'pokemon';
+ const kind=['item','machine'].includes(url.searchParams.get('kind'))?url.searchParams.get('kind'):'pokemon';
  const query=(url.searchParams.get('q') || '').slice(0,100);
  const target=(url.searchParams.get('target') || '').slice(0,100);
  let matches=[],entry=null,guide=null,message='';
+ if(game.status==='announced')return {game,kind,query:'',matches,entry,guide,message:'',machines:[],coverage:{pokemon:0,items:0,machines:0}};
+ const machineQuery=kind==='machine'||/^tm\s*\d*\s*[a-z]/i.test(query);
+ if(machineQuery){
+  const machines=findMachines(query,game);
+  return {game,kind:'machine',query,matches,entry,guide,machines,coverage:researchCoverage(game),references:gameSources[game.id],message:query&&!machines.length?'Nenhuma TM desse nome ou número foi confirmada nesta edição. O golpe pode ter outro método de aprendizado; isso não significa que o golpe não exista no jogo.':''};
+ }
  try {
   if(target){entry=await readApi(fetch,'/catalog/'+kind+'/'+encodeURIComponent(target));guide=await loadGuide(entry,game.id);}
   else if(query.trim()){const catalog=await readApi(fetch,'/catalog/'+kind+'?'+new URLSearchParams({q:query,per_page:'12'}));matches=catalog.data || [];}
  }catch(cause){message=cause.status===404?'Este alvo não foi encontrado no catálogo. Faça uma nova busca.':cause.message;}
- return {game,kind,query,matches,entry,guide,message};
+ return {game,kind,query,matches,entry,guide,message,machines:[],coverage:researchCoverage(game),references:gameSources[game.id]};
 }

@@ -7,11 +7,13 @@
   import { games, consoles } from "$lib/games.js";
   import Opening from "$lib/components/Opening.svelte";
   import ConsoleIcon from "$lib/components/ConsoleIcon.svelte";
-  import PokedexIcon from "$lib/components/PokedexIcon.svelte";
+  import PokedexIcon from '$lib/components/PokedexIcon.svelte';
   let { children, data } = $props();
   let mounted = $state(false);
   let open = $state(false);
   let light = $state(false);
+  let activeCard = null;
+
   onMount(() => {
     mounted = true;
     try { light = localStorage.getItem("illke-theme") === "light"; } catch {}
@@ -29,6 +31,42 @@
     if (target.pathname.startsWith('/jogos/')) target.pathname='/jogos/'+id;
     goto(target.pathname+target.search+target.hash, {invalidateAll:true});
   }
+  function handlePointerMove(event) {
+    if (event.pointerType === 'touch') return;
+    const target = event.target instanceof Element
+      ? event.target.closest('.pokemon-card, .game-card, .detail-portrait, .ability-card, .lookup-links a, .team-slot')
+      : null;
+    if (activeCard && activeCard !== target) {
+      activeCard.style.removeProperty('--rx');
+      activeCard.style.removeProperty('--ry');
+      activeCard.style.removeProperty('--mx');
+      activeCard.style.removeProperty('--my');
+      activeCard.removeAttribute('data-tilting');
+      activeCard = null;
+    }
+    if (!target) return;
+    activeCard = target;
+    const rect = target.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const px = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const py = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+    const ry = ((px - 0.5) * 16).toFixed(2) + 'deg';
+    const rx = ((0.5 - py) * 14).toFixed(2) + 'deg';
+    target.style.setProperty('--rx', rx);
+    target.style.setProperty('--ry', ry);
+    target.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
+    target.style.setProperty('--my', (py * 100).toFixed(1) + '%');
+    target.setAttribute('data-tilting', '1');
+  }
+  function handlePointerLeave() {
+    if (!activeCard) return;
+    activeCard.style.removeProperty('--rx');
+    activeCard.style.removeProperty('--ry');
+    activeCard.style.removeProperty('--mx');
+    activeCard.style.removeProperty('--my');
+    activeCard.removeAttribute('data-tilting');
+    activeCard = null;
+  }
   const nav = [
     ["/jogos", "Jogos e mapas", Gamepad2],
     ["/pokedex", "Pokédex", PokedexIcon],
@@ -43,11 +81,12 @@
 
 <svelte:window onkeydown={event=>{if(event.key==='Escape') open=false;}}/>
 {#if data.showIntro}<Opening/>{/if}
-<div class="app" class:light>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="app" class:light onpointermove={handlePointerMove} onpointerleave={handlePointerLeave}>
   <a href="#content" class="skip-link">Ir para o conteúdo</a>
   <header class="workspace-topbar">
     <a class="brand" href="/" aria-label="illke início"><span class="brand-mark"><span></span></span>illke</a>
-    <span class="current-location">{nav.find(([href])=>page.url.pathname.startsWith(href))?.[1] || 'Início'}</span>
+    <span class="current-location">{nav.find(([href])=>page.url.pathname.startsWith(href))?.[1] || (page.url.pathname.startsWith('/pokemon/') ? 'Pokédex' : page.url.pathname.startsWith('/item/') ? 'Itens' : page.url.pathname.startsWith('/golpe/') ? 'Golpes' : page.url.pathname.startsWith('/habilidade/') ? 'Habilidades' : page.url.pathname.startsWith('/builder') ? 'Builder' : 'Início')}</span>
     <div class="header-actions"><button class="icon-button theme-button" disabled={!mounted} onclick={theme} aria-label={light ? "Ativar tema escuro" : "Ativar tema claro"}>{#if light}<Moon size={18}/>{:else}<Sun size={18}/>{/if}</button><a class="button small" href="/builder"><Plus size={16}/> Criar equipe</a><button class="icon-button menu-toggle" disabled={!mounted} onclick={()=>open=!open} aria-controls="workspace-sidebar" aria-expanded={open} aria-label={open ? "Fechar menu" : "Abrir menu"}>{#if open}<X size={20}/>{:else}<Menu size={20}/>{/if}</button></div>
   </header>
   {#if open}<button class="workspace-backdrop" aria-label="Fechar navegação" onclick={()=>open=false}></button>{/if}
