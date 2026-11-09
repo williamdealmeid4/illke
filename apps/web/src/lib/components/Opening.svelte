@@ -74,8 +74,8 @@
           <circle class="opening-light" cx="60" cy="60" r="38" fill="url(#core-flare)"/>
           <circle class="opening-shockwave" cx="60" cy="60" r="24" stroke="#ffb830" stroke-width="2"/>
           <g class="shell-top">
-            <path d="M12 60a48 48 0 0 1 96 0H12Z" fill="url(#shell-upper)" stroke="#f6f7fb" stroke-width="4.5" stroke-linejoin="round"/>
-            <path d="M26 42A38 38 0 0 1 78 22" stroke="#ffffff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
+            <path d="M12 60a48 48 0 0 1 96 0H12Z" fill="#ff6971" stroke="#f6f7fb" stroke-width="4.5" stroke-linejoin="round"/>
+            <line x1="28" y1="36" x2="72" y2="24" stroke="#ffffff" stroke-opacity=".42" stroke-width="3" stroke-linecap="round"/>
           </g>
           <g class="shell-bottom">
             <path d="M108 60a48 48 0 0 1-96 0h96Z" fill="url(#shell-lower)" stroke="#f6f7fb" stroke-width="4.5" stroke-linejoin="round"/>

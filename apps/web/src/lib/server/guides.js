@@ -88,6 +88,6 @@ export async function loadGuide(entry, gameId) {
  if(!raw||!researched)return addWalkthrough(raw,entry);
  // Keep source-backed local coordinates and encounter rates; supplement gifts,
  // starters, shops and transfers absent from wild encounter tables.
- const hints=[...raw.hints,...researched.hints];
+ const hints=raw.hints.length ? raw.hints : researched.hints;
  return addWalkthrough({...raw,...researched,hints,status:hints.length?'ready':researched.status,sources:[raw.source,researched.source]},entry);
 }

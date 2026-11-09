@@ -530,8 +530,8 @@
         <span id="configuration"></span>
         <div class="wide natural-types"><span class="help">Tipagem do Pokémon</span><div class="actions">{#each options?.pokemon_types || [] as type}<span class="natural-type"><TypeIcon {type} size={22} />{type}</span>{/each}</div><small class="help">Definida pela espécie e forma do Pokémon.</small></div>
         {#if references.length}<label class="wide">Build convencional<select value={currentReference?.public_id || ''} onchange={event=>applyReference(event.currentTarget.value)} disabled={busy || optionsBusy}><option value="">Configuração personalizada</option>{#each references as reference}<option value={reference.public_id}>{reference.name}</option>{/each}</select><small class="help">Ao adicionar o Pokémon, usamos a primeira referência validada deste formato. Você pode escolher outra build ou trocar seus golpes.</small>{#if currentReference?.source_url}<a class="text-link" href={currentReference.source_url} rel="noreferrer">Fonte da build</a>{/if}</label>{/if}
-        <div class="wide"><span class="help">Pokémon ou forma</span>
-          <button class="button secondary" onclick={() => openPicker(selected)}>Trocar Pokémon</button>
+        <div class="wide builder-species-switch"><span class="help">Pokémon ou forma</span>
+          <button class="button secondary small" onclick={() => openPicker(selected)}>Trocar Pokémon</button>
         </div><label
           >Nome da build<input bind:value={draft.name} maxlength="100" />{#if !draft.name?.trim()}<small class="field-error">Dê um nome à build.</small>{/if}{#if fieldIssue('name')}<small class="field-error">{fieldIssue('name')}</small>{/if}</label
         ><label>Apelido do Pokémon<input bind:value={draft.nickname} maxlength="18" placeholder="Opcional" /></label

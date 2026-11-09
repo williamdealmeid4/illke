@@ -121,7 +121,11 @@ export function options(name, contextId = "gen9ou") {
   const key = context.id + ':' + species.id;
   if (!optionRestrictions.has(key)) {
     const validator = new TeamValidator(context.format);
-    optionRestrictions.set(key, Object.fromEntries(moves.map(move => [move.name, validator.validateSet({species:species.name,name:'',ability:context.capabilities.ability?species.abilities['0']:'',nature:'Serious',moves:[move.name],evs:{hp:4}}, {}) || []])));
+    const sampleMove = moves[0]?.name || 'Protect';
+    const legalAbility = context.capabilities.ability
+      ? Object.values(species.abilities).find(ab => !(validator.validateSet({species:species.name,name:'',ability:ab,nature:'Serious',moves:[sampleMove],evs:{hp:4}}, {}) || []).some(msg => msg.toLowerCase().includes('ability'))) || species.abilities['0']
+      : '';
+    optionRestrictions.set(key, Object.fromEntries(moves.map(move => [move.name, (validator.validateSet({species:species.name,name:'',ability:legalAbility,nature:'Serious',moves:[move.name],evs:{hp:4}}, {}) || []).filter(msg => !msg.toLowerCase().includes('ability ') || msg.toLowerCase().includes(move.name.toLowerCase()))])));
   }
   return {
     supported: true,

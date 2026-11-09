@@ -86,7 +86,7 @@
   <a href="#content" class="skip-link">Ir para o conteúdo</a>
   <header class="workspace-topbar">
     <a class="brand" href="/" aria-label="illke início"><span class="brand-mark"><span></span></span>illke</a>
-    <span class="current-location">{nav.find(([href])=>page.url.pathname.startsWith(href))?.[1] || (page.url.pathname.startsWith('/pokemon/') ? 'Pokédex' : page.url.pathname.startsWith('/item/') ? 'Itens' : page.url.pathname.startsWith('/golpe/') ? 'Golpes' : page.url.pathname.startsWith('/habilidade/') ? 'Habilidades' : page.url.pathname.startsWith('/builder') ? 'Builder' : 'Início')}</span>
+    <span class="current-location">{nav.find(([href])=>page.url.pathname.startsWith(href))?.[1] || (page.url.pathname.startsWith('/pokemon/') ? 'Pokédex' : page.url.pathname.startsWith('/item/') ? 'Itens' : page.url.pathname.startsWith('/golpe/') ? 'Golpes' : page.url.pathname.startsWith('/habilidade/') ? 'Habilidades' : page.url.pathname.startsWith('/builder') ? 'Builder' : page.url.pathname.startsWith('/calculos') ? 'Calculadora de dano' : page.url.pathname.startsWith('/favoritos') ? 'Favoritos' : page.url.pathname.startsWith('/wiki') ? 'Guias' : page.url.pathname.startsWith('/cobertura') ? 'Cobertura' : page.url.pathname.startsWith('/fontes') ? 'Fontes e créditos' : page.url.pathname.startsWith('/moderacao') ? 'Moderação' : page.url.pathname.startsWith('/discord') ? 'Bot do Discord' : 'Início')}</span>
     <div class="header-actions"><button class="icon-button theme-button" disabled={!mounted} onclick={theme} aria-label={light ? "Ativar tema escuro" : "Ativar tema claro"}>{#if light}<Moon size={18}/>{:else}<Sun size={18}/>{/if}</button><a class="button small" href="/builder"><Plus size={16}/> Criar equipe</a><button class="icon-button menu-toggle" disabled={!mounted} onclick={()=>open=!open} aria-controls="workspace-sidebar" aria-expanded={open} aria-label={open ? "Fechar menu" : "Abrir menu"}>{#if open}<X size={20}/>{:else}<Menu size={20}/>{/if}</button></div>
   </header>
   {#if open}<button class="workspace-backdrop" aria-label="Fechar navegação" onclick={()=>open=false}></button>{/if}
@@ -97,7 +97,7 @@
       <select disabled={!mounted} id="current-game" name="game" value={data.selectedGame?.id || ''} onchange={changeGame}><option value="" disabled>Selecionar jogo</option>{#each games as game}<option value={game.id}>{game.name} — {game.consoles.map(c=>consoles[c]).join(' / ')}</option>{/each}</select>
       {#if data.selectedGame}<a href={'/jogos/'+data.selectedGame.id+'?game='+data.selectedGame.id}>Mapa e locais de encontro</a>{/if}
     </form>
-    <nav aria-label="Ferramentas"><a href="/favoritos" onclick={()=>open=false}><Heart size={18}/>Favoritos</a><a href="/calculos" onclick={()=>open=false}><Calculator size={18}/>Calculadora de dano</a><a href="/wiki" onclick={()=>open=false}><Library size={18}/>Guias</a></nav>
+    <nav aria-label="Ferramentas"><a href="/favoritos" class:active={page.url.pathname.startsWith('/favoritos')} onclick={()=>open=false}><Heart size={18}/>Favoritos</a><a href="/calculos" class:active={page.url.pathname.startsWith('/calculos')} onclick={()=>open=false}><Calculator size={18}/>Calculadora de dano</a><a href="/wiki" class:active={page.url.pathname.startsWith('/wiki')} onclick={()=>open=false}><Library size={18}/>Guias</a></nav>
     <a class="sidebar-discord" href={data.discordInviteUrl || '/discord'}>Bot do Discord</a>
   </aside>
   <main id="content" class="workspace-content">{@render children()}</main>
