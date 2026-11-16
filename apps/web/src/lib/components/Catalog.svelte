@@ -4,10 +4,18 @@
   import EntityIcon from "./EntityIcon.svelte";
   import CategoryBadge from "./CategoryBadge.svelte";
   import Pagination from "./Pagination.svelte";
+  import DidYouMean from "./DidYouMean.svelte";
   import { page } from "$app/state";
   import { withGame } from "$lib/games.js";
   import {abilityCategories, classifyAbility} from '$lib/ability-categories.js';
   let { data } = $props();
+  function suggestionHref(term) {
+    if (!term) return page.url.pathname;
+    const params = new URLSearchParams(page.url.searchParams);
+    params.set('q', term);
+    params.delete('page');
+    return page.url.pathname + '?' + params.toString();
+  }
   const links = {
     pokemon: "/pokemon/",
     item: "/item/",
@@ -80,6 +88,7 @@
   >
 </form>
 {#if data.query.q || data.query.type || data.query.generation || data.query.category}<a class="text-link" href={page.url.pathname}>Limpar pesquisa e filtros</a>{/if}
+{#if data.catalog?.suggestion}<DidYouMean suggestion={data.catalog.suggestion} href={suggestionHref(data.catalog.suggestion)} />{/if}
 {#if data.kind === 'ability'}<p class="help">Categorias de navegação inferidas do efeito principal pelo illke. Uma habilidade pode ter várias funções. Os efeitos originais são mantidos no idioma da fonte.</p>{/if}
 {#if data.error}<div class="notice error" role="alert">
     {data.error}

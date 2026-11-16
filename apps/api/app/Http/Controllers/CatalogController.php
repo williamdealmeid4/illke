@@ -6,6 +6,7 @@ use App\EngineClient;
 use App\Models\Build;
 use App\Models\CatalogEntry;
 use App\Models\Topic;
+use App\Support\FuzzyMatcher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,18 +19,40 @@ class CatalogController extends Controller
     {
         abort_unless(in_array($kind, ['pokemon', 'item', 'move', 'ability']), 404);
         $input = $request->validate(['q' => ['nullable', 'string', 'max:100'], 'generation' => ['nullable', 'integer', 'between:1,9'], 'type' => ['nullable', 'string', 'max:30'], 'page' => ['nullable', 'integer', 'min:1']]);
-        $query = CatalogEntry::where('kind', $kind);
-        if ($q = $input['q'] ?? '') {
-            $query->where(fn ($query) => $query->where('name', 'like', '%'.$q.'%')->orWhere('slug', 'like', '%'.$q.'%')->orWhere('national_number', ctype_digit($q) ? (int) $q : -1));
-        }
+        $baseQuery = CatalogEntry::where('kind', $kind);
         if ($gen = $input['generation'] ?? null) {
-            $query->where('generation', $gen);
+            $baseQuery->where('generation', $gen);
         }
         if ($type = $input['type'] ?? null) {
-            $query->whereJsonContains('attributes->types', strtolower($type));
+            $baseQuery->whereJsonContains('attributes->types', strtolower($type));
         }
 
-        return response()->json($query->orderBy('national_number')->orderBy('id')->paginate(36)->withQueryString());
+        $q = trim((string) ($input['q'] ?? ''));
+        $applySearch = static function ($query, string $term): void {
+            $query->where(fn ($sub) => $sub->where('name', 'like', '%'.$term.'%')
+                ->orWhere('slug', 'like', '%'.$term.'%')
+                ->orWhere('national_number', ctype_digit($term) ? (int) $term : -1));
+        };
+
+        $query = clone $baseQuery;
+        if ($q !== '') {
+            $applySearch($query, $q);
+        }
+
+        $results = $query->orderBy('national_number')->orderBy('id')->paginate(36)->withQueryString();
+        $suggestion = null;
+
+        if ($q !== '' && $results->total() === 0 && ! ctype_digit($q)) {
+            $candidates = (clone $baseQuery)->orderBy('national_number')->orderBy('id')->pluck('name');
+            $suggestion = FuzzyMatcher::suggest($q, $candidates);
+            if ($suggestion !== null) {
+                $fallbackQuery = clone $baseQuery;
+                $applySearch($fallbackQuery, $suggestion);
+                $results = $fallbackQuery->orderBy('national_number')->orderBy('id')->paginate(36)->withQueryString();
+            }
+        }
+
+        return response()->json($results->toArray() + ['suggestion' => $suggestion]);
     }
 
     public function show(string $kind, string $slug): JsonResponse

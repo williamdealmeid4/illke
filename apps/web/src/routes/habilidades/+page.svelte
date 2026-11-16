@@ -5,7 +5,15 @@
   import { withGame } from '$lib/games.js';
   import AbilitySymbol from '$lib/components/AbilitySymbol.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
+  import DidYouMean from '$lib/components/DidYouMean.svelte';
   let { data } = $props();
+  function suggestionLink(term) {
+    if (!term) return '/habilidades';
+    const params = new URLSearchParams(page.url.searchParams);
+    params.set('q', term);
+    params.delete('page');
+    return '/habilidades?' + params.toString();
+  }
   let activeCategory = $derived(abilityCategories.find((category) => category.id === data.query.category) || abilityCategories[0]);
   function categoryLink(id) {
     const params = new URLSearchParams(page.url.searchParams);
@@ -50,6 +58,7 @@
 
       <div class="results-heading"><div><h2>{activeCategory.id === 'all' ? 'Todas as habilidades' : activeCategory.name}</h2><p>{activeCategory.description}</p></div>{#if !data.error}<span class="result-count">{data.catalog?.total || 0} <span>habilidades</span></span>{/if}</div>
       {#if filtered}<div class="filter-summary"><span>Filtros ativos{data.query.q ? ` · “${data.query.q}”` : ''}{data.query.generation ? ` · Geração ${data.query.generation}` : ''}</span><a href={clearLink}><RotateCcw size={13} /> Limpar filtros</a></div>{/if}
+      {#if data.suggestion}<DidYouMean suggestion={data.suggestion} href={suggestionLink(data.suggestion)} />{/if}
 
       {#if data.error}
         <div class="ability-empty" role="alert"><AbilitySymbol icon="CloudSun" size={34} /><h3>O catálogo está indisponível</h3><p>{data.error}</p><a class="retry-link" href={page.url.pathname + page.url.search} data-sveltekit-reload>Tentar novamente <ArrowRight size={15} /></a></div>

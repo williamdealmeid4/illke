@@ -1,3 +1,5 @@
+import { suggestMatch } from './fuzzy.js';
+
 // Editorial navigation groups describe the principal effect, not an official battle type.
 export const abilityCategories = [
   { id: 'all', name: 'Todas', icon: 'LayoutGrid', description: 'Explore o catálogo completo.' },
@@ -107,6 +109,20 @@ export function filterAbilities(entries, query = {}) {
       (!query.generation || String(entry.generation) === String(query.generation)) &&
       (!query.category || query.category === 'all' || abilityMeta(entry).category === query.category);
   }).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+}
+
+export function filterAbilitiesWithSuggestion(entries, query = {}) {
+  const filtered = filterAbilities(entries, query);
+  const q = (query.q || '').trim();
+  if (filtered.length > 0 || !q) {
+    return { entries: filtered, suggestion: null };
+  }
+  const scoped = filterAbilities(entries, { ...query, q: '' });
+  const suggestion = suggestMatch(q, scoped, (entry) => entry.name);
+  if (!suggestion) {
+    return { entries: filtered, suggestion: null };
+  }
+  return { entries: filterAbilities(scoped, { ...query, q: suggestion }), suggestion };
 }
 
 export function paginateAbilities(entries, url, perPage = 24) {

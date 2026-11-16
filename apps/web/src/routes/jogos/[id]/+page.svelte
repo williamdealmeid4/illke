@@ -4,6 +4,7 @@
  import { mapFor, landmarksFor } from '$lib/maps.js';
  import GameGuide from '$lib/components/GameGuide.svelte';
  import ConsoleIcon from '$lib/components/ConsoleIcon.svelte';
+ import DidYouMean from '$lib/components/DidYouMean.svelte';
  import { MapPin, Search } from '@lucide/svelte';
  let {data}=$props();
  let mounted=$state(false);
@@ -23,6 +24,7 @@
  {#if data.message}<p class="notice" role="alert">{data.message}</p>{/if}
  {#if data.machines?.length}<div class="target-results">{#each data.machines as machine}<a href={'/jogos/'+game.id+'?'+new URLSearchParams({game:game.id,kind:'item',target:machine.item})+'#onde-encontrar'}><span><strong>{machine.item.toUpperCase()} · {machine.move.replaceAll('-',' ')}</strong><small>Consultar locais de obtenção desta máquina em {game.name}</small></span><MapPin size={18}/></a>{/each}</div>{/if}
  <p class="help">Cobertura pesquisada desta edição: {data.coverage?.pokemon || 0} Pokémon · {data.coverage?.items || 0} itens · {data.coverage?.machines || 0} máquinas. Falta de informação não é confirmação de ausência.</p>
+ {#if data.suggestion}<DidYouMean suggestion={data.suggestion} href={'/jogos/'+game.id+'?'+new URLSearchParams({game:game.id,kind:data.kind,q:data.suggestion})} />{/if}
  {#if data.matches.length}<div class="target-results">{#each data.matches as entry}<a href={'/jogos/'+game.id+'?'+new URLSearchParams({game:game.id,kind:data.kind,target:entry.slug})+'#onde-encontrar'}>{#if entry.image}<img src={entry.image.url} alt="" width="52" height="52"/>{/if}<span><strong>{entry.name}</strong><small>Ver onde encontrar em {game.name}</small></span><MapPin size={18}/></a>{/each}</div>{:else if data.query&&!data.entry}<p>Nenhum resultado para “{data.query}”. Tente o nome usado no jogo.</p>{/if}
  {#if !data.entry&&!data.query}<div class="guide-examples"><span>Consultar:</span><a href={'/jogos/'+game.id+'?kind=pokemon&target=pikachu&game='+game.id+'#onde-encontrar'}>Pikachu</a><a href={'/jogos/'+game.id+'?kind=item&target=leftovers&game='+game.id+'#onde-encontrar'}>Leftovers</a><a href={'/jogos/'+game.id+'?kind=item&target=rare-candy&game='+game.id+'#onde-encontrar'}>Rare Candy</a></div>{/if}
 </section>

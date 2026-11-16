@@ -1,5 +1,5 @@
 import { readApi } from '$lib/api.js';
-import { abilityCategories, filterAbilities, paginateAbilities } from '$lib/abilities.js';
+import { abilityCategories, filterAbilities, filterAbilitiesWithSuggestion, paginateAbilities } from '$lib/abilities.js';
 
 // Filter complete successful API snapshots; failed requests are never cached.
 let cached = null;
@@ -25,7 +25,8 @@ export async function load({ fetch, url }) {
   try {
     const entries = await allAbilities(fetch);
     const scope = filterAbilities(entries, { ...query, category: '' });
-    return { query, catalog: paginateAbilities(filterAbilities(entries, query), url),
+    const { entries: matched, suggestion } = filterAbilitiesWithSuggestion(entries, query);
+    return { query, catalog: paginateAbilities(matched, url), suggestion,
       categories: abilityCategories.map((category) => ({ ...category,
         count: category.id === 'all' ? scope.length : filterAbilities(scope, { category: category.id }).length })),
       total: entries.length, error: null };

@@ -19,6 +19,8 @@
   import { mutate, sprite, statLabels, roles } from "$lib/api.js";
   import { library, createTeam, saveTeam, getTeam } from '$lib/team-store.js';
   import { emptyBuild, referenceBuilds } from '$lib/builder.js';
+  import { suggestMatch } from '$lib/fuzzy.js';
+  import DidYouMean from '$lib/components/DidYouMean.svelte';
   let { data } = $props();
   let draft = $state(untrack(() => structuredClone(data.initial)));
   let options = $state(untrack(() => data.options));
@@ -44,12 +46,25 @@
   let optionsBusy = $state(false);
   let references = $state(untrack(() => data.references || []));
   let moveSlot = $state(null), moveSearch = $state('');
-  let moveCandidates = $derived((options?.moves || []).filter(move => !moveSearch.trim() ||
+  let exactMoveCandidates = $derived((options?.moves || []).filter(move => !moveSearch.trim() ||
     (move.name+' '+move.type+' '+move.category).toLowerCase().includes(moveSearch.trim().toLowerCase())));
+  let moveSuggestion = $derived(moveSearch.trim() && !exactMoveCandidates.length
+    ? suggestMatch(moveSearch, options?.moves || [], (move) => move.name)
+    : null);
+  let moveCandidates = $derived(moveSuggestion
+    ? (options?.moves || []).filter(move => move.name.toLowerCase().includes(moveSuggestion.toLowerCase()))
+    : exactMoveCandidates);
   let currentReference = $derived(draft?.pokemon ? references.find(reference => signature([reference.configuration]) === signature([draft])) : null);
   let generation = $derived(Number(draft?.context_id?.match(/^gen(\d+)/)?.[1] || 9));
-  let candidates = $derived(data.species.filter((p) => p.gen <= generation &&
+  let genSpecies = $derived(data.species.filter((p) => p.gen <= generation));
+  let exactCandidates = $derived(genSpecies.filter((p) =>
     (!pokemonSearch || p.name.toLowerCase().includes(pokemonSearch.toLowerCase().trim()) || String(p.num) === pokemonSearch.trim())));
+  let pokemonSuggestion = $derived(pokemonSearch.trim() && !exactCandidates.length
+    ? suggestMatch(pokemonSearch, genSpecies, (p) => p.name)
+    : null);
+  let candidates = $derived(pokemonSuggestion
+    ? genSpecies.filter((p) => p.name.toLowerCase().includes(pokemonSuggestion.toLowerCase()))
+    : exactCandidates);
   async function openPicker(slot) {
     pickerSlot = slot; pokemonSearch = "";
     await tick(); document.getElementById("pokemon-search")?.focus();
@@ -489,6 +504,7 @@
         <button class="button secondary small" onclick={() => pickerSlot = null}>Cancelar</button></div>
       <label for="pokemon-search">Nome, forma ou número — gerações 1 a {generation}</label>
       <input id="pokemon-search" type="search" bind:value={pokemonSearch} placeholder="Buscar Pokémon" />
+      {#if pokemonSuggestion}<DidYouMean suggestion={pokemonSuggestion} onSelect={(s) => pokemonSearch = s} />{/if}
       <p class="help" aria-live="polite">{candidates.length} opções{candidates.length > 48 ? ". Exibindo as primeiras 48; digite para buscar." : "."}</p>
       <div class="picker-grid">
         {#each candidates.slice(0, 48) as p}<button disabled={busy} onclick={() => choosePokemon(p.name)} aria-label={"Selecionar " + p.name}>
@@ -600,6 +616,7 @@
           {#if moveSlot !== null}<section class="move-picker" aria-label={'Escolher golpe '+(moveSlot+1)}>
             <div class="picker-heading"><h4>Escolher golpe {moveSlot+1}</h4><button class="text-link" onclick={()=>moveSlot=null}>Fechar</button></div>
             <label for="move-search">Pesquisar golpes que {draft.pokemon} aprende</label><input id="move-search" type="search" bind:value={moveSearch} placeholder="Nome, tipo ou categoria" />
+            {#if moveSuggestion}<DidYouMean suggestion={moveSuggestion} onSelect={(s) => moveSearch = s} />{/if}
             <p class="help" aria-live="polite">{moveCandidates.length} golpes disponíveis nesta geração</p>
             <div class="move-results">{#each moveCandidates as move}<button class="move-result" onclick={()=>chooseMove(move.name)} disabled={draft.moves.some((name,index)=>index!==moveSlot && name===move.name)}><TypeIcon type={move.type} size={20}/><span><strong>{move.name}</strong><small>{move.type} · {move.category} · Poder {move.power || '—'}{options?.move_restrictions?.[move.name]?.length ? ' · Sujeito às regras do formato' : ''}</small></span></button>{:else}<p>Nenhum golpe encontrado no repertório deste Pokémon.</p>{/each}</div>
             <button class="text-link" onclick={()=>chooseMove('')}>Deixar este golpe vazio</button>

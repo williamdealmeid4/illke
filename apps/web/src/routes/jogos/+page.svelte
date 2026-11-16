@@ -6,17 +6,23 @@
  import { mapFor } from '$lib/maps.js';
  import ConsoleIcon from '$lib/components/ConsoleIcon.svelte';
  import GameCover from '$lib/components/GameCover.svelte';
+ import DidYouMean from '$lib/components/DidYouMean.svelte';
+ import { suggestMatch } from '$lib/fuzzy.js';
  import { Search, Map, ArrowUpRight, Check } from '@lucide/svelte';
  let mounted=$state(false);
  onMount(()=>{mounted=true;});
  let query=$state('');
  let platform=$state('');
  let category=$state('');
- let filtered=$derived(games.filter(g=>(!platform||g.consoles.includes(platform))&&(!category||g.category===category)&&(g.name+' '+g.region).toLowerCase().includes(query.toLowerCase())));
+ let scopedGames=$derived(games.filter(g=>(!platform||g.consoles.includes(platform))&&(!category||g.category===category)));
+ let exactFiltered=$derived(scopedGames.filter(g=>(g.name+' '+g.region).toLowerCase().includes(query.toLowerCase())));
+ let suggestion=$derived(query.trim()&&!exactFiltered.length?suggestMatch(query,scopedGames,g=>g.name):null);
+ let filtered=$derived(suggestion?scopedGames.filter(g=>g.name.toLowerCase().includes(suggestion.toLowerCase())):exactFiltered);
 </script>
 <svelte:head><title>Jogos e mapas Pokémon — illke</title><meta name="description" content="Escolha seu jogo Pokémon e console para consultar pistas, mapas e locais de encontro específicos por versão."/></svelte:head>
 <div class="page-header atlas-heading"><div><span class="atlas-symbol"><Map size={28}/></span><h1>Jogos e mapas</h1><p>Selecione a versão para consultar Pokémon, itens e locais de encontro.</p></div><a href="/pokedex" class="button secondary">Explorar Pokédex</a></div>
 <fieldset class="game-filters" disabled={!mounted} aria-label="Filtrar jogos"><label class="hint-search"><Search size={19}/><span class="sr-only">Buscar jogo ou região</span><input type="search" bind:value={query} placeholder="Busque um jogo ou uma região…"/></label><div><label class="sr-only" for="game-platform">Console</label><select id="game-platform" bind:value={platform}><option value="">Todos os consoles</option>{#each Object.entries(consoles) as [id,name]}<option value={id}>{name}</option>{/each}</select></div><div><label class="sr-only" for="game-category">Categoria</label><select id="game-category" bind:value={category}><option value="">Toda a franquia</option><option>Série principal</option><option>Derivados e aplicativos</option></select></div></fieldset>
+{#if suggestion}<DidYouMean {suggestion} onSelect={(s) => query = s} />{/if}
 <p class="help">{filtered.length} títulos no catálogo. Plataformas indicam edições nativas; retrocompatibilidade e relançamentos variam. A disponibilidade de pistas é indicada em cada jogo.</p>
 {#each ['Série principal','Derivados e aplicativos'] as group}
  {#if filtered.some(g=>g.category===group)}<section class="game-section"><div class="section-heading"><h2>{group}</h2></div><div class="game-grid">

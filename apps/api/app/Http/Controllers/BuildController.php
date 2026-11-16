@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\EngineClient;
 use App\Models\Build;
+use App\Support\FuzzyMatcher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,11 +34,29 @@ class BuildController extends Controller
         if ($request->filled('context_id')) {
             $query->where('context_id', $request->string('context_id')->toString());
         }
-        if ($request->filled('q')) {
-            $query->where(fn ($q) => $q->where('pokemon', 'like', '%'.$request->string('q').'%')->orWhere('name', 'like', '%'.$request->string('q').'%'));
+        $perPage = $request->has('ids') || $request->boolean('favorites') ? 100 : 24;
+        $q = trim((string) $request->input('q', ''));
+        $baseQuery = clone $query;
+
+        if ($q !== '') {
+            $query->where(fn ($sub) => $sub->where('pokemon', 'like', '%'.$q.'%')->orWhere('name', 'like', '%'.$q.'%'));
         }
 
-        return response()->json($query->orderBy('pokemon')->orderBy('id')->paginate($request->has('ids') || $request->boolean('favorites') ? 100 : 24)->withQueryString());
+        $results = $query->orderBy('pokemon')->orderBy('id')->paginate($perPage)->withQueryString();
+        $suggestion = null;
+
+        if ($q !== '' && $results->total() === 0) {
+            $candidates = (clone $baseQuery)->select('pokemon', 'name')->get()
+                ->flatMap(fn (Build $build) => [$build->pokemon, $build->name]);
+            $suggestion = FuzzyMatcher::suggest($q, $candidates);
+            if ($suggestion !== null) {
+                $fallbackQuery = clone $baseQuery;
+                $fallbackQuery->where(fn ($sub) => $sub->where('pokemon', 'like', '%'.$suggestion.'%')->orWhere('name', 'like', '%'.$suggestion.'%'));
+                $results = $fallbackQuery->orderBy('pokemon')->orderBy('id')->paginate($perPage)->withQueryString();
+            }
+        }
+
+        return response()->json($results->toArray() + ['suggestion' => $suggestion]);
     }
 
     public function show(Request $request, Build $build): JsonResponse

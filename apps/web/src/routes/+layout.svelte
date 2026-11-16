@@ -2,7 +2,7 @@
   import "../app.css";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import { Menu, X, Sun, Moon, Plus, Gamepad2, Users, Heart, Calculator, Package, Swords, Sparkles, Home, Library } from "@lucide/svelte";
+  import { Menu, X, Sun, Moon, Plus, Gamepad2, Users, Heart, Calculator, Package, Swords, Sparkles, Home, Library, PanelLeftClose, PanelLeftOpen, ChevronLeft, ChevronRight } from "@lucide/svelte";
   import { onMount } from "svelte";
   import { games, consoles } from "$lib/games.js";
   import Opening from "$lib/components/Opening.svelte";
@@ -12,15 +12,21 @@
   let mounted = $state(false);
   let open = $state(false);
   let light = $state(false);
+  let sidebarCollapsed = $state(false);
   let activeCard = null;
 
   onMount(() => {
     mounted = true;
     try { light = localStorage.getItem("illke-theme") === "light"; } catch {}
+    try { sidebarCollapsed = localStorage.getItem("illke-sidebar") === "collapsed"; } catch {}
   });
   function theme() {
     light = !light;
     try { localStorage.setItem("illke-theme", light ? "light" : "dark"); } catch {}
+  }
+  function toggleSidebar() {
+    sidebarCollapsed = !sidebarCollapsed;
+    try { localStorage.setItem("illke-sidebar", sidebarCollapsed ? "collapsed" : "expanded"); } catch {}
   }
   function changeGame(event) {
     open = false;
@@ -82,24 +88,47 @@
 <svelte:window onkeydown={event=>{if(event.key==='Escape') open=false;}}/>
 {#if data.showIntro}<Opening/>{/if}
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="app" class:light onpointermove={handlePointerMove} onpointerleave={handlePointerLeave}>
+<div class="app" class:light class:sidebar-collapsed={sidebarCollapsed} onpointermove={handlePointerMove} onpointerleave={handlePointerLeave}>
   <a href="#content" class="skip-link">Ir para o conteúdo</a>
   <header class="workspace-topbar">
+    <button
+      type="button"
+      class="icon-button sidebar-toggle"
+      disabled={!mounted}
+      onclick={toggleSidebar}
+      aria-controls="workspace-sidebar"
+      aria-expanded={!sidebarCollapsed}
+      aria-label={sidebarCollapsed ? "Puxar opções laterais" : "Guardar opções laterais"}
+      title={sidebarCollapsed ? "Puxar opções laterais" : "Guardar opções laterais"}
+    >{#if sidebarCollapsed}<PanelLeftOpen size={18}/>{:else}<PanelLeftClose size={18}/>{/if}</button>
     <a class="brand" href="/" aria-label="illke início"><span class="brand-mark"><span></span></span>illke</a>
     <span class="current-location">{nav.find(([href])=>page.url.pathname.startsWith(href))?.[1] || (page.url.pathname.startsWith('/pokemon/') ? 'Pokédex' : page.url.pathname.startsWith('/item/') ? 'Itens' : page.url.pathname.startsWith('/golpe/') ? 'Golpes' : page.url.pathname.startsWith('/habilidade/') ? 'Habilidades' : page.url.pathname.startsWith('/builder') ? 'Builder' : page.url.pathname.startsWith('/calculos') ? 'Calculadora de dano' : page.url.pathname.startsWith('/favoritos') ? 'Favoritos' : page.url.pathname.startsWith('/wiki') ? 'Guias' : page.url.pathname.startsWith('/cobertura') ? 'Cobertura' : page.url.pathname.startsWith('/fontes') ? 'Fontes e créditos' : page.url.pathname.startsWith('/moderacao') ? 'Moderação' : page.url.pathname.startsWith('/discord') ? 'Bot do Discord' : 'Início')}</span>
     <div class="header-actions"><button class="icon-button theme-button" disabled={!mounted} onclick={theme} aria-label={light ? "Ativar tema escuro" : "Ativar tema claro"}>{#if light}<Moon size={18}/>{:else}<Sun size={18}/>{/if}</button><a class="button small" href="/builder"><Plus size={16}/> Criar equipe</a><button class="icon-button menu-toggle" disabled={!mounted} onclick={()=>open=!open} aria-controls="workspace-sidebar" aria-expanded={open} aria-label={open ? "Fechar menu" : "Abrir menu"}>{#if open}<X size={20}/>{:else}<Menu size={20}/>{/if}</button></div>
   </header>
   {#if open}<button class="workspace-backdrop" aria-label="Fechar navegação" onclick={()=>open=false}></button>{/if}
-  <aside id="workspace-sidebar" class="workspace-sidebar" class:expanded={open}>
+  <aside id="workspace-sidebar" class="workspace-sidebar" class:expanded={open} aria-hidden={sidebarCollapsed ? 'true' : undefined}>
+    <span class="sidebar-section-label">Explorar</span>
     <nav aria-label="Principal"><a href="/" class:active={page.url.pathname==='/'} onclick={()=>open=false}><Home size={18}/>Início</a>{#each nav as [href,label,Icon]}<a {href} class:active={page.url.pathname.startsWith(href)} aria-current={page.url.pathname.startsWith(href)?'page':undefined} onclick={()=>open=false}><Icon size={18}/>{label}</a>{/each}</nav>
     <form action={page.url.pathname} class="sidebar-game" onsubmit={event=>{event.preventDefault();open=false;}}>
       <div class="sidebar-game-title"><ConsoleIcon platform={data.selectedGame?.consoles[0] || 'gbc'} size={40}/><label for="current-game">Jogo selecionado</label></div>
       <select disabled={!mounted} id="current-game" name="game" value={data.selectedGame?.id || ''} onchange={changeGame}><option value="" disabled>Selecionar jogo</option>{#each games as game}<option value={game.id}>{game.name} — {game.consoles.map(c=>consoles[c]).join(' / ')}</option>{/each}</select>
       {#if data.selectedGame}<a href={'/jogos/'+data.selectedGame.id+'?game='+data.selectedGame.id}>Mapa e locais de encontro</a>{/if}
     </form>
-    <nav aria-label="Ferramentas"><a href="/favoritos" class:active={page.url.pathname.startsWith('/favoritos')} onclick={()=>open=false}><Heart size={18}/>Favoritos</a><a href="/calculos" class:active={page.url.pathname.startsWith('/calculos')} onclick={()=>open=false}><Calculator size={18}/>Calculadora de dano</a><a href="/wiki" class:active={page.url.pathname.startsWith('/wiki')} onclick={()=>open=false}><Library size={18}/>Guias</a></nav>
+    <span class="sidebar-section-label">Ferramentas</span>
+    <nav aria-label="Ferramentas" class="sidebar-tools"><a href="/favoritos" class:active={page.url.pathname.startsWith('/favoritos')} onclick={()=>open=false}><Heart size={18}/>Favoritos</a><a href="/calculos" class:active={page.url.pathname.startsWith('/calculos')} onclick={()=>open=false}><Calculator size={18}/>Calculadora de dano</a><a href="/wiki" class:active={page.url.pathname.startsWith('/wiki')} onclick={()=>open=false}><Library size={18}/>Guias</a></nav>
     <a class="sidebar-discord" href={data.discordInviteUrl || '/discord'}>Bot do Discord</a>
   </aside>
+  <button
+    type="button"
+    class="sidebar-rail-toggle"
+    class:collapsed={sidebarCollapsed}
+    disabled={!mounted}
+    onclick={toggleSidebar}
+    aria-controls="workspace-sidebar"
+    aria-expanded={!sidebarCollapsed}
+    aria-label={sidebarCollapsed ? "Puxar opções laterais" : "Guardar opções laterais"}
+    title={sidebarCollapsed ? "Puxar opções laterais" : "Guardar opções laterais"}
+  >{#if sidebarCollapsed}<ChevronRight size={15}/>{:else}<ChevronLeft size={15}/>{/if}</button>
   <main id="content" class="workspace-content">{@render children()}</main>
   <footer>
     <a class="brand" href="/">illke</a>

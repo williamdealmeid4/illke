@@ -3470,3 +3470,408 @@ label.check:hover,
 .catalog-table tr:hover .catalog-name {
   color: var(--accent);
 }
+
+/* ==========================================================================
+   HIGH-IMPACT ABOVE-THE-FOLD VISUAL OVERHAUL
+   (Home, Pokédex Collector Cards, Pokémon Dossier & Live Battle HUD)
+   ========================================================================== */
+
+/* 1. Home Desk & Regional Map Viewport */
+.home-desk .dex-lookup,
+.home-desk .home-region {
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 71, 56, 0.12), transparent 52%),
+    radial-gradient(circle at 88% 100%, rgba(56, 189, 248, 0.08), transparent 55%),
+    linear-gradient(165deg, rgba(20, 23, 36, 0.95), rgba(10, 12, 20, 0.98));
+  box-shadow: 0 22px 48px -18px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.lookup-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 6px;
+}
+.lookup-shortcuts a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.lookup-shortcuts a::after {
+  content: "↗";
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+.lookup-shortcuts a:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface2));
+}
+.home-map-link {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.16), rgba(9, 12, 20, 0.96) 78%) !important;
+  overflow: hidden;
+}
+.home-map-link > img {
+  padding: 18px;
+  filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.65));
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+}
+.home-map-link:hover > img {
+  transform: scale(1.04);
+}
+.map-link-label {
+  background: rgba(12, 15, 24, 0.88) !important;
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-weight: 700;
+}
+
+/* 2. Seamless Elemental Collector Cards (.pokemon-card) */
+.pokemon-card {
+  border-radius: 20px;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--card-glow) 34%, rgba(255, 255, 255, 0.1));
+  background:
+    radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--card-glow) 28%, transparent) 0%, transparent 68%),
+    linear-gradient(168deg, color-mix(in srgb, var(--card-glow) 12%, var(--surface)) 0%, var(--bg) 100%);
+  box-shadow:
+    0 16px 36px -14px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.pokemon-card .pokemon-image {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 54%, color-mix(in srgb, var(--card-glow) 34%, transparent) 0%, rgba(255, 255, 255, 0.02) 64%, transparent 100%);
+  border: 1px solid color-mix(in srgb, var(--card-glow) 22%, rgba(255, 255, 255, 0.06));
+  border-radius: 16px;
+  overflow: hidden;
+}
+.pokemon-card .pokemon-image::before {
+  content: "";
+  position: absolute;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  border: 12px solid color-mix(in srgb, var(--card-glow) 16%, rgba(255, 255, 255, 0.03));
+  opacity: 0.55;
+  pointer-events: none;
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1), opacity .25s ease;
+}
+.pokemon-card:hover .pokemon-image::before {
+  transform: scale(1.18) rotate(18deg);
+  opacity: 0.85;
+}
+.pokemon-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+
+/* 3. Pokémon Detail Dossier (/pokemon/[slug]) */
+.detail-portrait {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--card-glow, var(--accent)) 38%, var(--border));
+  background:
+    radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--card-glow, var(--accent)) 34%, transparent) 0%, transparent 68%),
+    linear-gradient(165deg, var(--surface2), var(--bg));
+  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.detail-dex-watermark {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-family: var(--display);
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: color-mix(in srgb, var(--card-glow, var(--text)) 28%, transparent);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+.shiny-toggle-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-weight: 700;
+  color: var(--accent-amber);
+  border-color: color-mix(in srgb, var(--accent-amber) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent-amber) 12%, var(--surface));
+}
+.detail-stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.detail-stats-header h2 {
+  margin: 0;
+}
+.bst-badge {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 14px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--bg));
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--text);
+}
+.bst-badge strong {
+  color: var(--accent);
+  font-size: 14px;
+}
+.detail-grid .detail-data {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.detail-grid .detail-data > div {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(165deg, var(--surface), var(--bg));
+  border: 1px solid var(--border);
+}
+.detail-grid .detail-data > div:nth-child(5),
+.detail-grid .detail-data > div:nth-child(6) {
+  grid-column: span 2;
+}
+@media (max-width: 900px) {
+  .detail-grid .detail-data {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .detail-grid .detail-data > div:nth-child(5),
+  .detail-grid .detail-data > div:nth-child(6) {
+    grid-column: span 2;
+  }
+}
+
+/* 4. Live Battle HUD Arena on /calculos */
+.calc-live-arena {
+  margin: 16px 0;
+  padding: 22px 24px;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+  background:
+    radial-gradient(circle at 15% 50%, rgba(255, 71, 56, 0.14), transparent 55%),
+    radial-gradient(circle at 85% 50%, rgba(56, 189, 248, 0.14), transparent 55%),
+    linear-gradient(165deg, var(--surface) 0%, var(--bg) 100%);
+  box-shadow: 0 22px 46px -18px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.calc-arena-fighters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 1.2fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+}
+.calc-arena-side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(8, 10, 16, 0.65);
+  border: 1px solid var(--border);
+}
+.calc-arena-side[data-side="defender"] {
+  justify-content: space-between;
+  text-align: right;
+}
+.calc-arena-defender-info {
+  flex: 1;
+  min-width: 0;
+}
+.calc-arena-role {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+.calc-arena-side[data-side="defender"] .calc-arena-role {
+  color: var(--blue);
+}
+.calc-arena-side strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.calc-arena-side small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 3px;
+}
+.calc-arena-sprite {
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%), var(--surface2);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.calc-arena-sprite img {
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.55));
+}
+.calc-arena-center {
+  text-align: center;
+  padding: 8px 12px;
+}
+.calc-arena-center .result-number {
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1.05;
+  margin: 8px 0 6px;
+  background: linear-gradient(135deg, #fff 35%, #ffd6a5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.calc-verdict-chip[data-verdict="ohko"] {
+  background: color-mix(in srgb, var(--danger) 24%, var(--surface2));
+  border-color: var(--danger);
+  color: #fda4af;
+}
+.calc-verdict-chip[data-verdict="twohko"] {
+  background: color-mix(in srgb, var(--accent-amber) 22%, var(--surface2));
+  border-color: var(--accent-amber);
+  color: #fde68a;
+}
+.calc-arena-side .calc-hp-meter {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+}
+.calc-live-arena .calc-previous-box {
+  margin-top: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.calc-live-arena .calc-prev-range {
+  margin: 0;
+  font-size: 20px;
+}
+@media (max-width: 1024px) {
+  .calc-arena-fighters {
+    grid-template-columns: 1fr;
+  }
+  .calc-arena-side[data-side="defender"] {
+    text-align: left;
+  }
+}
+
+/* Collapsible Sidebar & Visual Hierarchy */
+.app {
+  transition: grid-template-columns .24s cubic-bezier(.22, 1, .36, 1);
+}
+.app.sidebar-collapsed {
+  grid-template-columns: 0px minmax(0, 1fr);
+}
+.workspace-sidebar {
+  transition: opacity .18s ease, padding .22s ease, border-color .22s ease;
+}
+.app.sidebar-collapsed .workspace-sidebar {
+  padding-inline: 0;
+  border-right-color: transparent;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar-section-label {
+  display: block;
+  padding: 2px 12px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.78;
+}
+.workspace-sidebar nav.sidebar-tools a {
+  min-height: 36px;
+  padding: 7px 12px;
+  font-size: 13px;
+}
+.sidebar-toggle {
+  margin-right: -10px;
+  flex-shrink: 0;
+}
+.sidebar-rail-toggle {
+  position: fixed;
+  top: 50%;
+  left: 236px;
+  transform: translate(-50%, -50%);
+  z-index: 36;
+  width: 22px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: left .24s cubic-bezier(.22, 1, .36, 1), color .15s ease, border-color .15s ease, background .15s ease;
+}
+.sidebar-rail-toggle:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: var(--surface2);
+}
+.sidebar-rail-toggle.collapsed {
+  left: 0;
+  transform: translate(0, -50%);
+  border-left: 0;
+  border-radius: 0 10px 10px 0;
+  width: 24px;
+}
+@media (max-width: 1150px) {
+  .sidebar-rail-toggle:not(.collapsed) {
+    left: 212px;
+  }
+}
+@media (max-width: 850px) {
+  .sidebar-toggle,
+  .sidebar-rail-toggle {
+    display: none;
+  }
+  .app.sidebar-collapsed .workspace-sidebar {
+    padding: 18px 14px;
+    border-right: 1px solid var(--border);
+    opacity: 1;
+    pointer-events: auto;
+    overflow: auto;
+  }
+}

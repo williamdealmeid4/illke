@@ -1,7 +1,16 @@
 <script>
   import BuildList from "$lib/components/BuildList.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
+  import DidYouMean from "$lib/components/DidYouMean.svelte";
+  import { page } from "$app/state";
   let { data } = $props();
+  function suggestionHref(term) {
+    if (!term) return '/builds';
+    const params = new URLSearchParams(page.url.searchParams);
+    params.set('q', term);
+    params.delete('page');
+    return '/builds?' + params.toString();
+  }
 </script>
 
 <svelte:head><title>Builds por formato — illke</title></svelte:head>
@@ -32,6 +41,7 @@
   Biblioteca de referência em ordem alfabética. Votos indicam aprovação da
   comunidade. O desempenho depende da equipe e do benchmark.
 </p>
+{#if data.builds?.suggestion}<DidYouMean suggestion={data.builds.suggestion} href={suggestionHref(data.builds.suggestion)} />{/if}
 {#if data.error}<div class="notice error">{data.error}</div>{/if}<BuildList
   builds={data.builds?.data || []}
 /><Pagination pagination={data.builds} />
