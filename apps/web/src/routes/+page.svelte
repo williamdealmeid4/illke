@@ -1,4 +1,5 @@
 <script>
+  import PokemonCardBackdrop from '$lib/components/PokemonCardBackdrop.svelte';
   import TypeBadge from '$lib/components/TypeBadge.svelte';
   import EntityIcon from '$lib/components/EntityIcon.svelte';
   import ConsoleIcon from '$lib/components/ConsoleIcon.svelte';
@@ -36,7 +37,7 @@
           class="pokemon-card"
           data-type={String(pokemon.attributes.types?.[0] || "normal").toLowerCase()}
           href={"/pokemon/" + pokemon.slug}
-          ><div class="pokemon-card-top">
+          ><PokemonCardBackdrop types={pokemon.attributes.types} /><div class="pokemon-card-top">
             <span>#{String(pokemon.national_number).padStart(4, "0")}</span
             ><ArrowUpRight size={15} />
           </div>

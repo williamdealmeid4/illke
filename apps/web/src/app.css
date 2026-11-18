@@ -3542,38 +3542,127 @@ label.check:hover,
 
 /* 2. Seamless Elemental Collector Cards (.pokemon-card) */
 .pokemon-card {
+  --card-glow: var(--t);
   border-radius: 20px;
   padding: 18px;
-  border: 1px solid color-mix(in srgb, var(--card-glow) 34%, rgba(255, 255, 255, 0.1));
-  background:
-    radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--card-glow) 28%, transparent) 0%, transparent 68%),
-    linear-gradient(168deg, color-mix(in srgb, var(--card-glow) 12%, var(--surface)) 0%, var(--bg) 100%);
+  border: 1px solid color-mix(in srgb, var(--card-glow) 42%, rgba(255, 255, 255, 0.18));
+  background: var(--surface);
   box-shadow:
-    0 16px 36px -14px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    0 16px 36px -14px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+.pokemon-card:hover {
+  border-color: color-mix(in srgb, var(--card-glow) 85%, #ffffff);
+  box-shadow:
+    0 20px 38px -12px color-mix(in srgb, var(--card-glow) 48%, rgba(0, 0, 0, 0.85)),
+    0 0 0 1px color-mix(in srgb, var(--card-glow) 58%, rgba(255, 255, 255, 0.2)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+.pokemon-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(
+      circle at var(--mx, 50%) var(--my, 35%),
+      color-mix(in srgb, var(--card-glow) 34%, rgba(255, 255, 255, 0.22)) 0%,
+      transparent 64%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.03) 34%,
+      rgba(0, 0, 0, 0.12) 64%,
+      rgba(255, 255, 255, 0.09) 100%
+    );
+}
+.pokemon-card::before {
+  z-index: 1;
+  background:
+    radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in srgb, var(--card-glow) 42%, rgba(255, 255, 255, 0.36)) 0%,
+      color-mix(in srgb, var(--card-glow) 18%, transparent) 32%,
+      transparent 58%
+    ),
+    linear-gradient(
+      118deg,
+      transparent 18%,
+      rgba(255, 255, 255, 0.12) 30%,
+      rgba(255, 110, 195, 0.16) 38%,
+      rgba(90, 245, 225, 0.2) 46%,
+      rgba(255, 240, 140, 0.24) 52%,
+      rgba(110, 175, 255, 0.18) 60%,
+      rgba(255, 255, 255, 0.1) 68%,
+      transparent 78%
+    );
+}
+.pokemon-card > :not(.pokemon-card-backdrop) {
+  position: relative;
+  z-index: 2;
 }
 .pokemon-card .pokemon-image {
   position: relative;
-  background:
-    radial-gradient(circle at 50% 54%, color-mix(in srgb, var(--card-glow) 34%, transparent) 0%, rgba(255, 255, 255, 0.02) 64%, transparent 100%);
-  border: 1px solid color-mix(in srgb, var(--card-glow) 22%, rgba(255, 255, 255, 0.06));
-  border-radius: 16px;
-  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
 }
 .pokemon-card .pokemon-image::before {
-  content: "";
-  position: absolute;
-  width: 116px;
-  height: 116px;
-  border-radius: 50%;
-  border: 12px solid color-mix(in srgb, var(--card-glow) 16%, rgba(255, 255, 255, 0.03));
-  opacity: 0.55;
-  pointer-events: none;
-  transition: transform .35s cubic-bezier(.22, 1, .36, 1), opacity .25s ease;
+  content: none;
 }
-.pokemon-card:hover .pokemon-image::before {
-  transform: scale(1.18) rotate(18deg);
-  opacity: 0.85;
+.pokemon-card > .pokemon-card-backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 0;
+  pointer-events: none;
+}
+.pokemon-card-element {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--t) 36%, var(--surface)) 0%,
+      color-mix(in srgb, var(--t) 18%, var(--surface)) 55%,
+      color-mix(in srgb, var(--t) 12%, var(--bg)) 100%
+    );
+}
+.pokemon-card-element + .pokemon-card-element {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.pokemon-card-element .type-icon {
+  position: absolute;
+  top: 43%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(108px, 82%) !important;
+  height: auto !important;
+  aspect-ratio: 1;
+  opacity: 0.22;
+  filter: grayscale(1) brightness(0.52) contrast(5.5) brightness(1.65);
+  max-width: 82%;
+  object-fit: contain;
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1), opacity .25s ease;
+}
+.pokemon-card:hover .pokemon-card-element .type-icon {
+  opacity: 0.3;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.pokemon-card .type {
+  background: color-mix(in srgb, var(--type) 18%, rgba(10, 12, 20, 0.82));
+  border-color: color-mix(in srgb, var(--type) 42%, rgba(255, 255, 255, 0.14));
+  backdrop-filter: blur(6px);
+}
+.light .pokemon-card .type {
+  background: color-mix(in srgb, var(--type) 22%, rgba(255, 255, 255, 0.88));
 }
 .pokemon-card h3 {
   font-size: 18px;

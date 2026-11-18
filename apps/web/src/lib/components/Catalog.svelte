@@ -1,4 +1,5 @@
 <script>
+  import PokemonCardBackdrop from './PokemonCardBackdrop.svelte';
   import { Search, ArrowUpRight, SlidersHorizontal } from "@lucide/svelte";
   import TypeBadge from "./TypeBadge.svelte";
   import EntityIcon from "./EntityIcon.svelte";
@@ -107,7 +108,7 @@
           class="pokemon-card"
           data-type={String(p.attributes.types?.[0] || "normal").toLowerCase()}
           href={withGame(links[data.kind] + p.slug,page.data.selectedGame?.id)}
-          ><div class="pokemon-card-top">
+          ><PokemonCardBackdrop types={p.attributes.types} /><div class="pokemon-card-top">
             <span>#{String(p.national_number).padStart(4, "0")}</span
             ><ArrowUpRight size={15} />
           </div>
